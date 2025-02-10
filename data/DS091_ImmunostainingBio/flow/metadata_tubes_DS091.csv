@@ -1,0 +1,5 @@
+rowID,colID,tubeID,cell_line,stimulus,stim_clean,description,protein_PE,protein_AF647,protein_AF488,protein_BV421
+A,2,A02,DAUDI,PBS,Basal,DAUDI - Basal,pSYK (Y525/Y526),pPLCy2 (Y759),pCD79a (Y182),cCaspase 3 + cPARP
+A,3,A03,DAUDI,aIg,Activated (anti-Ig),DAUDI - Activated (anti-Ig),pSYK (Y525/Y526),pPLCy2 (Y759),pCD79a (Y182),cCaspase 3 + cPARP
+A,4,A04,HBL1,PBS,Basal,HBL1 - Basal,pSYK (Y525/Y526),pPLCy2 (Y759),pCD79a (Y182),cCaspase 3 + cPARP
+A,5,A05,HBL1,H2O2,Activated (H2O2),HBL1 - Activated (H2O2),pSYK (Y525/Y526),pPLCy2 (Y759),pCD79a (Y182),cCaspase 3 + cPARP

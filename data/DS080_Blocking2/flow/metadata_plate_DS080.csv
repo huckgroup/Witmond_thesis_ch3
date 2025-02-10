@@ -1,0 +1,9 @@
+rowID,colID,wellID,sample,cell_line,stimulus,staining,protein_PE,protein_AF647,protein_AF488,protein_BV421
+A,2,A02,1,JURKAT,PBS,no,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+A,3,A03,2,JURKAT,aIg,no,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+A,4,A04,3,JURKAT,PBS,yes,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+A,5,A05,4,JURKAT,aIg,yes,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,2,B02,5,HBL1,PBS,no,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,3,B03,6,HBL1,aIg,no,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,4,B04,7,HBL1,PBS,yes,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,5,B05,8,HBL1,aIg,yes,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP

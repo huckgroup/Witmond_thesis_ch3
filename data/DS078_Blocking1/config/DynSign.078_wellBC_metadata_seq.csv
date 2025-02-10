@@ -1,0 +1,97 @@
+﻿plate,row,column,well, well_BC_ID,well_BC_seq,experiment,sample,cell_line,stimulus,stim_clean,stim_stain,block_buf,replicate,staining,description,description_rep,cell_treat
+A,A,1,A01,001,AATAACACCTCGAATC,DS078,1,Jurkat,PBS,Basal,Basal,ID-seq,rep1,yes,Jurkat - Basal - ID-seq buffer,Jurkat - Basal - ID-seq buffer - rep1,Jurkat - Basal
+A,B,1,B01,002,ACTATCACTTGGCATG,DS078,2,Jurkat,anti-Ig,Activated,Activated,ID-seq,rep1,yes,Jurkat - Activated - ID-seq buffer,Jurkat - Activated - ID-seq buffer - rep1,Jurkat - Activated
+A,C,1,C01,003,ATAACATGATCGACAC,DS078,3,No cells,MQ,Control,Control,ID-seq,rep1,yes,No cells - Control - ID-seq buffer,No cells - Control - ID-seq buffer - rep1,No cells - Control
+A,D,1,D01,004,CAGCTAGATGAAGAAG,DS078,4,No cells,MQ,Control,Control,ID-seq,rep2,yes,No cells - Control - ID-seq buffer,No cells - Control - ID-seq buffer - rep2,No cells - Control
+A,E,1,E01,005,CGCCGAGAAACAGACA,DS078,5,No cells,MQ,Control,Control,ID-seq,rep3,yes,No cells - Control - ID-seq buffer,No cells - Control - ID-seq buffer - rep3,No cells - Control
+A,F,1,F01,006,GATATAACTGGTTGCT,DS078,6,HBL1,PBS,Basal,Basal,ID-seq,rep1,yes,HBL1 - Basal - ID-seq buffer,HBL1 - Basal - ID-seq buffer - rep1,HBL1 - Basal
+A,G,1,G01,007,GCGGACTGTTTGTCGA,DS078,7,HBL1,PBS,Basal,Basal,ID-seq,rep2,yes,HBL1 - Basal - ID-seq buffer,HBL1 - Basal - ID-seq buffer - rep2,HBL1 - Basal
+A,H,1,H01,016,ACAAAGAAGGCAGGTT,DS078,8,HBL1,PBS,Basal,Basal,ID-seq,rep3,yes,HBL1 - Basal - ID-seq buffer,HBL1 - Basal - ID-seq buffer - rep3,HBL1 - Basal
+A,A,2,A02,009,TCGTTATGTCCTGCTT,DS078,9,HBL1,anti-Ig,Activated,Activated,ID-seq,rep1,yes,HBL1 - Activated - ID-seq buffer,HBL1 - Activated - ID-seq buffer - rep1,HBL1 - Activated
+A,B,2,B02,010,TGTGAGTGCCTCACCA,DS078,10,HBL1,anti-Ig,Activated,Activated,ID-seq,rep2,yes,HBL1 - Activated - ID-seq buffer,HBL1 - Activated - ID-seq buffer - rep2,HBL1 - Activated
+A,C,2,C02,011,AAACCCAAGAAACACT,DS078,11,HBL1,anti-Ig,Activated,Activated,ID-seq,rep3,yes,HBL1 - Activated - ID-seq buffer,HBL1 - Activated - ID-seq buffer - rep3,HBL1 - Activated
+A,D,2,D02,012,AACAAAGAGACTGATG,DS078,12,HBL1,PBS,Basal,Basal (no stain),ID-seq,rep1,no,HBL1 - Basal (no stain) - ID-seq buffer,HBL1 - Basal (no stain) - ID-seq buffer - rep1,HBL1 - Basal (no stain)
+A,E,2,E02,013,AACCTTTAGATGGGCT,DS078,13,HBL1,anti-Ig,Activated,Activated (no stain),ID-seq,rep1,no,HBL1 - Activated (no stain) - ID-seq buffer,HBL1 - Activated (no stain) - ID-seq buffer - rep1,HBL1 - Activated (no stain)
+A,F,2,F02,014,AAGCCATAGCCGAGGT,DS078,14,HBL1,anti-Ig,Activated,Activated (no stain),ID-seq,rep2,no,HBL1 - Activated (no stain) - ID-seq buffer,HBL1 - Activated (no stain) - ID-seq buffer - rep2,HBL1 - Activated (no stain)
+A,G,2,G02,015,AATCACGAGCTCCACG,DS078,15,HBL1,anti-Ig,Activated,Activated (no stain),ID-seq,rep3,no,HBL1 - Activated (no stain) - ID-seq buffer,HBL1 - Activated (no stain) - ID-seq buffer - rep3,HBL1 - Activated (no stain)
+A,H,2,H02,024,AGCGTATCAGATTGGG,DS078,16,No cells,MQ,Control,Control (no stain),ID-seq,rep1,no,No cells - Control (no stain) - ID-seq buffer,No cells - Control (no stain) - ID-seq buffer - rep1,No cells - Control (no stain)
+A,A,3,A03,017,ACATCCCAGGTAGCAC,DS078,17,Jurkat,PBS,Basal,Basal,RAID,rep1,yes,Jurkat - Basal - RAID buffer,Jurkat - Basal - RAID buffer - rep1,Jurkat - Basal
+A,B,3,B03,018,ACCCTTGAGTATGACA,DS078,18,Jurkat,anti-Ig,Activated,Activated,RAID,rep1,yes,Jurkat - Activated - RAID buffer,Jurkat - Activated - RAID buffer - rep1,Jurkat - Activated
+A,C,3,C03,019,ACGGTCGAGTGGCAGT,DS078,19,No cells,MQ,Control,Control,RAID,rep1,yes,No cells - Control - RAID buffer,No cells - Control - RAID buffer - rep1,No cells - Control
+A,D,3,D03,020,ACTATTCCAAATACGA,DS078,20,No cells,MQ,Control,Control,RAID,rep2,yes,No cells - Control - RAID buffer,No cells - Control - RAID buffer - rep2,No cells - Control
+A,E,3,E03,021,ACTTCGCCAAGGTTTC,DS078,21,No cells,MQ,Control,Control,RAID,rep3,yes,No cells - Control - RAID buffer,No cells - Control - RAID buffer - rep3,No cells - Control
+A,F,3,F03,022,AGACAGGCACATACCA,DS078,22,HBL1,PBS,Basal,Basal,RAID,rep1,yes,HBL1 - Basal - RAID buffer,HBL1 - Basal - RAID buffer - rep1,HBL1 - Basal
+A,G,3,G03,023,AGATCGTCACGTTCGG,DS078,23,HBL1,PBS,Basal,Basal,RAID,rep2,yes,HBL1 - Basal - RAID buffer,HBL1 - Basal - RAID buffer - rep2,HBL1 - Basal
+A,H,3,H03,032,ATGGGTTGTGGCGATA,DS078,24,HBL1,PBS,Basal,Basal,RAID,rep3,yes,HBL1 - Basal - RAID buffer,HBL1 - Basal - RAID buffer - rep3,HBL1 - Basal
+A,A,4,A04,025,AGGATAACAGTCATGT,DS078,25,HBL1,anti-Ig,Activated,Activated,RAID,rep1,yes,HBL1 - Activated - RAID buffer,HBL1 - Activated - RAID buffer - rep1,HBL1 - Activated
+A,B,4,B04,026,AGGGTTTCATCGATAC,DS078,26,HBL1,anti-Ig,Activated,Activated,RAID,rep2,yes,HBL1 - Activated - RAID buffer,HBL1 - Activated - RAID buffer - rep2,HBL1 - Activated
+A,C,4,C04,027,AGTAGCTCATTGCAGT,DS078,27,HBL1,anti-Ig,Activated,Activated,RAID,rep3,yes,HBL1 - Activated - RAID buffer,HBL1 - Activated - RAID buffer - rep3,HBL1 - Activated
+A,D,4,D04,028,AGTTAGCGTAGACAGC,DS078,28,HBL1,PBS,Basal,Basal (no stain),RAID,rep1,no,HBL1 - Basal (no stain) - RAID buffer,HBL1 - Basal (no stain) - RAID buffer - rep1,HBL1 - Basal (no stain)
+A,E,4,E04,029,ATCACAGGTCAACCAT,DS078,29,HBL1,anti-Ig,Activated,Activated (no stain),RAID,rep1,no,HBL1 - Activated (no stain) - RAID buffer,HBL1 - Activated (no stain) - RAID buffer - rep1,HBL1 - Activated (no stain)
+A,F,4,F04,030,ATCGATGGTCGAGATG,DS078,30,HBL1,anti-Ig,Activated,Activated (no stain),RAID,rep2,no,HBL1 - Activated (no stain) - RAID buffer,HBL1 - Activated (no stain) - RAID buffer - rep2,HBL1 - Activated (no stain)
+A,G,4,G04,031,ATGACCAGTGACAGGT,DS078,31,HBL1,anti-Ig,Activated,Activated (no stain),RAID,rep3,no,HBL1 - Activated (no stain) - RAID buffer,HBL1 - Activated (no stain) - RAID buffer - rep3,HBL1 - Activated (no stain)
+A,H,4,H04,040,CATGCAATCGGAGGTG,DS078,32,No cells,MQ,Control,Control (no stain),RAID,rep1,no,No cells - Control (no stain) - RAID buffer,No cells - Control (no stain) - RAID buffer - rep1,No cells - Control (no stain)
+A,A,5,A05,033,ATTCCATGTTAGGTAA,DS078,33,Jurkat,PBS,Basal,Basal,QuRIE-seq,rep1,yes,Jurkat - Basal - QuRIE-seq buffer,Jurkat - Basal - QuRIE-seq buffer - rep1,Jurkat - Basal
+A,B,5,B05,034,ATTTCTGGTTGTACGT,DS078,34,Jurkat,anti-Ig,Activated,Activated,QuRIE-seq,rep1,yes,Jurkat - Activated - QuRIE-seq buffer,Jurkat - Activated - QuRIE-seq buffer - rep1,Jurkat - Activated
+A,C,5,C05,035,CAAGCTATCACAGCGT,DS078,35,No cells,MQ,Control,Control,QuRIE-seq,rep1,yes,No cells - Control - QuRIE-seq buffer,No cells - Control - QuRIE-seq buffer - rep1,No cells - Control
+A,D,5,D05,036,CACATGATCAGTCGAC,DS078,36,No cells,MQ,Control,Control,QuRIE-seq,rep2,yes,No cells - Control - QuRIE-seq buffer,No cells - Control - QuRIE-seq buffer - rep2,No cells - Control
+A,E,5,E05,037,CACTGTCTCCAGCAGT,DS078,37,No cells,MQ,Control,Control,QuRIE-seq,rep3,yes,No cells - Control - QuRIE-seq buffer,No cells - Control - QuRIE-seq buffer - rep3,No cells - Control
+A,F,5,F05,038,CAGCGTGTCCGGACGT,DS078,38,HBL1,PBS,Basal,Basal,QuRIE-seq,rep1,yes,HBL1 - Basal - QuRIE-seq buffer,HBL1 - Basal - QuRIE-seq buffer - rep1,HBL1 - Basal
+A,G,5,G05,039,CATACTTTCGACCATA,DS078,39,HBL1,PBS,Basal,Basal,QuRIE-seq,rep2,yes,HBL1 - Basal - QuRIE-seq buffer,HBL1 - Basal - QuRIE-seq buffer - rep2,HBL1 - Basal
+A,H,5,H05,048,CGGACACAGGATCACG,DS078,40,HBL1,PBS,Basal,Basal,QuRIE-seq,rep3,yes,HBL1 - Basal - QuRIE-seq buffer,HBL1 - Basal - QuRIE-seq buffer - rep3,HBL1 - Basal
+A,A,6,A06,041,CATTGCCTCTAAACTG,DS078,41,HBL1,anti-Ig,Activated,Activated,QuRIE-seq,rep1,yes,HBL1 - Activated - QuRIE-seq buffer,HBL1 - Activated - QuRIE-seq buffer - rep1,HBL1 - Activated
+A,B,6,B06,042,CCACGTTTCTCTCGAC,DS078,42,HBL1,anti-Ig,Activated,Activated,QuRIE-seq,rep2,yes,HBL1 - Activated - QuRIE-seq buffer,HBL1 - Activated - QuRIE-seq buffer - rep2,HBL1 - Activated
+A,C,6,C06,043,CCCTCTCTCTTGGAAT,DS078,43,HBL1,anti-Ig,Activated,Activated,QuRIE-seq,rep3,yes,HBL1 - Activated - QuRIE-seq buffer,HBL1 - Activated - QuRIE-seq buffer - rep3,HBL1 - Activated
+A,D,6,D06,044,CCGTAGGAGACGATCA,DS078,44,HBL1,PBS,Basal,Basal (no stain),QuRIE-seq,rep1,no,HBL1 - Basal (no stain) - QuRIE-seq buffer,HBL1 - Basal (no stain) - QuRIE-seq buffer - rep1,HBL1 - Basal (no stain)
+A,E,6,E06,045,CCTCATGAGATCGCTT,DS078,45,HBL1,anti-Ig,Activated,Activated (no stain),QuRIE-seq,rep1,no,HBL1 - Activated (no stain) - QuRIE-seq buffer,HBL1 - Activated (no stain) - QuRIE-seq buffer - rep1,HBL1 - Activated (no stain)
+A,F,6,F06,046,CGAAGGAAGCATTTGT,DS078,46,HBL1,anti-Ig,Activated,Activated (no stain),QuRIE-seq,rep2,no,HBL1 - Activated (no stain) - QuRIE-seq buffer,HBL1 - Activated (no stain) - QuRIE-seq buffer - rep2,HBL1 - Activated (no stain)
+A,G,6,G06,047,CGATGCGAGCTAAGTG,DS078,47,HBL1,anti-Ig,Activated,Activated (no stain),QuRIE-seq,rep3,no,HBL1 - Activated (no stain) - QuRIE-seq buffer,HBL1 - Activated (no stain) - QuRIE-seq buffer - rep3,HBL1 - Activated (no stain)
+A,H,6,H06,049,CGTAGTAAGGGTCTAA,DS078,48,No cells,MQ,Control,Control (no stain),QuRIE-seq,rep1,no,No cells - Control (no stain) - QuRIE-seq buffer,No cells - Control (no stain) - QuRIE-seq buffer - rep1,No cells - Control (no stain)
+A,A,7,A07,008,TAAGCTCTCCCTCAGT,DS078,49,Jurkat,PBS,Basal,Basal,CITE-seq,rep1,yes,Jurkat - Basal - CITE-seq buffer,Jurkat - Basal - CITE-seq buffer - rep1,Jurkat - Basal
+A,B,7,B07,050,CTAACCCAGTAGCAAC,DS078,50,Jurkat,anti-Ig,Activated,Activated,CITE-seq,rep1,yes,Jurkat - Activated - CITE-seq buffer,Jurkat - Activated - CITE-seq buffer - rep1,Jurkat - Activated
+A,C,7,C07,051,CTAGGTAAGTGCATAG,DS078,51,No cells,MQ,Control,Control,CITE-seq,rep1,yes,No cells - Control - CITE-seq buffer,No cells - Control - CITE-seq buffer - rep1,No cells - Control
+A,D,7,D07,052,CTCAGTCCAAACTAGA,DS078,52,No cells,MQ,Control,Control,CITE-seq,rep2,yes,No cells - Control - CITE-seq buffer,No cells - Control - CITE-seq buffer - rep2,No cells - Control
+A,E,7,E07,053,CTCCTCCCAAGCGTCC,DS078,53,No cells,MQ,Control,Control,CITE-seq,rep3,yes,No cells - Control - CITE-seq buffer,No cells - Control - CITE-seq buffer - rep3,No cells - Control
+A,F,7,F07,054,CTGCAGGCACACTACA,DS078,54,HBL1,PBS,Basal,Basal,CITE-seq,rep1,yes,HBL1 - Basal - CITE-seq buffer,HBL1 - Basal - CITE-seq buffer - rep1,HBL1 - Basal
+A,G,7,G07,055,CTGTAGACACGGATTT,DS078,55,HBL1,PBS,Basal,Basal,CITE-seq,rep2,yes,HBL1 - Basal - CITE-seq buffer,HBL1 - Basal - CITE-seq buffer - rep2,HBL1 - Basal
+A,H,7,H07,056,CTTCGGTCAGAGGAAA,DS078,56,HBL1,PBS,Basal,Basal,CITE-seq,rep3,yes,HBL1 - Basal - CITE-seq buffer,HBL1 - Basal - CITE-seq buffer - rep3,HBL1 - Basal
+A,A,8,A08,057,GAACGTTCAGGTGGAT,DS078,57,HBL1,anti-Ig,Activated,Activated,CITE-seq,rep1,yes,HBL1 - Activated - CITE-seq buffer,HBL1 - Activated - CITE-seq buffer - rep1,HBL1 - Activated
+A,B,8,B08,058,GAATCGTCATCAGTGT,DS078,58,HBL1,anti-Ig,Activated,Activated,CITE-seq,rep2,yes,HBL1 - Activated - CITE-seq buffer,HBL1 - Activated - CITE-seq buffer - rep2,HBL1 - Activated
+A,C,8,C08,059,GACGTTACATTAGTCG,DS078,59,HBL1,anti-Ig,Activated,Activated,CITE-seq,rep3,yes,HBL1 - Activated - CITE-seq buffer,HBL1 - Activated - CITE-seq buffer - rep3,HBL1 - Activated
+A,D,8,D08,060,GAGATGGGTACGTGTT,DS078,60,HBL1,PBS,Basal,Basal (no stain),CITE-seq,rep1,no,HBL1 - Basal (no stain) - CITE-seq buffer,HBL1 - Basal (no stain) - CITE-seq buffer - rep1,HBL1 - Basal (no stain)
+A,E,8,E08,061,GAGTGTTGTATGGTAA,DS078,61,HBL1,anti-Ig,Activated,Activated (no stain),CITE-seq,rep1,no,HBL1 - Activated (no stain) - CITE-seq buffer,HBL1 - Activated (no stain) - CITE-seq buffer - rep1,HBL1 - Activated (no stain)
+A,F,8,F08,062,GATCGTAGTCCTCATC,DS078,62,HBL1,anti-Ig,Activated,Activated (no stain),CITE-seq,rep2,no,HBL1 - Activated (no stain) - CITE-seq buffer,HBL1 - Activated (no stain) - CITE-seq buffer - rep2,HBL1 - Activated (no stain)
+A,G,8,G08,063,GATTTCTGTCTTGGTA,DS078,63,HBL1,anti-Ig,Activated,Activated (no stain),CITE-seq,rep3,no,HBL1 - Activated (no stain) - CITE-seq buffer,HBL1 - Activated (no stain) - CITE-seq buffer - rep3,HBL1 - Activated (no stain)
+A,H,8,H08,064,GCAGTTAGTGGAACCA,DS078,64,No cells,MQ,Control,Control (no stain),CITE-seq,rep1,no,No cells - Control (no stain) - CITE-seq buffer,No cells - Control (no stain) - CITE-seq buffer - rep1,No cells - Control (no stain)
+A,A,9,A09,065,GCCATTCGTTACATCG,DS078,65,Jurkat,PBS,Basal,Basal,Ab-seq,rep1,yes,Jurkat - Basal - Ab-seq buffer,Jurkat - Basal - Ab-seq buffer - rep1,Jurkat - Basal
+A,B,9,B09,066,GCGTGCAGTTGCTAGT,DS078,66,Jurkat,anti-Ig,Activated,Activated,Ab-seq,rep1,yes,Jurkat - Activated - Ab-seq buffer,Jurkat - Activated - Ab-seq buffer - rep1,Jurkat - Activated
+A,C,9,C09,067,GCTTTCGTCAAGTCTG,DS078,67,No cells,MQ,Control,Control,Ab-seq,rep1,yes,No cells - Control - Ab-seq buffer,No cells - Control - Ab-seq buffer - rep1,No cells - Control
+A,D,9,D09,068,GGAGGTATCAGGAAGC,DS078,68,No cells,MQ,Control,Control,Ab-seq,rep2,yes,No cells - Control - Ab-seq buffer,No cells - Control - Ab-seq buffer - rep2,No cells - Control
+A,E,9,E09,069,GGGACAATCCACAGCG,DS078,69,No cells,MQ,Control,Control,Ab-seq,rep3,yes,No cells - Control - Ab-seq buffer,No cells - Control - Ab-seq buffer - rep3,No cells - Control
+A,F,9,F09,070,GGGCTCATCCGATAGT,DS078,70,HBL1,PBS,Basal,Basal,Ab-seq,rep1,yes,HBL1 - Basal - Ab-seq buffer,HBL1 - Basal - Ab-seq buffer - rep1,HBL1 - Basal
+A,G,9,G09,071,GGTAATCTCGAACATT,DS078,71,HBL1,PBS,Basal,Basal,Ab-seq,rep2,yes,HBL1 - Basal - Ab-seq buffer,HBL1 - Basal - Ab-seq buffer - rep2,HBL1 - Basal
+A,H,9,H09,072,GGTTCTCTCGCTGACG,DS078,72,HBL1,PBS,Basal,Basal,Ab-seq,rep3,yes,HBL1 - Basal - Ab-seq buffer,HBL1 - Basal - Ab-seq buffer - rep3,HBL1 - Basal
+A,A,10,A10,073,GTAGAGGTCGTTACCC,DS078,73,HBL1,anti-Ig,Activated,Activated,Ab-seq,rep1,yes,HBL1 - Activated - Ab-seq buffer,HBL1 - Activated - Ab-seq buffer - rep1,HBL1 - Activated
+A,B,10,B10,074,GTCACGGTCTCGACCT,DS078,74,HBL1,anti-Ig,Activated,Activated,Ab-seq,rep2,yes,HBL1 - Activated - Ab-seq buffer,HBL1 - Activated - Ab-seq buffer - rep2,HBL1 - Activated
+A,C,10,C10,075,GTCGCGATCTTCCGGC,DS078,75,HBL1,anti-Ig,Activated,Activated,Ab-seq,rep3,yes,HBL1 - Activated - Ab-seq buffer,HBL1 - Activated - Ab-seq buffer - rep3,HBL1 - Activated
+A,D,10,D10,076,GTGAGTTAGACCATAG,DS078,76,HBL1,PBS,Basal,Basal (no stain),Ab-seq,rep1,no,HBL1 - Basal (no stain) - Ab-seq buffer,HBL1 - Basal (no stain) - Ab-seq buffer - rep1,HBL1 - Basal (no stain)
+A,E,10,E10,077,GTGGGAAAGATACAGC,DS078,77,HBL1,anti-Ig,Activated,Activated (no stain),Ab-seq,rep1,no,HBL1 - Activated (no stain) - Ab-seq buffer,HBL1 - Activated (no stain) - Ab-seq buffer - rep1,HBL1 - Activated (no stain)
+A,F,10,F10,078,GTTACGAAGCATAGAC,DS078,78,HBL1,anti-Ig,Activated,Activated (no stain),Ab-seq,rep2,no,HBL1 - Activated (no stain) - Ab-seq buffer,HBL1 - Activated (no stain) - Ab-seq buffer - rep2,HBL1 - Activated (no stain)
+A,G,10,G10,079,GTTGCTCAGCGTATAG,DS078,79,HBL1,anti-Ig,Activated,Activated (no stain),Ab-seq,rep3,no,HBL1 - Activated (no stain) - Ab-seq buffer,HBL1 - Activated (no stain) - Ab-seq buffer - rep3,HBL1 - Activated (no stain)
+A,H,10,H10,080,TAAGCACAGGAGAATG,DS078,80,No cells,MQ,Control,Control (no stain),Ab-seq,rep1,no,No cells - Control (no stain) - Ab-seq buffer,No cells - Control (no stain) - Ab-seq buffer - rep1,No cells - Control (no stain)
+A,A,11,A11,081,TACCCACAGGGCATGT,DS078,81,Jurkat,PBS,Basal,Basal,NEAT-seq,rep1,yes,Jurkat - Basal - NEAT-seq buffer,Jurkat - Basal - NEAT-seq buffer - rep1,Jurkat - Basal
+A,B,11,B11,082,TACTGCCAGTAATTGG,DS078,82,Jurkat,anti-Ig,Activated,Activated,NEAT-seq,rep1,yes,Jurkat - Activated - NEAT-seq buffer,Jurkat - Activated - NEAT-seq buffer - rep1,Jurkat - Activated
+A,C,11,C11,083,TAGGGTTAGTGAACAT,DS078,83,No cells,MQ,Control,Control,NEAT-seq,rep1,yes,No cells - Control - NEAT-seq buffer,No cells - Control - NEAT-seq buffer - rep1,No cells - Control
+A,D,11,D11,084,TATCTTGAGTTTCCAA,DS078,84,No cells,MQ,Control,Control,NEAT-seq,rep2,yes,No cells - Control - NEAT-seq buffer,No cells - Control - NEAT-seq buffer - rep2,No cells - Control
+A,E,11,E11,085,TCAATTCCAAGACGAC,DS078,85,No cells,MQ,Control,Control,NEAT-seq,rep3,yes,No cells - Control - NEAT-seq buffer,No cells - Control - NEAT-seq buffer - rep3,No cells - Control
+A,F,11,F11,086,TCAGGGCCACAACGAG,DS078,86,HBL1,PBS,Basal,Basal,NEAT-seq,rep1,yes,HBL1 - Basal - NEAT-seq buffer,HBL1 - Basal - NEAT-seq buffer - rep1,HBL1 - Basal
+A,G,11,G11,087,TCATGCCCACGAGGAT,DS078,87,HBL1,PBS,Basal,Basal,NEAT-seq,rep2,yes,HBL1 - Basal - NEAT-seq buffer,HBL1 - Basal - NEAT-seq buffer - rep2,HBL1 - Basal
+A,H,11,H11,088,TCCATCGCAGACCAGA,DS078,88,HBL1,PBS,Basal,Basal,NEAT-seq,rep3,yes,HBL1 - Basal - NEAT-seq buffer,HBL1 - Basal - NEAT-seq buffer - rep3,HBL1 - Basal
+A,A,12,A12,089,TCCTCCCCAGGCGTTC,DS078,89,HBL1,anti-Ig,Activated,Activated,NEAT-seq,rep1,yes,HBL1 - Activated - NEAT-seq buffer,HBL1 - Activated - NEAT-seq buffer - rep1,HBL1 - Activated
+A,B,12,B12,090,TCGATTTCATAGTCGT,DS078,90,HBL1,anti-Ig,Activated,Activated,NEAT-seq,rep2,yes,HBL1 - Activated - NEAT-seq buffer,HBL1 - Activated - NEAT-seq buffer - rep2,HBL1 - Activated
+A,C,12,C12,091,TCGTAGACATGTCAGT,DS078,91,HBL1,anti-Ig,Activated,Activated,NEAT-seq,rep3,yes,HBL1 - Activated - NEAT-seq buffer,HBL1 - Activated - NEAT-seq buffer - rep3,HBL1 - Activated
+A,D,12,D12,092,TCTCAGCGTACCGCTG,DS078,92,HBL1,PBS,Basal,Basal (no stain),NEAT-seq,rep1,no,HBL1 - Basal (no stain) - NEAT-seq buffer,HBL1 - Basal (no stain) - NEAT-seq buffer - rep1,HBL1 - Basal (no stain)
+A,E,12,E12,093,TGAACGTGTATCGAGG,DS078,93,HBL1,anti-Ig,Activated,Activated (no stain),NEAT-seq,rep1,no,HBL1 - Activated (no stain) - NEAT-seq buffer,HBL1 - Activated (no stain) - NEAT-seq buffer - rep1,HBL1 - Activated (no stain)
+A,F,12,F12,094,TGAGGAGGTCCCGTGA,DS078,94,HBL1,anti-Ig,Activated,Activated (no stain),NEAT-seq,rep2,no,HBL1 - Activated (no stain) - NEAT-seq buffer,HBL1 - Activated (no stain) - NEAT-seq buffer - rep2,HBL1 - Activated (no stain)
+A,G,12,G12,095,TGCACGGGTCTGCGCA,DS078,95,HBL1,anti-Ig,Activated,Activated (no stain),NEAT-seq,rep3,no,HBL1 - Activated (no stain) - NEAT-seq buffer,HBL1 - Activated (no stain) - NEAT-seq buffer - rep3,HBL1 - Activated (no stain)
+A,H,12,H12,096,TGCGGGTGTGCGTCGT,DS078,96,No cells,MQ,Control,Control (no stain),NEAT-seq,rep1,no,No cells - Control (no stain) - NEAT-seq buffer,No cells - Control (no stain) - NEAT-seq buffer - rep1,No cells - Control (no stain)

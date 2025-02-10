@@ -1,0 +1,81 @@
+rowID,colID,wellID,sample,cell_line,stimulus,inhibitor,replicate,staining,panel,protein_PE,protein_AF647,protein_AF488,protein_BV421
+A,4,A04,38,HBL1,aIg,DMSO,rep4,no,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,4,B04,4,HBL1,aIg,DMSO,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+C,4,C04,10,HBL1,aIg,DMSO,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+D,4,D04,16,HBL1,aIg,DMSO,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+E,4,E04,22,DAUDI,aIg,DMSO,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+F,4,F04,28,DAUDI,aIg,DMSO,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+G,4,G04,34,DAUDI,aIg,DMSO,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+H,4,H04,40,DAUDI,aIg,DMSO,rep4,no,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,5,B05,5,HBL1,aIg,iBTK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+C,5,C05,11,HBL1,aIg,iBTK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+D,5,D05,17,HBL1,aIg,iBTK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+E,5,E05,23,DAUDI,aIg,iBTK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+F,5,F05,29,DAUDI,aIg,iBTK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+G,5,G05,35,DAUDI,aIg,iBTK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,6,B06,6,HBL1,aIg,iSYK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+C,6,C06,12,HBL1,aIg,iSYK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+D,6,D06,18,HBL1,aIg,iSYK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+E,6,E06,24,DAUDI,aIg,iSYK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+F,6,F06,30,DAUDI,aIg,iSYK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+G,6,G06,36,DAUDI,aIg,iSYK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+A,10,A10,38,HBL1,aIg,DMSO,rep4,no,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+B,10,B10,4,HBL1,aIg,DMSO,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+C,10,C10,10,HBL1,aIg,DMSO,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+D,10,D10,16,HBL1,aIg,DMSO,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+E,10,E10,22,DAUDI,aIg,DMSO,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+F,10,F10,28,DAUDI,aIg,DMSO,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+G,10,G10,34,DAUDI,aIg,DMSO,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+H,10,H10,40,DAUDI,aIg,DMSO,rep4,no,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+B,11,B11,5,HBL1,aIg,iBTK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+C,11,C11,11,HBL1,aIg,iBTK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+D,11,D11,17,HBL1,aIg,iBTK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+E,11,E11,23,DAUDI,aIg,iBTK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+F,11,F11,29,DAUDI,aIg,iBTK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+G,11,G11,35,DAUDI,aIg,iBTK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+B,12,B12,6,HBL1,aIg,iSYK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+C,12,C12,12,HBL1,aIg,iSYK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+D,12,D12,18,HBL1,aIg,iSYK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+E,12,E12,24,DAUDI,aIg,iSYK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+F,12,F12,30,DAUDI,aIg,iSYK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+G,12,G12,36,DAUDI,aIg,iSYK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+A,1,A01,37,HBL1,PBS,DMSO,rep4,no,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,1,B01,1,HBL1,PBS,DMSO,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+C,1,C01,7,HBL1,PBS,DMSO,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+D,1,D01,13,HBL1,PBS,DMSO,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+E,1,E01,19,DAUDI,PBS,DMSO,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+F,1,F01,25,DAUDI,PBS,DMSO,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+G,1,G01,31,DAUDI,PBS,DMSO,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+H,1,H01,39,DAUDI,PBS,DMSO,rep4,no,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,2,B02,2,HBL1,PBS,iBTK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+C,2,C02,8,HBL1,PBS,iBTK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+D,2,D02,14,HBL1,PBS,iBTK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+E,2,E02,20,DAUDI,PBS,iBTK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+F,2,F02,26,DAUDI,PBS,iBTK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+G,2,G02,32,DAUDI,PBS,iBTK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+B,3,B03,3,HBL1,PBS,iSYK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+C,3,C03,9,HBL1,PBS,iSYK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+D,3,D03,15,HBL1,PBS,iSYK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+E,3,E03,21,DAUDI,PBS,iSYK,rep1,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+F,3,F03,27,DAUDI,PBS,iSYK,rep2,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+G,3,G03,33,DAUDI,PBS,iSYK,rep3,yes,A,pSYK (Y525/Y526),Rabbit IgG isotype,pCD79a (Y182),cCaspase 3 + cPARP
+A,7,A07,37,HBL1,PBS,DMSO,rep4,no,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+B,7,B07,1,HBL1,PBS,DMSO,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+C,7,C07,7,HBL1,PBS,DMSO,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+D,7,D07,13,HBL1,PBS,DMSO,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+E,7,E07,19,DAUDI,PBS,DMSO,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+F,7,F07,25,DAUDI,PBS,DMSO,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+G,7,G07,31,DAUDI,PBS,DMSO,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+H,7,H07,39,DAUDI,PBS,DMSO,rep4,no,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+B,8,B08,2,HBL1,PBS,iBTK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+C,8,C08,8,HBL1,PBS,iBTK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+D,8,D08,14,HBL1,PBS,iBTK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+E,8,E08,20,DAUDI,PBS,iBTK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+F,8,F08,26,DAUDI,PBS,iBTK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+G,8,G08,32,DAUDI,PBS,iBTK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+B,9,B09,3,HBL1,PBS,iSYK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+C,9,C09,9,HBL1,PBS,iSYK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+D,9,D09,15,HBL1,PBS,iSYK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+E,9,E09,21,DAUDI,PBS,iSYK,rep1,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+F,9,F09,27,DAUDI,PBS,iSYK,rep2,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP
+G,9,G09,33,DAUDI,PBS,iSYK,rep3,yes,B,pAKT (S473),NA,pBLNK (Y84),cCaspase 3 + cPARP

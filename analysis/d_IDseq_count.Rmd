@@ -1,0 +1,289 @@
+---
+title: "ID-seq from FASTQ to count tables"
+author: "mwitmond"
+date: "2024-08-06"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    toc_float: 
+      collapsed: FALSE
+    toc_depth: 3
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Set-up 
+
+Note: Run all bash code in the terminal (Ubuntu on Windows)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = F
+)
+```
+
+```{r libraries}
+library(rjson)
+library(kableExtra)
+library(dplyr)
+```
+
+Install the conda environment from a .yml file
+```{bash conda_install, eval=F}
+# Check the directories for conda environments
+conda config --show envs_dirs
+
+# Move to directory with conda_environment.yml file:
+cd /mnt/c/Users/meldew/'OneDrive - Radboud Universiteit'/Documenten/data/analysis/template_data_analysis_MW/data/config
+
+# Install conda environment (done only once)
+conda env create -f conda_environment.yml
+# Environment name: bulkIDseq_kite
+# Location: /home/meldewitmond/.conda/envs/bulkIDseq_kite
+```
+
+
+
+## DS075: BarcodeCheck
+
+### FASTQ to counts
+
+Activate the conda environment from a .yml file
+```{bash conda_activate_DS075, eval=F}
+# Activate the correct conda environment
+conda activate bulkIDseq_kite
+
+# Move to directory with all configuration files:
+cd /mnt/c/Users/meldew/'OneDrive - Radboud Universiteit'/Documenten/data/analysis/chapter_IDseq_tech/data/DS075_BarcodeCheck/config
+```
+
+Step 1: Prepare index and mismatch files to use [kite](https://github.com/pachterlab/kite) from pachterlab.
+
+Use the manually created FeatureBarcodes.csv file, custom_whitelist.txt file and other config files: Huck/Cells/DynSign/GeneralProtocols/general_sequencing_metadata_files/config
+
+#### plateA
+
+```{bash prep_DS075_A, eval=F}
+# Prepare folders for processing in the data folder:
+cd ..
+mkdir counts
+cd counts
+mkdir plateA
+cd plateA
+```
+
+```{bash count_tables_DS075_A, eval=F}
+# Create the pseudoalignment of the reads (including time of running in the output)
+# Adjust the .fastq.gz file names
+time kallisto bus -i ../../config/FeaturesMismatch.idx -o ./ -x 10xv3 -t 4 ../../FASTQ/MW_DS075_lib1_plateA_A39_S27_R1_001.fastq.gz ../../FASTQ/MW_DS075_lib1_plateA_A39_S27_R2_001.fastq.gz
+
+# Make the corrected bus
+time bustools correct -w ../../config/custom_whitelist.txt output.bus -o output_corrected.bus
+
+# Sort the corrected bus (can take very long with RNA seq; more reads = more time)
+time bustools sort -t 4 -o output_sorted.bus output_corrected.bus
+
+# Make count table (.mtx file)
+mkdir featurecounts
+time bustools count -o featurecounts/featurecounts --genecounts -g ../../config/FeaturesMismatch.t2g -e ./matrix.ec -t ./transcripts.txt ./output_sorted.bus
+# Location of count tables: data\counts\plateA\featurecounts
+
+cd ..
+```
+
+#### plateB
+
+```{bash prep_DS075_B, eval=F}
+# Prepare folders for processing in the data folder:
+# cd ..
+# mkdir counts
+# cd counts
+mkdir plateB
+cd plateB
+```
+
+```{bash count_tables_DS075_B, eval=F}
+# Create the pseudoalignment of the reads (including time of running in the output)
+# Adjust the .fastq.gz file names
+time kallisto bus -i ../../config/FeaturesMismatch.idx -o ./ -x 10xv3 -t 4 ../../FASTQ/MW_DS075_lib2_plateB_A40_S28_R1_001.fastq.gz ../../FASTQ/MW_DS075_lib2_plateB_A40_S28_R2_001.fastq.gz
+
+# Make the corrected bus
+time bustools correct -w ../../config/custom_whitelist.txt output.bus -o output_corrected.bus
+
+# Sort the corrected bus (can take very long with RNA seq; more reads = more time)
+time bustools sort -t 4 -o output_sorted.bus output_corrected.bus
+
+# Make count table (.mtx file)
+mkdir featurecounts
+time bustools count -o featurecounts/featurecounts --genecounts -g ../../config/FeaturesMismatch.t2g -e ./matrix.ec -t ./transcripts.txt ./output_sorted.bus
+# Location of count tables: data\counts\plateA\featurecounts
+
+cd ..
+```
+
+
+### Run log {.tabset}
+
+#### plateA
+
+```{r run_log_DS075_A, eval=F}
+# Print info on count generation run
+PROT_log<- rjson::fromJSON(file = "data/counts/plateA/run_info.json")
+PROT_log<- do.call(rbind, lapply(PROT_log, data.frame))
+colnames (PROT_log) <- ""
+PROT_log %>%
+  kbl() %>%
+  kable_styling()
+```
+
+#### plateB
+
+```{r run_log_DS075_B, eval=F}
+# Print info on count generation run
+PROT_log<- rjson::fromJSON(file = "data/counts/plateB/run_info.json")
+PROT_log<- do.call(rbind, lapply(PROT_log, data.frame))
+colnames (PROT_log) <- ""
+PROT_log %>%
+  kbl() %>%
+  kable_styling()
+```
+
+
+### Output
+
+Unfiltered counts are stored (for each sample) in data/counts/plate/featurecounts/ folder as .mtx format (sparse matrix). 
+
+
+
+## DS078: Blocking1
+
+### FASTQ to counts
+
+Activate the conda environment from a .yml file
+```{bash conda_activate_DS078, eval=F}
+# Activate the correct conda environment
+conda activate bulkIDseq_kite
+
+# Move to directory with all configuration files:
+cd /mnt/c/Users/meldew/'OneDrive - Radboud Universiteit'/Documenten/data/analysis/chapter_IDseq_tech/data/DS078_Blocking1/config
+```
+
+Step 1: Prepare index and mismatch files to use [kite](https://github.com/pachterlab/kite) from pachterlab.
+
+Use the manually created FeatureBarcodes.csv file, custom_whitelist.txt file and other config files: Huck/Cells/DynSign/GeneralProtocols/general_sequencing_metadata_files/config
+
+#### plateA
+
+```{bash prep_DS078, eval=F}
+# Prepare folders for processing in the data folder:
+cd ..
+mkdir counts
+cd counts
+mkdir plateA
+cd plateA
+```
+
+```{bash count_tables_DS078, eval=F}
+# Create the pseudoalignment of the reads (including time of running in the output)
+# Adjust the .fastq.gz file names
+time kallisto bus -i ../../config/FeaturesMismatch.idx -o ./ -x 10xv3 -t 4 ../../FASTQ/JvB_DynSign078_A40_S24_R1_001.fastq.gz ../../FASTQ/JvB_DynSign078_A40_S24_R2_001.fastq.gz
+
+# Make the corrected bus
+time bustools correct -w ../../config/custom_whitelist.txt output.bus -o output_corrected.bus
+
+# Sort the corrected bus (can take very long with RNA seq; more reads = more time)
+time bustools sort -t 4 -o output_sorted.bus output_corrected.bus
+
+# Make count table (.mtx file)
+mkdir featurecounts
+time bustools count -o featurecounts/featurecounts --genecounts -g ../../config/FeaturesMismatch.t2g -e ./matrix.ec -t ./transcripts.txt ./output_sorted.bus
+# Location of count tables: data\counts\plateA\featurecounts
+
+cd ..
+```
+
+### Run log {.tabset}
+
+#### plateA
+
+```{r run_log_DS078, eval=F}
+# Print info on count generation run
+PROT_log<- rjson::fromJSON(file = "data/counts/plateA/run_info.json")
+PROT_log<- do.call(rbind, lapply(PROT_log, data.frame))
+colnames (PROT_log) <- ""
+PROT_log %>%
+  kbl() %>%
+  kable_styling()
+```
+
+### Output
+
+Unfiltered counts are stored (for each sample) in data/counts/plate/featurecounts/ folder as .mtx format (sparse matrix). 
+
+
+
+## DS091: ImmunostainingBio
+
+### FASTQ to counts
+
+Activate the conda environment from a .yml file
+```{bash conda_activate_DS091, eval=F}
+# Activate the correct conda environment
+conda activate bulkIDseq_kite
+
+# Move to directory with all configuration files:
+cd /mnt/c/Users/meldew/'OneDrive - Radboud Universiteit'/Documenten/data/analysis/chapter_IDseq_tech/data/DS091_ImmunostainingBio/config
+```
+
+Step 1: Prepare index and mismatch files to use [kite](https://github.com/pachterlab/kite) from pachterlab.
+
+Use the manually created FeatureBarcodes.csv file, custom_whitelist.txt file and other config files: Huck/Cells/DynSign/GeneralProtocols/general_sequencing_metadata_files/config
+
+#### plateA
+
+```{bash prep_DS091, eval=F}
+# Prepare folders for processing in the data folder:
+cd ..
+mkdir counts
+cd counts
+mkdir plateA
+cd plateA
+```
+
+```{bash count_tables_DS091, eval=F}
+# Create the pseudoalignment of the reads (including time of running in the output)
+# Adjust the .fastq.gz file names
+time kallisto bus -i ../../config/FeaturesMismatch.idx -o ./ -x 10xv3 -t 4 ../../FASTQ/42525_MW_DynSign091_A39_R1.fastq.gz ../../FASTQ/42525_MW_DynSign091_A39_R2.fastq.gz
+
+# Make the corrected bus
+time bustools correct -w ../../config/custom_whitelist.txt output.bus -o output_corrected.bus
+
+# Sort the corrected bus (can take very long with RNA seq; more reads = more time)
+time bustools sort -t 4 -o output_sorted.bus output_corrected.bus
+
+# Make count table (.mtx file)
+mkdir featurecounts
+time bustools count -o featurecounts/featurecounts --genecounts -g ../../config/FeaturesMismatch.t2g -e ./matrix.ec -t ./transcripts.txt ./output_sorted.bus
+# Location of count tables: data\counts\plateA\featurecounts
+
+cd ..
+```
+
+### Run log {.tabset}
+
+#### plateA
+
+```{r run_log_DS091, eval=F}
+# Print info on count generation run
+PROT_log<- rjson::fromJSON(file = "data/counts/plateA/run_info.json")
+PROT_log<- do.call(rbind, lapply(PROT_log, data.frame))
+colnames (PROT_log) <- ""
+PROT_log %>%
+  kbl() %>%
+  kable_styling()
+```
+
+### Output
+
+Unfiltered counts are stored (for each sample) in data/counts/plate/featurecounts/ folder as .mtx format (sparse matrix). 

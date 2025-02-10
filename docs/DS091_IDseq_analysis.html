@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="mwitmond" />
+
+<meta name="date" content="2023-02-23" />
+
+<title>DS091 IDseq analysis</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Chapter IDseq tech</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="y_chapter_main.html">Figs main</a>
+</li>
+<li>
+  <a href="z_chapter_suppl.html">Figs suppl</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Flow
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="a_flow_gating.html">Gating</a>
+    </li>
+    <li>
+      <a href="b_flow_ann.html">Annotation</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    IDseq
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="d_IDseq_count.html">Count tables</a>
+    </li>
+    <li>
+      <a href="e_IDseq_ann.html">Annotation</a>
+    </li>
+    <li>
+      <a href="DS078_IDseq_analysis.html">DS078 analysis</a>
+    </li>
+    <li>
+      <a href="DS091_IDseq_analysis.html">DS091 analysis</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">DS091 IDseq analysis</h1>
+<h4 class="author">mwitmond</h4>
+<h4 class="date">2023-02-23</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-02-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>chapter_IDseq_tech/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240806code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240806)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240806code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240806)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong31f8444">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 31f8444
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong31f8444"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 31f8444.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
+
+Untracked files:
+    Untracked:  code/DS075_combined_analysis.R
+    Untracked:  code/packages_FACS.R
+    Untracked:  code/packages_seq.R
+    Untracked:  data/BB014_LibraryIndex/
+    Untracked:  data/DS027_FirstIDseq/
+    Untracked:  data/DS055_LibraryKlenowAmp/
+    Untracked:  data/DS056_LibraryAmp1/
+    Untracked:  data/DS059_LibraryByproducts/
+    Untracked:  data/DS072_LibraryAmp2/
+    Untracked:  data/DS075_BarcodeCheck/
+    Untracked:  data/DS078_Blocking1/
+    Untracked:  data/DS080_Blocking2/
+    Untracked:  data/DS084_BioInhibition/
+    Untracked:  data/DS091_ImmunostainingBio/
+    Untracked:  data/DSxxx_Conjugations/
+    Untracked:  data/annotated_gels_batch1-10_digital.pptx
+    Untracked:  output/BioAnalyzer_plots/
+    Untracked:  output/DS075_BarcodeCheck/
+    Untracked:  output/DS078_Blocking1/
+    Untracked:  output/DS091_ImmunostainingBio/
+    Untracked:  output/figures/
+    Untracked:  output/network_visual/
+
+Unstaged changes:
+    Deleted:    analysis/about.Rmd
+    Deleted:    analysis/c_flow_vis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/DS091_IDseq_analysis.Rmd</code>)
+and HTML (<code>docs/DS091_IDseq_analysis.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+31f8444
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+Revised ch3 figs
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level2">
+<h2>Set-up</h2>
+<pre class="r"><code>row_order = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;)
+col_order = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;10&quot;, &quot;11&quot;, &quot;12&quot;)
+panel_labels &lt;- c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;,&quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;, &quot;I&quot;, &quot;J&quot;, &quot;K&quot;, &quot;L&quot;, &quot;M&quot;)
+
+textsize &lt;- theme(axis.text.x = element_text(colour = &quot;grey&quot;, size = 12, face = &quot;bold&quot;),
+                  axis.text.y = element_text(colour = &quot;grey&quot;, size = 12, face = &quot;bold&quot;),
+                  axis.title = element_text(colour = &quot;black&quot;, size = 12, face = &quot;bold&quot;), 
+                  legend.title = element_text(colour = &quot;black&quot;, size = 12, face = &quot;bold&quot;),
+                  # legend.title = element_blank(), 
+                  legend.text = element_text(colour = &quot;grey&quot;, size = 12, face = &quot;bold&quot;), 
+                  strip.text.x = element_text(colour = &quot;black&quot;, size = 12, face = &quot;bold&quot;)
+)
+
+textsize_small &lt;- theme(text = element_text(size = 8, family = &quot;sans&quot;, colour = &quot;black&quot;),
+                        plot.title = element_text(size = 9)
+)
+
+colors_dark9 &lt;- c(&quot;#4daf4a&quot;, &quot;#984ea3&quot;, &quot;#377eb8&quot;, &quot;#ff7f00&quot;, &quot;#ffff33&quot;, &quot;#e41a1c&quot;, &quot;#f781bf&quot;, &quot;#a65628&quot;, &quot;#999999&quot;)
+colors_light12 &lt;- c(&quot;#8dd3c7&quot;,&quot;#ffffb3&quot;,&quot;#bebada&quot;,&quot;#fb8072&quot;,&quot;#80b1d3&quot;,&quot;#fdb462&quot;,&quot;#b3de69&quot;,&quot;#fccde5&quot;,&quot;#d9d9d9&quot;,&quot;#bc80bd&quot;,&quot;#ccebc5&quot;,&quot;#ffed6f&quot;)
+colors_paired10 &lt;- c(&quot;#a6cee3&quot;, &quot;#1f78b4&quot;, &quot;#b2df8a&quot;, &quot;#33a02c&quot;, &quot;#fdbf6f&quot;, &quot;#ff7f00&quot;, &quot;#cab2d6&quot;, &quot;#6a3d9a&quot;, &quot;#fb9a99&quot;, &quot;#e31a1c&quot;)
+colors_blue9 &lt;- c(&quot;#f7fbff&quot;, &quot;#deebf7&quot;, &quot;#c6dbef&quot;, &quot;#9ecae1&quot;, &quot;#6baed6&quot;, &quot;#4292c6&quot;, &quot;#2171b5&quot;, &quot;#08519c&quot;, &quot;#08306b&quot;)
+colors_yellow_blue9 &lt;- c(&quot;#ffffd9&quot;, &quot;#edf8b1&quot;, &quot;#c7e9b4&quot;, &quot;#7fcdbb&quot;, &quot;#41b6c4&quot;, &quot;#1d91c0&quot;, &quot;#225ea8&quot;, &quot;#253494&quot;, &quot;#081d58&quot;)</code></pre>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<div id="raw-data" class="section level3">
+<h3>Raw data</h3>
+<pre class="r"><code># Load sparse matrix format all data
+counts_PlateA &lt;- read_count_output(&quot;data/counts/PlateA/featurecounts&quot;, name = &quot;featurecounts&quot;)
+
+meta_wellID &lt;- read_csv(&quot;data/config/DynSign.091_wellBC_metadata_seq.csv&quot;)
+meta_Abs &lt;- read_excel(&quot;data/config/BulkIDseq_Ab_info_seq_analysis_202212.xlsx&quot;)
+
+# Reshape counts in data table format
+counts_dtbl &lt;- data.frame(counts_PlateA) %&gt;% 
+  mutate(barcode_name = rownames(counts_PlateA)) %&gt;% #barcode_name #Barcodename
+  select(barcode_name, everything()) %&gt;%
+  gather(&quot;well_BC_seq&quot;, &quot;counts&quot;, 2:c(ncol(counts_PlateA)+1)) %&gt;%
+  filter(counts &gt;= 1) %&gt;% # Remove undetected proteins counts
+  left_join(meta_Abs) %&gt;%
+  unique() %&gt;%
+  # filter(!is.na(target_nospace)) %&gt;% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata
+  filter(!is.na(experiment)) %&gt;%
+  arrange(plate, well)
+
+# Calculate per-sample properties
+data_properties &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(well_BC_seq) %&gt;%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %&gt;%
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) # Add sample metadata </code></pre>
+<p>The full panel of mapped barcodes and 96 wells are present in the
+data table. After removing non-detected barcodes and proteins not
+present in metadata file (not conjugated) we will explore the data
+properties. First have a look at the total counts and number of detected
+protein barcodes per sample:</p>
+<pre class="r"><code>options(repr.plot.width = 8, repr.plot.height = 3)
+
+ggplot(data_properties, aes(log10(nCount), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  # scale_color_binned(type = &quot;viridis&quot;, name = &quot;Staining conc (ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><strong>Figure:</strong> Correlation between total counts and number
+of detected protein barcodes. We observe many more detected proteins
+than present in the staining.</p>
+<p>As we have a 96-wells plate, we can also have a look at total counts
+per plate detected:</p>
+<pre class="r"><code>options(repr.plot.width = 8, repr.plot.height = 3)
+
+raw_map(data = log10(data_properties$nCount), well = data_properties$well, plate = 96, size = 7) +
+  scale_fill_viridis(expression(&quot;Total counts Log&quot;[10])) +
+  theme_bw()</code></pre>
+<p><strong>Figure:</strong> Plate overview of total counts. We can see
+several patterns of samples with high total counts. This is expected, as
+in these wells we have the stained HBL1 cells. In other wells we do not
+expect counts as these are different types of negative controls (MQ,
+no-stain, no-cell).</p>
+</div>
+<div id="barcode-contamination-compensation" class="section level3">
+<h3>Barcode contamination compensation</h3>
+<pre class="r"><code>comp_matrix &lt;- read_csv(&quot;data/BC_compensation_matrix.csv&quot;)
+
+data_comp &lt;- counts_dtbl %&gt;%
+  # filter(well == &quot;A01&quot;) %&gt;%
+  select(plate, well, barcode_name, counts) %&gt;%
+  left_join(comp_matrix, by = join_by(barcode_name == BC_to_correct)) #, multiple = &quot;all&quot;
+
+# Get counts of OG BC
+data_comp_OG &lt;- data_comp %&gt;%
+  # filter(well == &quot;A01&quot;) %&gt;%
+  filter(barcode_name == OG_BC) %&gt;%
+  select(plate, well, OG_BC, counts) %&gt;%
+  dplyr::rename(counts_OG_BC = counts)
+
+# Calculate false reads
+data_false &lt;- left_join(data_comp, data_comp_OG) %&gt;% 
+  mutate(false_counts = (counts_OG_BC / percent_OG_BC) * percent_BC_to_correct) %&gt;%
+  filter(barcode_name != OG_BC) %&gt;%
+  group_by(plate, well, barcode_name, counts) %&gt;%
+  summarize(total_false_counts = sum(false_counts, na.rm = TRUE))
+
+counts_dtbl &lt;- counts_dtbl %&gt;%
+  # filter(well == &quot;A01&quot;) %&gt;%
+  left_join(data_false) %&gt;% 
+  mutate(total_false_counts = replace_na(total_false_counts, 0), 
+         true_counts = as.integer(counts - total_false_counts), 
+         percent_true = (true_counts / counts) * 100) %&gt;%
+  filter(!is.na(target_nospace)) # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+
+compensation &lt;- counts_dtbl %&gt;%
+  select(well, barcode_name, counts, total_false_counts, true_counts, percent_true, target_nospace, description_sample, description_staining)
+
+# Calculate per-sample properties
+data_properties_true &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(well_BC_seq) %&gt;%
+  summarize(nCount = sum(true_counts), 
+            nProt = n()) %&gt;%
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) # Add sample metadata </code></pre>
+<pre class="r"><code>options(repr.plot.width = 8, repr.plot.height = 3)
+
+ggplot(counts_dtbl, aes(log10(counts), log10(true_counts), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation raw counts and compensated counts&quot;,
+       x = expression(&quot;Raw counts Log&quot;[10]),
+       y = expression(&quot;Compensated counts Log&quot;[10])) +
+  textsize_small</code></pre>
+<p><strong>Figure:</strong> Correlation between raw counts and
+compensated counts.</p>
+</div>
+<div id="count-normalisation" class="section level3">
+<h3>Count normalisation</h3>
+<pre class="r"><code>scaling_factors &lt;- counts_dtbl %&gt;%
+  filter(cell_line %in% c(&quot;HBL1&quot;, &quot;DAUDI&quot;)) %&gt;%
+  # filter() %&gt;% #target_nospace == &quot;GAPDH&quot; # modification == &quot;no&quot;
+  ungroup() %&gt;%
+  group_by(cell_line, target_nospace) %&gt;%
+  mutate(scaling_factor = counts / median(counts),
+         scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor = true_counts / median(true_counts),
+         true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %&gt;%
+  ungroup() %&gt;%
+  group_by(cell_line, description_sample, description_staining) %&gt;%
+  summarize(scaling_factor = median(scaling_factor), .groups = &quot;keep&quot;,
+            scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor = median(true_scaling_factor),
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl &lt;- counts_dtbl %&gt;%
+  filter(cell_line %in% c(&quot;HBL1&quot;, &quot;DAUDI&quot;)) %&gt;%
+  left_join(scaling_factors) %&gt;%
+  ungroup() %&gt;%
+  mutate(counts_norm = counts / scaling_factor,
+         counts_norm_geo = counts / scaling_factor_geo, 
+         true_counts_norm = true_counts / true_scaling_factor, 
+         true_counts_norm_geo = true_counts / true_scaling_factor_geo)
+
+counts_dtbl &lt;- filter(counts_dtbl, !is.na(target_nospace)) %&gt;%
+  mutate(stimulus = factor(stimulus, levels = c(&quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;)))
+
+# Calculate per-sample properties
+data_properties_norm &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(well_BC_seq) %&gt;%
+  summarize(nCount_norm = sum(counts_norm_geo), 
+            nProt = n()) %&gt;%
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, &quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;))
+
+data_properties_norm_true &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(well_BC_seq) %&gt;%
+  summarize(nCount_norm = sum(true_counts_norm_geo), 
+            nProt = n()) %&gt;%
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, &quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;))</code></pre>
+<pre class="r"><code>options(repr.plot.width = 8, repr.plot.height = 3)
+
+ggplot(counts_dtbl, aes(log10(counts), log10(counts_norm_geo), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation raw counts and normalised counts&quot;,
+       x = expression(&quot;Raw counts Log&quot;[10]),
+       y = expression(&quot;Normalised counts Log&quot;[10])) +
+  textsize_small
+
+ggplot(data_properties_norm, aes(log10(nCount_norm), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  # scale_color_binned(type = &quot;viridis&quot;, name = &quot;Staining conc (ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation normalised counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Normalised counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><strong>Figure:</strong> Correlation between raw counts and
+compensated counts.</p>
+</div>
+</div>
+<div id="counts-analysis" class="section level2">
+<h2>Counts analysis</h2>
+<div id="counts-per-sample" class="section level3">
+<h3>Counts per sample</h3>
+<p>To gain insight into effect of staining conditions on number signal
+in all different samples, we first have a look at not-normalized (raw)
+counts per buffer per sample.</p>
+<pre class="r"><code># Total counts
+fig_sample_total &lt;- ggplot(data_properties, aes(stimulus, nCount, color = paste(staining_cells, &quot;-&quot;, staining_volume))) +
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = &quot;free_x&quot;, independent = &quot;x&quot;) +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = &quot;Cells - volume&quot;) + 
+  labs(x = &quot;Stimulus&quot;, y = &quot;Total counts&quot;, title = &quot;Total counts&quot;) + 
+  theme(legend.position = &quot;none&quot;) +
+  textsize_small
+
+# Compensated counts
+fig_sample_true &lt;- ggplot(data_properties_true, aes(stimulus, nCount, color = paste(staining_cells, &quot;-&quot;, staining_volume))) +
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = &quot;free_x&quot;, independent = &quot;x&quot;) +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = &quot;Cells - volume&quot;) + 
+  labs(x = &quot;Stimulus&quot;, y = &quot;Compensated counts&quot;, title = &quot;Compensated counts&quot;) + 
+  textsize_small
+
+# Normalised total counts
+fig_sample_norm &lt;- ggplot(data_properties_norm, aes(stimulus, nCount_norm, color = paste(staining_cells, &quot;-&quot;, staining_volume))) + 
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = &quot;free_x&quot;, independent = &quot;x&quot;) +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = &quot;Cells - volume&quot;) + 
+  labs(x = &quot;Stimulus&quot;, y = &quot;Normalised total counts&quot;, title = &quot;Normalised total counts&quot;) + 
+  theme(legend.position = &quot;none&quot;) +
+  textsize_small
+
+# Normalised compensated counts
+fig_sample_norm_true &lt;- ggplot(data_properties_norm_true, aes(stimulus, nCount_norm, color = paste(staining_cells, &quot;-&quot;, staining_volume))) + 
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = &quot;free_x&quot;, independent = &quot;x&quot;) +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = &quot;Cells - volume&quot;) + 
+  labs(x = &quot;Stimulus&quot;, y = &quot;Normalised compensated counts&quot;, title = &quot;Normalised compensated counts&quot;) + 
+  textsize_small
+
+plot_grid(fig_sample_total, fig_sample_true, fig_sample_norm, fig_sample_norm_true, ncol = 2)
+
+plot_grid(fig_sample_true, fig_sample_norm_true, ncol = 1)</code></pre>
+<p><strong>Figure:</strong> Distribution counts per sample with/without
+compensation and normalisation.</p>
+</div>
+<div id="counts-per-ab" class="section level3">
+<h3>Counts per Ab</h3>
+<pre class="r"><code># Total counts
+fig_Ab_total &lt;- ggplot(unique(subset(counts_dtbl, cell_line %in% c(&quot;DAUDI&quot;, &quot;HBL1&quot;) &amp; staining_conc_text == &quot;0.125 ug/mL&quot;)), 
+       aes(x = reorder(target_nospace, counts), 
+           y = counts, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = &quot;black&quot;, size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
+    labels = trans_format(&quot;log10&quot;, math_format(10^.x))) +
+  annotation_logticks(sides = &quot;l&quot;) +
+  labs(x = &quot;Protein&quot;, y = &quot;Total counts&quot;, title = &quot;Total counts&quot;) +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+# Compensated counts
+fig_Ab_true &lt;- ggplot(unique(subset(counts_dtbl, cell_line %in% c(&quot;DAUDI&quot;, &quot;HBL1&quot;) &amp; staining_conc_text == &quot;0.125 ug/mL&quot;)), 
+       aes(x = reorder(target_nospace, true_counts), 
+           y = true_counts, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = &quot;black&quot;, size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
+    labels = trans_format(&quot;log10&quot;, math_format(10^.x))) +
+  annotation_logticks(sides = &quot;l&quot;) +
+  labs(x = &quot;Protein&quot;, y = &quot;Compensated counts&quot;, title = &quot;Compensated counts&quot;) +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+plot_grid(fig_Ab_total, fig_Ab_true, ncol = 1)</code></pre>
+<p><strong>Figure:</strong> Distribution of total or compensated counts
+per Ab-barcode for the 0.125 ug/mL samples (non-normalised).</p>
+<pre class="r"><code># Total counts
+fig_Ab_total &lt;- ggplot(unique(subset(counts_dtbl, cell_line %in% c(&quot;DAUDI&quot;, &quot;HBL1&quot;) &amp; staining_conc_text == &quot;0.125 ug/mL&quot;)), 
+       aes(x = reorder(target_nospace, counts_norm_geo), 
+           y = counts_norm_geo, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = &quot;black&quot;, size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
+    labels = trans_format(&quot;log10&quot;, math_format(10^.x))) +
+  annotation_logticks(sides = &quot;l&quot;) +
+  labs(x = &quot;Protein&quot;, y = &quot;Normalised total counts&quot;, title = &quot;Normalised total counts&quot;) +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+# Compensated counts
+fig_Ab_true &lt;- ggplot(unique(subset(counts_dtbl, cell_line %in% c(&quot;DAUDI&quot;, &quot;HBL1&quot;) &amp; staining_conc_text == &quot;0.125 ug/mL&quot;)), 
+       aes(x = reorder(target_nospace, true_counts_norm_geo), 
+           y = true_counts_norm_geo, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = &quot;black&quot;, size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
+    labels = trans_format(&quot;log10&quot;, math_format(10^.x))) +
+  annotation_logticks(sides = &quot;l&quot;) +
+  labs(x = &quot;Protein&quot;, y = &quot;Normalised compensated counts&quot;, title = &quot;Normalised compensated counts&quot;) +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+plot_grid(fig_Ab_total, fig_Ab_true, ncol = 1)</code></pre>
+<p><strong>Figure:</strong> Distribution of normalised total or
+compensated counts per Ab-barcode for the 0.125 ug/mL samples.</p>
+</div>
+</div>
+<div id="deseq2-analysis-daudi" class="section level2">
+<h2>DEseq2 analysis DAUDI</h2>
+<p><a
+href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html"
+class="uri">https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html</a></p>
+<p>DESeq2 analysis parameters:</p>
+<ul>
+<li><p>DAUDI cells (anti-Ig stimulation)</p></li>
+<li><p>Compensated counts (&gt;= 1)</p></li>
+<li><p>Model design: staining_conc_text + stimulus</p></li>
+</ul>
+<pre class="r"><code># Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts &lt;- counts_dtbl  %&gt;%
+  filter(cell_line == &quot;DAUDI&quot; &amp; true_counts &gt;= 1) %&gt;%
+  select(target_nospace, well, true_counts) %&gt;%
+  filter(!is.na(true_counts)) %&gt;%
+  spread(well, true_counts) %&gt;%
+  replace(is.na(.), 0)
+
+rownames(cts) &lt;- cts$target_nospace
+cts &lt;- as.matrix(as.data.frame(cts[2:ncol(cts)]))
+
+coldata &lt;- data.frame(well = colnames(cts)) %&gt;%
+  left_join(meta_wellID) %&gt;%
+  mutate(staining_conc_text = factor(staining_conc_text, levels = c(&quot;0.5 ug/mL&quot;, &quot;0.25 ug/mL&quot;, &quot;0.125 ug/mL&quot;, &quot;0.063 ug/mL&quot;, &quot;0.031 ug/mL&quot;, &quot;0 ug/mL&quot;)))
+
+rownames(coldata) &lt;- coldata$well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign &lt;- ~ staining_conc_text + stimulus
+
+# Then create the DESeq dataset
+dds &lt;- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stimulus &lt;- relevel(dds$stimulus, ref = &quot;PBS&quot;)
+
+# OPTIONAL: Make a list of control genes that should not change (non-phospho proteins)
+# ctrl_genes: logical list with TRUE/FALSE for each protein in cts (same order). TRUE means use for normalisation
+ctrl_genes &lt;- counts_dtbl  %&gt;%
+  filter(cell_line == &quot;DAUDI&quot; &amp; true_counts &gt;= 1) %&gt;%
+  select(target_nospace, modification) %&gt;%
+  unique() %&gt;%
+  mutate(ctrl_genes = case_when(modification == &quot;no&quot; ~ TRUE,
+                                modification == &quot;cleaved&quot; | modification == &quot;phospho&quot; ~ FALSE)) %&gt;%
+  pull(ctrl_genes)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+# dds &lt;- estimateSizeFactors(dds, controlGenes = ctrl_genes) # OPTIONAL: normalise data with specified control genes
+dds &lt;- DESeq(dds, test = &quot;Wald&quot;, fitType = &quot;local&quot;)
+DESeq_comparisons &lt;- resultsNames(dds) # lists the coefficients
+DESeq_comparisons</code></pre>
+<div id="log2fc-results" class="section level3">
+<h3>Log2FC results</h3>
+<p>Significance threshold: padj &lt; 0.05</p>
+<pre class="r"><code># Test LFC shrinkage
+results_aIg &lt;- results(dds, name = &quot;stimulus_anti.Ig_vs_PBS&quot;, alpha = 0.05)
+results_aIg_lfc &lt;- lfcShrink(dds, coef = &quot;stimulus_anti.Ig_vs_PBS&quot;, type = &quot;apeglm&quot;, lfcThreshold = 0.05)
+results_aIg_ashr &lt;- lfcShrink(dds, coef = &quot;stimulus_anti.Ig_vs_PBS&quot;, type = &quot;ashr&quot;, lfcThreshold = 0.05)
+
+results_conc_0.25 &lt;- results(dds, name = &quot;staining_conc_text_0.25.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0.125 &lt;- results(dds, name = &quot;staining_conc_text_0.125.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0.063 &lt;- results(dds, name = &quot;staining_conc_text_0.063.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0.031 &lt;- results(dds, name = &quot;staining_conc_text_0.031.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0 &lt;- results(dds, name = &quot;staining_conc_text_0.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+
+list_results &lt;- list(results_aIg, results_conc_0.25, results_conc_0.125, results_conc_0.063, results_conc_0.031, results_conc_0)
+
+# Results summary
+results_aIg_ordered &lt;- results_aIg[order(results_aIg$pvalue),] # Order on lowest p-value
+summary(results_aIg, padj = 0.05)
+sum(results_aIg$padj &lt; 0.05, na.rm = TRUE)</code></pre>
+<pre class="r"><code>par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff &lt;- 0.05
+plotMA(results_aIg, alpha = signcutoff, main = &quot;no shrinking&quot;)
+plotMA(results_aIg_lfc, alpha = signcutoff, main = &quot;apeglm&quot;)
+plotMA(results_aIg_ashr, alpha = signcutoff, main = &quot;ashr&quot;)
+
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff &lt;- 0.05
+plotMA(results_aIg, alpha = signcutoff, main = &quot;aIg vs PBS&quot;)
+plotMA(results_conc_0.25, alpha = signcutoff, main = &quot;0.25 ug/mL vs 0.5 ug/mL&quot;)
+plotMA(results_conc_0.031, alpha = signcutoff, main = &quot;0.031 ug/mL vs 0.5 ug/mL&quot;)</code></pre>
+</div>
+<div id="data-transformation" class="section level3 tabset">
+<h3 class="tabset">Data transformation</h3>
+<pre class="r"><code># Normtransform (log2(n+1))
+ntd &lt;- normTransform(dds)
+
+# Variance stabilising transform
+vsd &lt;- vst(dds, blind = FALSE, nsub = nrow(dds))
+
+# Regularized log transform
+rld &lt;- rlog(dds, blind = FALSE)</code></pre>
+<div id="pca" class="section level4">
+<h4>PCA</h4>
+<pre class="r"><code>list_datatransform &lt;- list(ntd, vsd, rld)
+titles_datatransform &lt;- c(&quot;ntd&quot;, &quot;vsd&quot;, &quot;rld&quot;)
+
+for (data in 1:3){
+  options(repr.plot.width = 6, repr.plot.height = 3)
+  pcaData &lt;- plotPCA(unlist(list_datatransform[[data]]), intgroup = c(&quot;stimulus&quot;, &quot;staining_conc_text&quot;, &quot;staining_cells&quot;, &quot;staining_volume&quot;), returnData = TRUE)
+  percentVar &lt;- round(100 * attr(pcaData, &quot;percentVar&quot;))
+  
+  plot &lt;- ggplot(pcaData, aes(PC1, PC2, color = stimulus, fill = stimulus, shape = paste(staining_cells, &quot;-&quot;, staining_volume))) +
+    geom_point(size = 2) +
+    xlab(paste0(&quot;PC1: &quot;, percentVar[1], &quot;% variance&quot;)) +
+    ylab(paste0(&quot;PC2: &quot;, percentVar[2], &quot;% variance&quot;)) + 
+    coord_fixed() +
+    facet_wrap(~staining_conc_text) +
+    scale_color_manual(values = c(&quot;PBS&quot; = &quot;black&quot;, &quot;anti-Ig&quot;= &quot;orange&quot;)) + 
+    scale_fill_manual(values = c(&quot;PBS&quot; = &quot;black&quot;, &quot;anti-Ig&quot;= &quot;orange&quot;)) + 
+    scale_shape_manual(values = c(21:25), name = &quot;Cells - volume&quot;) +
+    ggtitle(titles_datatransform[data]) +
+    theme_bw() +
+    textsize_small
+  
+  print(plot)
+}</code></pre>
+</div>
+<div id="variance" class="section level4">
+<h4>Variance</h4>
+<pre class="r"><code>options(repr.plot.width = 8, repr.plot.height = 3)
+
+msd_ntd &lt;- meanSdPlot(assay(ntd))
+plot_ntd &lt;- msd_ntd$gg + 
+  labs(x = &quot;Ranked mean&quot;, y = &quot;Standard deviation&quot;, title = &quot;Normtransform (log2(n+1))&quot;) + 
+  theme_bw() + theme(legend.position = &quot;none&quot;) + textsize_small
+
+msd_vsd &lt;- meanSdPlot(assay(vsd))
+plot_vsd &lt;- msd_vsd$gg + 
+  labs(x = &quot;Ranked mean&quot;, y = &quot;Standard deviation&quot;, title = &quot;Variance stabilising transform&quot;) + 
+  theme_bw() + theme(legend.position = &quot;none&quot;) + textsize_small
+
+msd_rld &lt;- meanSdPlot(assay(rld))
+plot_rld &lt;- msd_rld$gg + 
+  labs(x = &quot;Ranked mean&quot;, y = &quot;Standard deviation&quot;, title = &quot;Regularized log transform&quot;) + 
+  theme_bw() + theme(legend.position = &quot;none&quot;) + textsize_small
+
+plot_grid(plot_ntd, plot_vsd, plot_rld, ncol = 3)</code></pre>
+</div>
+<div id="sample-to-sample-distances" class="section level4">
+<h4>Sample-to-sample distances</h4>
+<pre class="r"><code>options(repr.plot.width = 10, repr.plot.height = 7)
+
+for (data in 1:3){
+  sampleDists &lt;- dist(t(assay(unlist(list_datatransform[[data]]))))
+  sampleDistMatrix &lt;- as.matrix(sampleDists)
+  rownames(sampleDistMatrix) &lt;- paste(list_datatransform[[data]]$stimulus,
+                                      list_datatransform[[data]]$staining_conc_text, 
+                                      list_datatransform[[data]]$staining_volume, 
+                                      sep = &quot;-&quot;)
+  colnames(sampleDistMatrix) &lt;- NULL
+  colors &lt;- colorRampPalette(rev(brewer.pal(9, &quot;Blues&quot;)))(255)
+  
+  plot &lt;- pheatmap(sampleDistMatrix,
+                   clustering_distance_rows = sampleDists,
+                   clustering_distance_cols = sampleDists,
+                   col = colors, 
+                   main = titles_datatransform[data]) 
+  
+  print(plot)
+}</code></pre>
+</div>
+</div>
+<div id="volcano" class="section level3">
+<h3>Volcano</h3>
+<p>We continue with the results without any shrinkage as the shrinkage
+methods don’t seem to affect the results (see Log2FC section). Highlight
+the significantly changing proteins:</p>
+<ul>
+<li><p>padj &lt; 0.05</p></li>
+<li><p>Log2FC &lt; log2(1.1)</p></li>
+</ul>
+<pre class="r"><code># Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins &lt;- rownames(dataset)
+  dataset$target_nospace &lt;- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express &lt;- &quot;NO&quot;
+  dataset$diff_express[dataset$log2FoldChange &gt; foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;UP&quot;
+  dataset$diff_express[dataset$log2FoldChange &lt; -foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;DOWN&quot;
+  
+  # Add a column for labeling
+  dataset$delabel &lt;- NA
+  dataset$delabel[dataset$diff_express != &quot;NO&quot;] &lt;- dataset$proteins[dataset$diff_express != &quot;NO&quot;]
+  
+  # Add Ab metadata
+  dataset &lt;- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# # Test with aIg vs PBS
+# volc_results_aIg &lt;- prep_forvulcano(dataset = results_aIg, foldchange_filter = log2(1.1))
+
+# Apply function to each dataset
+names_results_volc &lt;- c(&quot;volc_results_aIg&quot;, &quot;volc_results_conc_0.25&quot;, &quot;volc_results_conc_0.125&quot;, &quot;volc_results_conc_0.063&quot;, &quot;volc_results_conc_0.031&quot;, &quot;volc_results_conc_0&quot;)
+
+for(dataset in c(1:length(list_results))){
+  assign(names_results_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], foldchange_filter = log2(1.1)))
+}</code></pre>
+<pre class="r"><code># Function to create volcano plots
+# Standard log2FC threshold = log2(1.5); standard padj threshold = 0.05
+vulcanoplot_results &lt;- function(data = data, 
+                                title_plot = &quot;&quot;, 
+                                xintercepts = c(-log2(1.5), log2(1.5)), 
+                                yintercept = -log10(0.05), 
+                                line_colors = c(&quot;red&quot;), 
+                                point_colors = c(UP = &quot;navy&quot;, NO = &quot;black&quot;, DOWN = &quot;firebrick&quot;)){
+  
+  # Create a plot (ggplot2)
+  ggplot(data = as.data.frame(data), aes(x = log2FoldChange, y = -log10(padj), col = diff_express, label = delabel)) +
+    geom_point() + 
+    theme_minimal() +
+    geom_text_repel(size = 2.5, 
+                    segment.size = 0.2,
+                    hjust = 0,
+                    direction = &quot;y&quot;,
+                    nudge_y = -log10(0.005),
+                    # nudge_x = ifelse(data$log2FoldChange &lt; 0, -0.4 - data$log2FoldChange, 0.4 - data$log2FoldChange)
+                    ) +
+    scale_color_manual(values = point_colors) +
+    geom_vline(xintercept = xintercepts, col = line_colors) +
+    geom_hline(yintercept = yintercept, col = line_colors) +
+    ggtitle(title_plot) +
+    theme(axis.text.x = element_text(colour = &#39;black&#39;, size = 9),
+          axis.text.y = element_text(colour = &#39;black&#39;, size = 9),
+          text = element_text(size = 9),
+          axis.text = element_text(size = 9),
+          plot.title = element_text(size = 11))
+}
+
+# # Test with aIg vs PBS
+# plot &lt;- vulcanoplot_results(data = volc_results_aIg, title_plot = &quot;DAUDI anti-Ig vs PBS&quot;, xintercepts = c(-log2(1.1), log2(1.1)))
+# print(plot)
+
+# Apply function to each dataset
+list_results_volc &lt;- list(volc_results_aIg, volc_results_conc_0.25, volc_results_conc_0.125, volc_results_conc_0.063, volc_results_conc_0.031, volc_results_conc_0)
+titles_volcano &lt;- c(&quot;anti-Ig vs PBS&quot;, &quot;0.25 ug/mL vs 0.5 ug/mL&quot;, &quot;0.125 ug/mL vs 0.5 ug/mL&quot;, &quot;0.063 ug/mL vs 0.5 ug/mL&quot;, &quot;0.031 ug/mL vs 0.5 ug/mL&quot;, &quot;0 ug/mL vs 0.5 ug/mL&quot;)
+
+for(dataset in c(1:length(list_results_volc))){
+  plot &lt;- vulcanoplot_results(data = list_results_volc[[dataset]], 
+                              title_plot = titles_volcano[dataset], 
+                              xintercepts = c(-log2(1.1), log2(1.1)))
+  print(plot)
+}</code></pre>
+<p><strong>Figure:</strong> Volcano plots of DESeq2 model
+comparisons.</p>
+</div>
+<div id="heatmap" class="section level3">
+<h3>Heatmap</h3>
+<p>We continue with the results with regularised log transformation as
+this transformation reduces the variance in the 0 ug/mL samples the most
+(see Data transform section). Create heatmaps of significant
+changes:</p>
+<ul>
+<li><p>padj &lt; 0.05</p></li>
+<li><p>Log2FC &lt; log2(1.1)</p></li>
+</ul>
+<pre class="r"><code># Function to filter the data
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+filter_heatmap &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5), select_top = TRUE, select_n = 10) {
+  data &lt;- as.data.frame(dataset) %&gt;%
+    filter(padj &lt;= padj_filter &amp; abs(log2FoldChange) &gt;= foldchange_filter) %&gt;%
+    arrange(-log2FoldChange) 
+  rownames(data) &lt;- data$target_nospace
+  
+  # Select top 10 proteins with most increased and decreased expression
+  if (select_top == TRUE) {
+    data_top &lt;- data %&gt;%
+      slice_max(order_by = abs(log2FoldChange), n = select_n)
+    return(data_top)
+  } else {
+    return(data)
+  }
+}
+
+# # Test with aIg vs PBS
+# heat_results_aIg &lt;- filter_heatmap(dataset = volc_results_aIg, select_top = FALSE)
+
+# Apply function to each dataset
+names_results_heat &lt;- list(&quot;heat_results_aIg&quot;, &quot;heat_results_conc_0.25&quot;, &quot;heat_results_conc_0.125&quot;, &quot;heat_results_conc_0.063&quot;, &quot;heat_results_conc_0.031&quot;, &quot;heat_results_conc_0&quot;)
+
+for(dataset in c(1:length(list_results_volc))){
+  assign(names_results_heat[[dataset]], filter_heatmap(dataset = list_results_volc[[dataset]], select_top = FALSE, foldchange_filter = log2(1.1)))
+  dataset
+}
+
+# Subset the full dataframe to get metadata for heatmap plotting
+data_heatmap &lt;- as.data.frame(colData(dds)[, c(&quot;stimulus&quot;,&quot;staining_conc_text&quot;, &quot;staining_cells&quot;, &quot;staining_volume&quot;)]) %&gt;%
+  # filter(cell_line == &quot;DAUDI&quot;) %&gt;%
+  arrange(stimulus, staining_conc_text)</code></pre>
+<pre class="r"><code># , fig.width=10, fig.height=10
+# options(repr.plot.width = 10, repr.plot.height = 10)
+
+# aIg vs PBS
+heat_results_aIg$marker_pathway[is.na(heat_results_aIg$marker_pathway)] &lt;- &quot;Other&quot;
+
+ann_colors_aIg &lt;- list(stimulus = c(&quot;PBS&quot; = &quot;#edf8e9&quot;, &quot;anti-Ig&quot; = &quot;#31a354&quot;),
+                   staining_conc_text = c(&quot;0.5 ug/mL&quot; = &quot;#08306b&quot;, 
+                                     &quot;0.25 ug/mL&quot; = &quot;#08519c&quot;, 
+                                     &quot;0.125 ug/mL&quot; = &quot;#4292c6&quot;, 
+                                     &quot;0.063 ug/mL&quot; = &quot;#6baed6&quot;, 
+                                     &quot;0.031 ug/mL&quot; = &quot;#9ecae1&quot;, 
+                                     &quot;0 ug/mL&quot; = &quot;#deebf7&quot;),
+                   staining_cells = c(&quot;0M (no cell)&quot; = &quot;#f2f0f7&quot;, &quot;0.25M&quot; = &quot;#9e9ac8&quot;, &quot;0.5M&quot; = &quot;#54278f&quot;),
+                   staining_volume = c(&quot;20 uL&quot; = &quot;#fdbe85&quot;, &quot;30 uL&quot; = &quot;#fd8d3c&quot;, &quot;40 uL&quot; = &quot;#e6550d&quot;), 
+                   modification = c(phospho = &quot;#f768a1&quot;, no = &quot;grey&quot;, cleaved = &quot;#fff7bc&quot;),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_aIg$marker_pathway))], unique(heat_results_aIg$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_aIg$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_aIg[, c(&quot;modification&quot;, &quot;marker_pathway&quot;)],
+  # annotation_row = test_results_H2O2$marker_pathway,
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_aIg,
+  scale = &quot;row&quot;,
+  colorRampPalette(c(&quot;navy&quot;, &quot;white&quot;, &quot;firebrick3&quot;))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_aIg)$modification,
+  # cellwidth = 10, 
+  # cellheight = 10, 
+  fontsize = 8,
+  main = &quot;DAUDI: anti-Ig vs PBS\n(true counts, rld transform)&quot;
+)
+
+# 0.031 ug/mL vs 0.5 ug/mL
+heat_results_conc_0.031$marker_pathway[is.na(heat_results_conc_0.031$marker_pathway)] &lt;- &quot;Other&quot;
+
+ann_colors_0.031ugmL &lt;- list(stimulus = c(&quot;PBS&quot; = &quot;#edf8e9&quot;, &quot;anti-Ig&quot; = &quot;#31a354&quot;),
+                   staining_conc_text = c(&quot;0.5 ug/mL&quot; = &quot;#08306b&quot;, 
+                                     &quot;0.25 ug/mL&quot; = &quot;#08519c&quot;, 
+                                     &quot;0.125 ug/mL&quot; = &quot;#4292c6&quot;, 
+                                     &quot;0.063 ug/mL&quot; = &quot;#6baed6&quot;, 
+                                     &quot;0.031 ug/mL&quot; = &quot;#9ecae1&quot;, 
+                                     &quot;0 ug/mL&quot; = &quot;#deebf7&quot;),
+                   staining_cells = c(&quot;0M (no cell)&quot; = &quot;#f2f0f7&quot;, &quot;0.25M&quot; = &quot;#9e9ac8&quot;, &quot;0.5M&quot; = &quot;#54278f&quot;),
+                   staining_volume = c(&quot;20 uL&quot; = &quot;#fdbe85&quot;, &quot;30 uL&quot; = &quot;#fd8d3c&quot;, &quot;40 uL&quot; = &quot;#e6550d&quot;), 
+                   modification = c(phospho = &quot;#f768a1&quot;, no = &quot;grey&quot;, cleaved = &quot;#fff7bc&quot;),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_conc_0.031$marker_pathway))], unique(heat_results_conc_0.031$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_conc_0.031$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_conc_0.031[, c(&quot;modification&quot;, &quot;marker_pathway&quot;)],
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_0.031ugmL,
+  scale = &quot;row&quot;,
+  colorRampPalette(c(&quot;navy&quot;, &quot;white&quot;, &quot;firebrick3&quot;))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_conc_0.031)$modification,
+  # cellwidth = 10, 
+  # cellheight = 10, 
+  fontsize = 8,  
+  main = &quot;DAUDI: 0.031 ug/mL vs 0.5 ug/mL\n(true counts, rld transformed)&quot;
+)</code></pre>
+<p><strong>Figure:</strong> Heatmap of significant results for H2O2 vs
+PBS and for 0.031 ug/mL vs 0.5 ug/mL.</p>
+</div>
+<div id="significant-changes" class="section level3">
+<h3>Significant changes</h3>
+<p>Finally, we visualised the normalised true counts of the
+significantly changing proteins in the H2O2 vs PBS comparison.</p>
+<ul>
+<li><p>padj &lt; 0.05</p></li>
+<li><p>Log2FC &lt; log2(1.1)</p></li>
+</ul>
+<pre class="r"><code>options(repr.plot.width = 5, repr.plot.height = 3)
+
+top_proteins &lt;- unique(c(heat_results_aIg$target_nospace))
+
+for(protein in 1:length(top_proteins)) {
+  plot &lt;- ggplot(subset(counts_dtbl, cell_line == &quot;DAUDI&quot; &amp; target_nospace == top_proteins[protein]), 
+                 aes(stimulus, true_counts_norm_geo, color = paste(staining_cells, &quot;-&quot;, staining_volume))) +
+    geom_jitter(alpha = 1, size = 2, width = 0.1) +
+    facet_wrap(~staining_conc_text) +
+    theme_bw() +
+    # scale_y_log10() +
+    scale_color_manual(values = colors_dark9, name = &quot;Cells - volume&quot;) + 
+    ggtitle(top_proteins[protein]) +
+    labs(x = &quot;Stimulus&quot;, y = &quot;Normalized compensated counts&quot;) +
+    textsize_small
+  
+  print(plot)
+}</code></pre>
+<p><strong>Figure:</strong> Normalized counts differential aIg vs
+PBS.</p>
+</div>
+</div>
+<div id="deseq2-analysis-hbl1" class="section level2">
+<h2>DEseq2 analysis HBL1</h2>
+<p><a
+href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html"
+class="uri">https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html</a></p>
+<p>DESeq2 analysis parameters:</p>
+<ul>
+<li><p>HBL1 cells (H2O2 stimulation)</p></li>
+<li><p>Compensated counts (&gt; 1)</p></li>
+<li><p>Model design: staining_conc_text + stimulus</p></li>
+</ul>
+<pre class="r"><code># Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts &lt;- counts_dtbl  %&gt;%
+  filter(cell_line == &quot;HBL1&quot; &amp; true_counts &gt;= 1) %&gt;%
+  select(target_nospace, well, true_counts) %&gt;%
+  filter(!is.na(true_counts)) %&gt;%
+  spread(well, true_counts) %&gt;%
+  replace(is.na(.), 0)
+
+rownames(cts) &lt;- cts$target_nospace
+cts &lt;- as.matrix(as.data.frame(cts[2:ncol(cts)]))
+
+coldata &lt;- data.frame(well = colnames(cts)) %&gt;%
+  left_join(meta_wellID) %&gt;%
+  mutate(staining_conc_text = factor(staining_conc_text, levels = c(&quot;0.5 ug/mL&quot;, &quot;0.25 ug/mL&quot;, &quot;0.125 ug/mL&quot;, &quot;0.063 ug/mL&quot;, &quot;0.031 ug/mL&quot;, &quot;0 ug/mL&quot;)))
+
+rownames(coldata) &lt;- coldata$well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign &lt;- ~ staining_conc_text + stimulus
+
+# Then create the DESeq dataset
+dds &lt;- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stimulus &lt;- relevel(dds$stimulus, ref = &quot;PBS&quot;)
+
+# OPTIONAL: Make a list of control genes that should not change (non-phospho proteins)
+# ctrl_genes: logical list with TRUE/FALSE for each protein in cts (same order). TRUE means use for normalisation
+ctrl_genes &lt;- counts_dtbl  %&gt;%
+  filter(cell_line == &quot;HBL1&quot; &amp; true_counts &gt;= 1) %&gt;%
+  select(target_nospace, modification) %&gt;%
+  unique() %&gt;%
+  mutate(ctrl_genes = case_when(modification == &quot;no&quot; ~ TRUE,
+                                modification == &quot;cleaved&quot; | modification == &quot;phospho&quot; ~ FALSE)) %&gt;%
+  pull(ctrl_genes)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+# dds &lt;- estimateSizeFactors(dds, controlGenes = ctrl_genes) # OPTIONAL: normalise data with specified control genes
+dds &lt;- DESeq(dds, test = &quot;Wald&quot;, fitType = &quot;local&quot;)
+DESeq_comparisons &lt;- resultsNames(dds) # lists the coefficients
+DESeq_comparisons</code></pre>
+<div id="log2fc-results-1" class="section level3">
+<h3>Log2FC results</h3>
+<p>Significance threshold: padj &lt; 0.01</p>
+<pre class="r"><code># Test LFC shrinkage
+results_H2O2 &lt;- results(dds, name = &quot;stimulus_H2O2_vs_PBS&quot;, alpha = 0.01)
+results_H2O2_lfc &lt;- lfcShrink(dds, coef = &quot;stimulus_H2O2_vs_PBS&quot;, type = &quot;apeglm&quot;, lfcThreshold = 0.01)
+results_H2O2_ashr &lt;- lfcShrink(dds, coef = &quot;stimulus_H2O2_vs_PBS&quot;, type = &quot;ashr&quot;, lfcThreshold = 0.01)
+
+results_conc_0.25 &lt;- results(dds, name = &quot;staining_conc_text_0.25.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.01)
+results_conc_0.125 &lt;- results(dds, name = &quot;staining_conc_text_0.125.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.01)
+results_conc_0.063 &lt;- results(dds, name = &quot;staining_conc_text_0.063.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.01)
+results_conc_0.031 &lt;- results(dds, name = &quot;staining_conc_text_0.031.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.01)
+results_conc_0 &lt;- results(dds, name = &quot;staining_conc_text_0.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.01)
+
+list_results &lt;- list(results_H2O2, results_conc_0.25, results_conc_0.125, results_conc_0.063, results_conc_0.031, results_conc_0)
+
+# Results summary
+results_H2O2_ordered &lt;- results_H2O2[order(results_H2O2$pvalue),] # Order on lowest p-value
+summary(results_H2O2, padj = 0.01)
+sum(results_H2O2$padj &lt; 0.01, na.rm = TRUE)</code></pre>
+<pre class="r"><code>par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff &lt;- 0.01
+plotMA(results_H2O2, alpha = signcutoff, main = &quot;no shrinking&quot;)
+plotMA(results_H2O2_lfc, alpha = signcutoff, main = &quot;apeglm&quot;)
+plotMA(results_H2O2_ashr, alpha = signcutoff, main = &quot;ashr&quot;)
+
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff &lt;- 0.01
+plotMA(results_H2O2, alpha = signcutoff, main = &quot;H2O2 vs PBS&quot;)
+plotMA(results_conc_0.25, alpha = signcutoff, main = &quot;0.25 ug/mL vs 0.5 ug/mL&quot;)
+plotMA(results_conc_0.031, alpha = signcutoff, main = &quot;0.031 ug/mL vs 0.5 ug/mL&quot;)</code></pre>
+</div>
+<div id="data-transformation-1" class="section level3 tabset">
+<h3 class="tabset">Data transformation</h3>
+<pre class="r"><code># Normtransform (log2(n+1))
+ntd &lt;- normTransform(dds)
+
+# Variance stabilising transform
+vsd &lt;- vst(dds, blind = FALSE, nsub = nrow(dds))
+
+# Regularized log transform
+rld &lt;- rlog(dds, blind = FALSE)</code></pre>
+<div id="pca-1" class="section level4">
+<h4>PCA</h4>
+<pre class="r"><code>list_datatransform &lt;- list(ntd, vsd, rld)
+titles_datatransform &lt;- c(&quot;ntd&quot;, &quot;vsd&quot;, &quot;rld&quot;)
+
+for (data in 1:3){
+  options(repr.plot.width = 6, repr.plot.height = 3)
+  pcaData &lt;- plotPCA(unlist(list_datatransform[[data]]), intgroup = c(&quot;stimulus&quot;, &quot;staining_conc_text&quot;, &quot;staining_cells&quot;, &quot;staining_volume&quot;), returnData = TRUE)
+  percentVar &lt;- round(100 * attr(pcaData, &quot;percentVar&quot;))
+  
+  plot &lt;- ggplot(pcaData, aes(PC1, PC2, color = stimulus, fill = stimulus, shape = paste(staining_cells, &quot;-&quot;, staining_volume))) +
+    geom_point(size = 2) +
+    xlab(paste0(&quot;PC1: &quot;, percentVar[1], &quot;% variance&quot;)) +
+    ylab(paste0(&quot;PC2: &quot;, percentVar[2], &quot;% variance&quot;)) + 
+    coord_fixed() +
+    facet_wrap(~staining_conc_text) +
+    scale_color_manual(values = c(&quot;PBS&quot; = &quot;black&quot;, &quot;H2O2&quot;= &quot;orange&quot;)) + 
+    scale_fill_manual(values = c(&quot;PBS&quot; = &quot;black&quot;, &quot;H2O2&quot;= &quot;orange&quot;)) + 
+    scale_shape_manual(values = c(21:25), name = &quot;Cells - volume&quot;) +
+    ggtitle(titles_datatransform[data]) +
+    theme_bw() + 
+    textsize_small
+  
+  print(plot)
+}</code></pre>
+</div>
+<div id="variance-1" class="section level4">
+<h4>Variance</h4>
+<pre class="r"><code>options(repr.plot.width = 8, repr.plot.height = 3)
+
+msd_ntd &lt;- meanSdPlot(assay(ntd))
+plot_ntd &lt;- msd_ntd$gg + 
+  labs(x = &quot;Ranked mean&quot;, y = &quot;Standard deviation&quot;, title = &quot;Normtransform (log2(n+1))&quot;) + 
+  theme_bw() + theme(legend.position = &quot;none&quot;) + textsize_small
+
+msd_vsd &lt;- meanSdPlot(assay(vsd))
+plot_vsd &lt;- msd_vsd$gg + 
+  labs(x = &quot;Ranked mean&quot;, y = &quot;Standard deviation&quot;, title = &quot;Variance stabilising transform&quot;) + 
+  theme_bw() + theme(legend.position = &quot;none&quot;) + textsize_small
+
+msd_rld &lt;- meanSdPlot(assay(rld))
+plot_rld &lt;- msd_rld$gg + 
+  labs(x = &quot;Ranked mean&quot;, y = &quot;Standard deviation&quot;, title = &quot;Regularized log transform&quot;) + 
+  theme_bw() + theme(legend.position = &quot;none&quot;) + textsize_small
+
+plot_grid(plot_ntd, plot_vsd, plot_rld, ncol = 3)</code></pre>
+</div>
+<div id="sample-to-sample-distances-1" class="section level4">
+<h4>Sample-to-sample distances</h4>
+<pre class="r"><code>options(repr.plot.width = 10, repr.plot.height = 7)
+
+for (data in 1:3){
+  sampleDists &lt;- dist(t(assay(unlist(list_datatransform[[data]]))))
+  sampleDistMatrix &lt;- as.matrix(sampleDists)
+  rownames(sampleDistMatrix) &lt;- paste(list_datatransform[[data]]$stimulus,
+                                      list_datatransform[[data]]$staining_conc_text, 
+                                      list_datatransform[[data]]$staining_volume, 
+                                      sep = &quot;-&quot;)
+  colnames(sampleDistMatrix) &lt;- NULL
+  colors &lt;- colorRampPalette(rev(brewer.pal(9, &quot;Blues&quot;)))(255)
+  
+  plot &lt;- pheatmap(sampleDistMatrix,
+                   clustering_distance_rows = sampleDists,
+                   clustering_distance_cols = sampleDists,
+                   col = colors, 
+                   main = titles_datatransform[data]) 
+  
+  print(plot)
+}</code></pre>
+</div>
+</div>
+<div id="volcano-1" class="section level3">
+<h3>Volcano</h3>
+<p>We continue with the results without any shrinkage as the shrinkage
+methods don’t seem to affect the results (see Log2FC section). Highlight
+the significantly changing proteins:</p>
+<ul>
+<li><p>padj &lt; 0.01</p></li>
+<li><p>Log2FC &lt; log2(1.2)</p></li>
+</ul>
+<pre class="r"><code># Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins &lt;- rownames(dataset)
+  dataset$target_nospace &lt;- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express &lt;- &quot;NO&quot;
+  dataset$diff_express[dataset$log2FoldChange &gt; foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;UP&quot;
+  dataset$diff_express[dataset$log2FoldChange &lt; -foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;DOWN&quot;
+  
+  # Add a column for labeling
+  dataset$delabel &lt;- NA
+  dataset$delabel[dataset$diff_express != &quot;NO&quot;] &lt;- dataset$proteins[dataset$diff_express != &quot;NO&quot;]
+  
+  # Add Ab metadata
+  dataset &lt;- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# # Test with H2O2 vs PBS
+# volc_results_H2O2 &lt;- prep_forvulcano(dataset = results_H2O2)
+
+# Apply function to each dataset
+names_results_volc &lt;- c(&quot;volc_results_H2O2&quot;, &quot;volc_results_conc_0.25&quot;, &quot;volc_results_conc_0.125&quot;, &quot;volc_results_conc_0.063&quot;, &quot;volc_results_conc_0.031&quot;, &quot;volc_results_conc_0&quot;)
+
+for(dataset in c(1:length(list_results))){
+  assign(names_results_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], padj_filter = 0.01,  foldchange_filter = log2(1.2)))
+}</code></pre>
+<pre class="r"><code># Function to create volcano plots
+# Standard log2FC threshold = log2(1.5); standard padj threshold = 0.05
+vulcanoplot_results &lt;- function(data = data, 
+                                title_plot = &quot;&quot;, 
+                                xintercepts = c(-log2(1.5), log2(1.5)), 
+                                yintercept = -log10(0.05), 
+                                line_colors = c(&quot;red&quot;), 
+                                point_colors = c(UP = &quot;navy&quot;, NO = &quot;black&quot;, DOWN = &quot;firebrick&quot;)){
+  
+  # Create a plot (ggplot2)
+  ggplot(data = as.data.frame(data), aes(x = log2FoldChange, y = -log10(padj), col = diff_express, label = delabel)) +
+    geom_point() + 
+    theme_minimal() +
+    geom_text_repel(size = 2.5, 
+                    segment.size = 0.2,
+                    hjust = 0,
+                    direction = &quot;y&quot;,
+                    nudge_y = -log10(0.005),
+                    # nudge_x = ifelse(data$log2FoldChange &lt; 0, -0.4 - data$log2FoldChange, 0.4 - data$log2FoldChange)
+                    ) +
+    scale_color_manual(values = point_colors) +
+    geom_vline(xintercept = xintercepts, col = line_colors) +
+    geom_hline(yintercept = yintercept, col = line_colors) +
+    ggtitle(title_plot) +
+    theme(axis.text.x = element_text(colour = &#39;black&#39;, size = 9),
+          axis.text.y = element_text(colour = &#39;black&#39;, size = 9),
+          text = element_text(size = 9),
+          axis.text = element_text(size = 9),
+          plot.title = element_text(size = 11))
+}
+
+# # Test with H2O2 vs PBS
+# plot &lt;- vulcanoplot_results(data = volc_results_H2O2, title_plot = &quot;HBL1 H2O2 vs PBS&quot;)
+# print(plot)
+
+# Apply function to each dataset
+list_results_volc &lt;- list(volc_results_H2O2, volc_results_conc_0.25, volc_results_conc_0.125, volc_results_conc_0.063, volc_results_conc_0.031, volc_results_conc_0)
+titles_volcano &lt;- c(&quot;H2O2 vs PBS&quot;, &quot;0.25 ug/mL vs 0.5 ug/mL&quot;, &quot;0.125 ug/mL vs 0.5 ug/mL&quot;, &quot;0.063 ug/mL vs 0.5 ug/mL&quot;, &quot;0.031 ug/mL vs 0.5 ug/mL&quot;, &quot;0 ug/mL vs 0.5 ug/mL&quot;)
+
+for(dataset in c(1:length(list_results_volc))){
+  plot &lt;- vulcanoplot_results(data =  list_results_volc[[dataset]], title_plot = titles_volcano[dataset], xintercepts = c(-log2(1.2), log2(1.2)), yintercept = -log10(0.01))
+  print(plot)
+}</code></pre>
+<p><strong>Figure:</strong> Volcano plots of DESeq2 model
+comparisons.</p>
+</div>
+<div id="heatmap-1" class="section level3">
+<h3>Heatmap</h3>
+<p>We continue with the results with regularised log transformation as
+this transformation reduces the variance in the 0 ug/mL samples the most
+(see Data transform section). Create heatmaps of significant
+changes:</p>
+<ul>
+<li><p>padj &lt; 0.01</p></li>
+<li><p>Log2FC &lt; log2(1.2)</p></li>
+</ul>
+<pre class="r"><code># Function to filter the data
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+filter_heatmap &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5), select_top = TRUE, select_n = 10) {
+  data &lt;- as.data.frame(dataset) %&gt;%
+    filter(padj &lt;= padj_filter &amp; abs(log2FoldChange) &gt;= foldchange_filter) %&gt;%
+    arrange(-log2FoldChange) 
+  rownames(data) &lt;- data$target_nospace
+  
+  # Select top 10 proteins with most increased and decreased expression
+  if (select_top == TRUE) {
+    data_top &lt;- data %&gt;%
+      slice_max(order_by = abs(log2FoldChange), n = select_n)
+    return(data_top)
+  } else {
+    return(data)
+  }
+}
+
+# # Test with H2O2 vs PBS
+# test_results_H2O2 &lt;- filter_heatmap(dataset = volc_results_H2O2, select_top = FALSE)
+
+# Apply function to each dataset
+names_results_heat &lt;- list(&quot;heat_results_H2O2&quot;, &quot;heat_results_conc_0.25&quot;, &quot;heat_results_conc_0.125&quot;, &quot;heat_results_conc_0.063&quot;, &quot;heat_results_conc_0.031&quot;, &quot;heat_results_conc_0&quot;)
+
+for(dataset in c(1:length(list_results_volc))){
+  assign(names_results_heat[[dataset]], filter_heatmap(dataset = list_results_volc[[dataset]], select_top = FALSE, padj_filter = 0.01,  foldchange_filter = log2(1.2)))
+  dataset
+}
+
+# Subset the full dataframe to get metadata for heatmap plotting
+data_heatmap &lt;- as.data.frame(colData(dds)[, c(&quot;stimulus&quot;,&quot;staining_conc_text&quot;, &quot;staining_cells&quot;, &quot;staining_volume&quot;)]) %&gt;%
+  # filter(cell_line == &quot;HBL1&quot;) %&gt;%
+  arrange(stimulus, staining_conc_text)</code></pre>
+<pre class="r"><code># , fig.width=10, fig.height=10
+# options(repr.plot.width = 10, repr.plot.height = 10)
+
+# H2O2 vs PBS
+heat_results_H2O2$marker_pathway[is.na(heat_results_H2O2$marker_pathway)] &lt;- &quot;Other&quot;
+
+ann_colors_H2O2 &lt;- list(stimulus = c(&quot;PBS&quot; = &quot;#edf8e9&quot;, &quot;H2O2&quot; = &quot;#31a354&quot;),
+                   staining_conc_text = c(&quot;0.5 ug/mL&quot; = &quot;#08306b&quot;, 
+                                     &quot;0.25 ug/mL&quot; = &quot;#08519c&quot;, 
+                                     &quot;0.125 ug/mL&quot; = &quot;#4292c6&quot;, 
+                                     &quot;0.063 ug/mL&quot; = &quot;#6baed6&quot;, 
+                                     &quot;0.031 ug/mL&quot; = &quot;#9ecae1&quot;, 
+                                     &quot;0 ug/mL&quot; = &quot;#deebf7&quot;),
+                   staining_cells = c(&quot;0M (no cell)&quot; = &quot;#f2f0f7&quot;, &quot;0.25M&quot; = &quot;#9e9ac8&quot;, &quot;0.5M&quot; = &quot;#54278f&quot;),
+                   staining_volume = c(&quot;20 uL&quot; = &quot;#fdbe85&quot;, &quot;30 uL&quot; = &quot;#fd8d3c&quot;, &quot;40 uL&quot; = &quot;#e6550d&quot;), 
+                   modification = c(phospho = &quot;#f768a1&quot;, no = &quot;grey&quot;, cleaved = &quot;#fff7bc&quot;),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_H2O2$marker_pathway))], unique(heat_results_H2O2$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_H2O2$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_H2O2[, c(&quot;modification&quot;, &quot;marker_pathway&quot;)],
+  # annotation_row = test_results_H2O2$marker_pathway,
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_H2O2,
+  scale = &quot;row&quot;,
+  colorRampPalette(c(&quot;navy&quot;, &quot;white&quot;, &quot;firebrick3&quot;))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_H2O2)$modification,
+  cellwidth = 10,
+  cellheight = 10,
+  fontsize = 8,
+  main = &quot;HBL1: H2O2 vs PBS (true counts, rld transform)&quot;
+)
+
+# 0 ug/mL vs 0.5 ug/mL
+heat_results_conc_0$marker_pathway[is.na(heat_results_conc_0$marker_pathway)] &lt;- &quot;Other&quot;
+
+ann_colors_0ugmL &lt;- list(stimulus = c(&quot;PBS&quot; = &quot;#edf8e9&quot;, &quot;H2O2&quot; = &quot;#31a354&quot;),
+                   staining_conc_text = c(&quot;0.5 ug/mL&quot; = &quot;#08306b&quot;, 
+                                     &quot;0.25 ug/mL&quot; = &quot;#08519c&quot;, 
+                                     &quot;0.125 ug/mL&quot; = &quot;#4292c6&quot;, 
+                                     &quot;0.063 ug/mL&quot; = &quot;#6baed6&quot;, 
+                                     &quot;0.031 ug/mL&quot; = &quot;#9ecae1&quot;, 
+                                     &quot;0 ug/mL&quot; = &quot;#deebf7&quot;),
+                   staining_cells = c(&quot;0M (no cell)&quot; = &quot;#f2f0f7&quot;, &quot;0.25M&quot; = &quot;#9e9ac8&quot;, &quot;0.5M&quot; = &quot;#54278f&quot;),
+                   staining_volume = c(&quot;20 uL&quot; = &quot;#fdbe85&quot;, &quot;30 uL&quot; = &quot;#fd8d3c&quot;, &quot;40 uL&quot; = &quot;#e6550d&quot;), 
+                   modification = c(phospho = &quot;#f768a1&quot;, no = &quot;grey&quot;, cleaved = &quot;#fff7bc&quot;),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_conc_0$marker_pathway))], unique(heat_results_conc_0$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_conc_0$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_conc_0[, c(&quot;modification&quot;, &quot;marker_pathway&quot;)],
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_0ugmL,
+  scale = &quot;row&quot;,
+  colorRampPalette(c(&quot;navy&quot;, &quot;white&quot;, &quot;firebrick3&quot;))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_conc_0)$modification,
+  cellwidth = 10,
+  cellheight = 10,
+  fontsize = 8,  
+  main = &quot;HBL1: 0 ug/mL vs 0.5 ug/mL (true counts, rld transform)&quot;
+)</code></pre>
+<p><strong>Figure:</strong> Heatmap of significant results for H2O2 vs
+PBS and for 0 ug/mL vs 0.5 ug/mL.</p>
+</div>
+<div id="significant-changes-1" class="section level3">
+<h3>Significant changes</h3>
+<p>Finally, we visualised the normalised true counts of the
+significantly changing proteins in the H2O2 vs PBS comparison.</p>
+<ul>
+<li><p>padj &lt; 0.01</p></li>
+<li><p>Log2FC &lt; log2(1.2)</p></li>
+</ul>
+<pre class="r"><code>options(repr.plot.width = 5, repr.plot.height = 3)
+
+top_proteins &lt;- unique(c(heat_results_H2O2$target_nospace))
+
+for(protein in 1:length(top_proteins)) {
+  plot &lt;- ggplot(subset(counts_dtbl, cell_line == &quot;HBL1&quot; &amp; target_nospace == top_proteins[protein]), 
+                 aes(stimulus, true_counts_norm_geo, color = paste(staining_cells, &quot;-&quot;, staining_volume))) +
+    geom_jitter(alpha = 1, size = 2, width = 0.1) +
+    facet_wrap(~staining_conc_text) +
+    theme_bw() +
+    # scale_y_log10() +
+    scale_color_manual(values = colors_dark9, name = &quot;Cells - volume&quot;) + 
+    ggtitle(top_proteins[protein]) +
+    labs(x = &quot;Stimulus&quot;, y = &quot;Normalized compensated counts&quot;) +
+    textsize_small
+  
+  print(plot)
+}</code></pre>
+<p><strong>Figure:</strong> Normalized counts differential H2O2 vs
+PBS.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

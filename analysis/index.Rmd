@@ -1,0 +1,53 @@
+---
+title: "Chapter on ID-seq technique implementation"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Description
+
+This is the data analysis folder for the thesis chapter titled: *Adaptation of immunodetection by sequencing (ID-seq) to study B-cell receptor signaling*.
+
+
+
+## Abstract
+
+Cells process extracellular signals from their environment through vast intracellular signaling networks. Measuring the protein phosphorylation events involved in cell signaling provides information on the intracellular dynamics of information processing at the protein level. Here, we have adapted and implemented immunodetection by sequencing (ID-seq) for B-cell signaling research, to measure 111 unique (phospho-)protein targets simultaneously. We have optimised the blocking, staining, PCR and clean-up steps to create an experimental protocol that produces robust datasets. As a proof-of-concept, we demonstrate how ID-seq enables the investigation of B-cell receptor (BCR) signaling in two B-cell lymphomas. We reveal network-wide phosphorylation of B-cell signaling proteins upon activation in both a Burkitt’s lymphoma and a diffuse large B-cell lymphoma cell model. B-cell receptor stimulation led to phosphorylation events in the core B-cell signaling hub, while hydrogen peroxide (H2O2) inhibition of phosphatases resulted in strong changes in global phosphorylation levels. These findings confirm how ID-seq can shed light on the effect of different perturbations on B-cell signaling, which is promising for both understanding malignancies and furthering drug development.
+
+
+
+## In this repository
+
+[Figs main](y_chapter_main.html): Main figures for the chapter
+
+[Figs suppl](z_chapter_suppl.html): Supplementary figures for the chapter
+
+
+Flow cytometry data:
+
+-   [Flow gating](a_flow_gating.html): Gating strategy
+
+-   [Flow annotation](b_flow_ann.html): Annotation with metadata
+
+
+ID-seq data: 
+-   [IDseq count](d_IDseq_count.html): FASTQ to count tables
+
+-   [IDseq annotation](e_IDseq_ann.html): Annotation with metadata
+
+-   [DS078 analysis](DS078_IDseq_analysis.html): Original analysis of DS078 ID-seq data
+
+-   [DS091 analysis](DS091_IDseq_analysis.html): Original analysis of DS091 ID-seq data
+
+
+
+## Experiments
+
+DS078: Blocking1
+
+DS091: ImmunostainingBio

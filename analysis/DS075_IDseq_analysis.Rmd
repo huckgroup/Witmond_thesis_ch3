@@ -1,0 +1,291 @@
+---
+title: "Ab_barcodes"
+author: "Jessie van Buggenum"
+date: "2022-06-28"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    toc_float: 
+      collapsed: FALSE
+    toc_depth: 3
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Load libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = F
+)
+```
+
+```{r libraries_and_ functions, message=FALSE, warning=FALSE, eval=FALSE}
+library(DropletUtils)
+library(Seurat)
+library(Matrix)
+library(tidyverse)
+library(scico)
+library(plyr)
+library(ggthemes)
+library(kableExtra)
+library(ggpubr)
+library(patchwork)
+library(readxl)
+library(ggpubr)
+library(scales)
+
+## From online; Slightly modified from BUSpaRse, just to avoid installing a few dependencies not used here
+read_count_output <- function(dir, name) {
+  dir <- normalizePath(dir, mustWork = TRUE)
+  m <- readMM(paste0(dir, "/", name, ".mtx"))
+  m <- Matrix::t(m)
+  m <- as(m, "dgCMatrix")
+  # The matrix read has cells in rows
+  ge <- ".genes.txt"
+  genes <- readLines(file(paste0(dir, "/", name, ge)))
+  barcodes <- readLines(file(paste0(dir, "/", name, ".barcodes.txt")))
+  colnames(m) <- barcodes
+  rownames(m) <- genes
+  return(m)
+}
+
+## For re-ordered antibody plot
+scale_x_reordered <- function(..., sep = "___") {
+  reg <- paste0(sep, ".+$")
+  ggplot2::scale_x_discrete(labels = function(x) gsub(reg, "", x), ...)
+}
+reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
+  new_x <- paste(x, within, sep = sep)
+  stats::reorder(new_x, by, FUN = fun)
+}
+
+```
+
+
+## Import & datatable properties
+
+```{r, eval=FALSE}
+## load sparse matrix format all data
+counts_PlateA <- read_count_output("data/counts/PlateA/featurecounts", name = "featurecounts")
+counts_PlateB <- read_count_output("data/counts/PlateB/featurecounts", name = "featurecounts")
+
+```
+
+
+```{r, eval=FALSE}
+## calculate per sample features (from droplet utils)
+tot_count_A <- colSums(counts_PlateA)
+lib_sat_A <- tibble(sample_BC = colnames(counts_PlateA),
+  nCount = tot_count_A,
+                  nProt = colSums(counts_PlateA > 0)) 
+
+mta_wellID <- read_excel("data/config/meta_antibody_barcodes_samples_new.xlsx")
+
+lib_sat_A <-left_join(lib_sat_A, subset(meta_wellID, Plate == "Plate_A"))
+  
+## calculate per sample features (from droplet utils)
+tot_count_B <- colSums(counts_PlateB)
+lib_sat_B<- tibble(sample_BC = colnames(counts_PlateB),
+  nCount = tot_count_B,
+                  nProt = colSums(counts_PlateB > 0)) 
+
+lib_sat_B <-left_join(lib_sat_B, subset(meta_wellID, Plate == "Plate_B"))
+    
+  
+```
+
+## Per sample properties {.tabset}
+
+### PlateA
+```{r Fig1_nCountvsnPROT, warning=FALSE, fig.width=8, fig.height=3, eval=FALSE}
+options(repr.plot.width=18, repr.plot.height=6)
+ggplot(lib_sat_A , aes(nCount, nProt)) +
+  geom_point(alpha = 1, size = 1) +
+ # facet_wrap(~stimulus)+
+  theme_bw()
+```
+*Figure 1* Correlation between Total counts and number of detected 'proteins'. 
+
+```{r, eval=FALSE}
+# total.properties_persample_input <- lib_sat %>%
+#   ungroup()%>%
+#   group_by(stimulus, concentration_Ab) %>%
+#   dplyr::summarise(.groups = "keep",
+#                    total.samples = n(), 
+#             mean = mean(counts ), 
+#             median = median(counts ),
+#             total = sum(counts))
+
+lib_sat_A%>%
+  kbl() %>%
+  kable_styling()
+```
+
+### PlateB
+```{r Fig1_nCountvsnPROT2, warning=FALSE, fig.width=8, fig.height=3, eval=FALSE}
+options(repr.plot.width=18, repr.plot.height=6)
+ggplot(lib_sat_B , aes(nCount, nProt)) +
+  geom_point(alpha = 1, size = 1) +
+ # facet_wrap(~stimulus)+
+  theme_bw()
+```
+*Figure 1* Correlation between Total counts and number of detected 'proteins'. 
+
+```{r, eval=FALSE}
+# total.properties_persample_input <- lib_sat %>%
+#   ungroup()%>%
+#   group_by(stimulus, concentration_Ab) %>%
+#   dplyr::summarise(.groups = "keep",
+#                    total.samples = n(), 
+#             mean = mean(counts ), 
+#             median = median(counts ),
+#             total = sum(counts))
+
+lib_sat_B%>%
+  kbl() %>%
+  kable_styling()
+```
+
+
+## Per Barcode % counts of total
+
+```{r, eval=FALSE}
+counts.dtbl <- data.frame(counts_PlateA) %>% 
+  mutate(Barcodename = rownames(counts_PlateA)) %>%
+  select(Barcodename, everything()) %>%
+  gather("sample_BC", "counts", 2:c(ncol(counts_PlateA)+1))
+
+counts.all.filtered.dplyr.all <- counts.dtbl %>%
+  left_join(subset(meta_wellID, Plate == "Plate_A")) %>%
+ #  left_join(Metadata_antibodies)%>%
+  unique() %>%
+  filter(counts >0) %>%
+  left_join(select(lib_sat_A, nCount,sample_ID ,expected_Ab_BC)) %>%
+  mutate(Percentage = (counts/nCount)*100)
+
+library(readxl)
+meta_featurebarcodes <- read_excel("data/config/meta_featurebarcodes.xlsx") 
+
+# counts.all.filtered.dplyr <- subset(counts.all.filtered.dplyr.all, !is.na(target_easy_name))
+
+counts.all.filtered.dplyr.all <- left_join(counts.all.filtered.dplyr.all, meta_featurebarcodes) 
+
+# head(counts.all.filtered.dplyr.all)
+
+write.csv2(counts.all.filtered.dplyr.all, "output/plateA_counts_and_percentages.csv")
+
+```
+
+
+```{r PlateA_perc_above0.1, warning=FALSE, fig.width=45, fig.height=16, eval=FALSE}
+# barcodes_to_plot <- c(paste0("BC_", 1:300))
+
+ggplot(subset(counts.all.filtered.dplyr.all, Percentage >0.1 ), aes(as.factor(FeatureBarcode_nr)  , Percentage)) +
+     # geom_boxplot(outlier.colour="black", outlier.shape=16,
+     #         outlier.size=0.5, notch=FALSE) +
+  geom_point()+
+ # theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+  # scale_y_log10()+
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ #  annotation_logticks(sides = 'l') +
+  labs(x="Barcode")+
+  theme_bw() +
+  facet_wrap(~well_nr  , ncol = 12, scales = "free_x")+
+  RotatedAxis()+
+  scale_color_brewer(palette="Dark2") 
+```
+
+
+```{r PlateA_counts_above0.1, warning=FALSE, fig.width=45, fig.height=16, eval=FALSE}
+# barcodes_to_plot <- c(paste0("BC_", 1:300))
+
+ggplot(subset(counts.all.filtered.dplyr.all, Percentage >0.1 ), aes(as.factor(FeatureBarcode_nr)  , counts)) +
+     # geom_boxplot(outlier.colour="black", outlier.shape=16,
+     #         outlier.size=0.5, notch=FALSE) +
+  geom_point()+
+ # theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+  # scale_y_log10()+
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ #  annotation_logticks(sides = 'l') +
+  labs(x="Barcode")+
+  theme_bw() +
+  facet_wrap(~well_nr  , ncol = 12, scales = "free_x")+
+  RotatedAxis()+
+  scale_color_brewer(palette="Dark2") 
+```
+
+
+#### PlateB
+
+
+```{r, eval=FALSE}
+counts.dtbl <- data.frame(counts_PlateB) %>% 
+  mutate(Barcodename = rownames(counts_PlateB)) %>%
+  select(Barcodename, everything()) %>%
+  gather("sample_BC", "counts", 2:c(ncol(counts_PlateB)+1))
+
+counts.all.filtered.dplyr.all <- counts.dtbl %>%
+  left_join(meta_wellID) %>%
+ #  left_join(Metadata_antibodies)%>%
+  unique() %>%
+  filter(counts >0) %>%
+  left_join(select(lib_sat_B, nCount,sample_ID ,expected_Ab_BC)) %>%
+  mutate(Percentage = (counts/nCount)*100)
+
+library(readxl)
+meta_featurebarcodes <- read_excel("data/config/meta_featurebarcodes.xlsx") 
+
+# counts.all.filtered.dplyr <- subset(counts.all.filtered.dplyr.all, !is.na(target_easy_name))
+
+counts.all.filtered.dplyr.all <- left_join(counts.all.filtered.dplyr.all, meta_featurebarcodes) 
+
+# head(counts.all.filtered.dplyr.all)
+
+write.csv2(counts.all.filtered.dplyr.all, "output/plateB_counts_and_percentages.csv")
+
+
+```
+
+
+```{r PlateB_perc_above0.1, warning=FALSE, fig.width=45, fig.height=8, eval=FALSE}
+barcodes_to_plot <- c(paste0("BC_", 1:300))
+
+ggplot(subset(counts.all.filtered.dplyr.all, Percentage >0.1), aes(as.factor( FeatureBarcode_nr)  , Percentage)) +
+     # geom_boxplot(outlier.colour="black", outlier.shape=16,
+     #         outlier.size=0.5, notch=FALSE) +
+  geom_point()+
+ # theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+  # scale_y_log10()+
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ #  annotation_logticks(sides = 'l') +
+  labs(x="Barcode")+
+  theme_bw() +
+  facet_wrap(~well_nr  , ncol = 12, scales = "free_x")+
+  RotatedAxis()+
+  scale_color_brewer(palette="Dark2") 
+```
+
+```{r PlateB_counts_above0.1, warning=FALSE, fig.width=45, fig.height=8, eval=FALSE}
+barcodes_to_plot <- c(paste0("BC_", 1:300))
+
+ggplot(subset(counts.all.filtered.dplyr.all, Percentage >0.1 ), aes(as.factor( FeatureBarcode_nr)  , counts)) +
+     # geom_boxplot(outlier.colour="black", outlier.shape=16,
+     #         outlier.size=0.5, notch=FALSE) +
+  geom_point()+
+ # theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+  # scale_y_log10()+
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ #  annotation_logticks(sides = 'l') +
+  labs(x="Barcode")+
+  theme_bw() +
+  facet_wrap(~well_nr  , ncol = 12, scales = "free_x")+
+  RotatedAxis()+
+  scale_color_brewer(palette="Dark2") 
+```

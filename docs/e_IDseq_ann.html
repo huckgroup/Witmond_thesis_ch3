@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="mwitmond" />
+
+<meta name="date" content="2024-09-24" />
+
+<title>ID-seq annotation</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Chapter IDseq tech</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="y_chapter_main.html">Figs main</a>
+</li>
+<li>
+  <a href="z_chapter_suppl.html">Figs suppl</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Flow
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="a_flow_gating.html">Gating</a>
+    </li>
+    <li>
+      <a href="b_flow_ann.html">Annotation</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    IDseq
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="d_IDseq_count.html">Count tables</a>
+    </li>
+    <li>
+      <a href="e_IDseq_ann.html">Annotation</a>
+    </li>
+    <li>
+      <a href="DS078_IDseq_analysis.html">DS078 analysis</a>
+    </li>
+    <li>
+      <a href="DS091_IDseq_analysis.html">DS091 analysis</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">ID-seq annotation</h1>
+<h4 class="author">mwitmond</h4>
+<h4 class="date">2024-09-24</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-02-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>chapter_IDseq_tech/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240806code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240806)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240806code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240806)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong31f8444">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 31f8444
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong31f8444"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 31f8444.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
+
+Untracked files:
+    Untracked:  code/DS075_combined_analysis.R
+    Untracked:  code/packages_FACS.R
+    Untracked:  code/packages_seq.R
+    Untracked:  data/BB014_LibraryIndex/
+    Untracked:  data/DS027_FirstIDseq/
+    Untracked:  data/DS055_LibraryKlenowAmp/
+    Untracked:  data/DS056_LibraryAmp1/
+    Untracked:  data/DS059_LibraryByproducts/
+    Untracked:  data/DS072_LibraryAmp2/
+    Untracked:  data/DS075_BarcodeCheck/
+    Untracked:  data/DS078_Blocking1/
+    Untracked:  data/DS080_Blocking2/
+    Untracked:  data/DS084_BioInhibition/
+    Untracked:  data/DS091_ImmunostainingBio/
+    Untracked:  data/DSxxx_Conjugations/
+    Untracked:  data/annotated_gels_batch1-10_digital.pptx
+    Untracked:  output/BioAnalyzer_plots/
+    Untracked:  output/DS075_BarcodeCheck/
+    Untracked:  output/DS078_Blocking1/
+    Untracked:  output/DS091_ImmunostainingBio/
+    Untracked:  output/figures/
+    Untracked:  output/network_visual/
+
+Unstaged changes:
+    Deleted:    analysis/about.Rmd
+    Deleted:    analysis/c_flow_vis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/e_IDseq_ann.Rmd</code>) and HTML
+(<code>docs/e_IDseq_ann.html</code>) files. If you’ve configured a
+remote Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+31f8444
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+Revised ch3 figs
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level2">
+<h2>Set-up</h2>
+<pre class="r"><code>row_order = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;)
+col_order = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;10&quot;, &quot;11&quot;, &quot;12&quot;)
+panel_labels &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;,&quot;d&quot;, &quot;e&quot;, &quot;f&quot;, &quot;g&quot;, &quot;h&quot;, &quot;i&quot;, &quot;j&quot;, &quot;k&quot;, &quot;l&quot;, &quot;m&quot;)
+
+textsize &lt;- theme(axis.text.x = element_text(colour = &quot;grey&quot;, size = 11), #, face = &quot;bold&quot;
+                  axis.text.y = element_text(colour = &quot;grey&quot;, size = 11),
+                  axis.title = element_text(colour = &quot;black&quot;, size = 12), 
+                  legend.title = element_text(colour = &quot;black&quot;, size = 12),
+                  # legend.title = element_blank(), 
+                  legend.text = element_text(colour = &quot;grey&quot;, size = 11), 
+                  strip.text.x = element_text(colour = &quot;black&quot;, size = 12)
+)
+
+textsize_small &lt;- theme(text = element_text(size = 7, family = &quot;sans&quot;, colour = &quot;black&quot;),
+                        plot.title = element_text(size = 8)
+)
+textsize_medium &lt;- theme(text = element_text(size = 10, family = &quot;sans&quot;, colour = &quot;black&quot;),
+                         strip.text.x = element_text(size = 10), 
+                         plot.title = element_text(size = 10)
+)
+
+colors_dark9 &lt;- c(&quot;#4daf4a&quot;, &quot;#984ea3&quot;, &quot;#377eb8&quot;, &quot;#ff7f00&quot;, &quot;#f781bf&quot;, &quot;#ffff33&quot;, &quot;#e41a1c&quot;, &quot;#a65628&quot;, &quot;#999999&quot;)
+colors_light12 &lt;- c(&quot;#8dd3c7&quot;,&quot;#ffffb3&quot;,&quot;#bebada&quot;,&quot;#fb8072&quot;,&quot;#80b1d3&quot;,&quot;#fdb462&quot;,&quot;#b3de69&quot;,&quot;#fccde5&quot;,&quot;#d9d9d9&quot;,&quot;#bc80bd&quot;,&quot;#ccebc5&quot;,&quot;#ffed6f&quot;)
+colors_paired10 &lt;- c(&quot;#a6cee3&quot;, &quot;#1f78b4&quot;, &quot;#b2df8a&quot;, &quot;#33a02c&quot;, &quot;#fdbf6f&quot;, &quot;#ff7f00&quot;, &quot;#cab2d6&quot;, &quot;#6a3d9a&quot;, &quot;#fb9a99&quot;, &quot;#e31a1c&quot;)
+
+colors_blue9 &lt;- c(&quot;#f7fbff&quot;, &quot;#deebf7&quot;, &quot;#c6dbef&quot;, &quot;#9ecae1&quot;, &quot;#6baed6&quot;, &quot;#4292c6&quot;, &quot;#2171b5&quot;, &quot;#08519c&quot;, &quot;#08306b&quot;)
+colors_green9 &lt;- c(&quot;#f7fcf5&quot;, &quot;#e5f5e0&quot;, &quot;#c7e9c0&quot;, &quot;#a1d99b&quot;, &quot;#74c476&quot;, &quot;#41ab5d&quot;, &quot;#238b45&quot;, &quot;#006d2c&quot;, &quot;#00441b&quot;)
+colors_purple9 &lt;- c(&quot;#fcfbfd&quot;, &quot;#efedf5&quot;, &quot;#dadaeb&quot;, &quot;#bcbddc&quot;, &quot;#9e9ac8&quot;, &quot;#807dba&quot;, &quot;#6a51a3&quot;, &quot;#54278f&quot;, &quot;#3f007d&quot;)
+colors_red9 &lt;- c(&quot;#fff5f0&quot;, &quot;#fee0d2&quot;, &quot;#fcbba1&quot;, &quot;#fc9272&quot;, &quot;#fb6a4a&quot;, &quot;#ef3b2c&quot;, &quot;#cb181d&quot;, &quot;#a50f15&quot;, &quot;#67000d&quot;)
+colors_orange9 &lt;- c(&quot;#fff5eb&quot;, &quot;#fee6ce&quot;, &quot;#fdd0a2&quot;, &quot;#fdae6b&quot;, &quot;#fd8d3c&quot;, &quot;#f16913&quot;, &quot;#d94801&quot;, &quot;#a63603&quot;, &quot;#7f2704&quot;)
+colors_grey9 &lt;- c(&quot;#ffffff&quot;, &quot;#f0f0f0&quot;, &quot;#d9d9d9&quot;, &quot;#bdbdbd&quot;, &quot;#969696&quot;, &quot;#737373&quot;, &quot;#525252&quot;, &quot;#252525&quot;, &quot;#000000&quot;)
+
+colors_yb9 &lt;- c(&quot;#ffffd9&quot;, &quot;#edf8b1&quot;, &quot;#c7e9b4&quot;, &quot;#7fcdbb&quot;, &quot;#41b6c4&quot;, &quot;#1d91c0&quot;, &quot;#225ea8&quot;, &quot;#253494&quot;, &quot;#081d58&quot;)
+colors_pr9 &lt;- c(&quot;#f7f4f9&quot;, &quot;#e7e1ef&quot;, &quot;#d4b9da&quot;, &quot;#c994c7&quot;, &quot;#df65b0&quot;, &quot;#e7298a&quot;, &quot;#ce1256&quot;, &quot;#980043&quot;, &quot;#67001f&quot;)
+
+colors_proteins &lt;- c(&quot;pCD79a (Y182)&quot; = &quot;#892BE1&quot;, &quot;pSYK (Y525/Y526)&quot; = &quot;#1E8FFF&quot;, &quot;pPLCy2 (Y759)&quot; = &quot;#20B1A9&quot;)
+colors_stim &lt;- c(&quot;PBS&quot; = &quot;#737373&quot;, &quot;anti-Ig&quot; = &quot;#74c476&quot;, &quot;H2O2&quot; = &quot;#6EA6CD&quot;)
+colors_stim_clean &lt;- c(&quot;Basal&quot; = &quot;#737373&quot;, &quot;Activated (anti-Ig)&quot; = &quot;#74c476&quot;, &quot;Activated (H2O2)&quot; = &quot;#6EA6CD&quot;)
+colors_cell &lt;- c(&quot;HBL1&quot; = &quot;#df65b0&quot;, &quot;DAUDI&quot; = &quot;#41b6c4&quot;)</code></pre>
+</div>
+<div id="ds075-barcodecheck" class="section level2">
+<h2>DS075: BarcodeCheck</h2>
+<div id="raw-data" class="section level3">
+<h3>Raw data</h3>
+<pre class="r"><code># Load sparse matrix format all data
+counts_PlateA &lt;- read_count_output(&quot;data/DS075_BarcodeCheck/counts/PlateA/featurecounts&quot;, name = &quot;featurecounts&quot;)
+counts_PlateB &lt;- read_count_output(&quot;data/DS075_BarcodeCheck/counts/PlateB/featurecounts&quot;, name = &quot;featurecounts&quot;)
+
+meta_wellID &lt;- read_csv(&quot;data/DS075_BarcodeCheck/config/DynSign.075_wellBC_metadata_seq.csv&quot;)
+# meta_wellID &lt;- read_csv(&quot;data/DS075_BarcodeCheck/config/meta_antibody_barcodes_samples_new.csv&quot;)
+meta_Abs_nr &lt;- read_excel(&quot;data/DS075_BarcodeCheck/config/meta_featurebarcodes.xlsx&quot;)
+
+# Reshape counts in data table format
+# Plate A
+counts_dtbl_plateA &lt;- data.frame(counts_PlateA) %&gt;% 
+  mutate(barcode_name = rownames(counts_PlateA)) %&gt;% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %&gt;%
+  gather(&quot;well_BC_seq&quot;, &quot;counts&quot;, 2:c(ncol(counts_PlateA)+1)) %&gt;%
+  dplyr::filter(counts &gt; 1) %&gt;% # Remove undetected proteins counts
+  left_join(meta_Abs_nr) %&gt;%
+  unique() %&gt;%
+  # dplyr::filter(!is.na(target_nospace)) %&gt;% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %&gt;%
+  arrange(plate, well)
+
+# Plate B
+counts_dtbl_plateB &lt;- data.frame(counts_PlateB) %&gt;% 
+  mutate(barcode_name = rownames(counts_PlateB)) %&gt;% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %&gt;%
+  gather(&quot;well_BC_seq&quot;, &quot;counts&quot;, 2:c(ncol(counts_PlateB)+1)) %&gt;%
+  dplyr::filter(counts &gt; 1) %&gt;% # Remove undetected proteins counts
+  left_join(meta_Abs_nr) %&gt;%
+  unique() %&gt;%
+  # dplyr::filter(!is.na(target_nospace)) %&gt;% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == &quot;B&quot;)) %&gt;% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %&gt;%
+  arrange(plate, well)
+
+counts_dtbl &lt;- full_join(counts_dtbl_plateA, counts_dtbl_plateB)
+
+# Calculate per-sample properties
+data_properties &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID) %&gt;% # Add sample metadata 
+  arrange(plate, well)</code></pre>
+<p><em><strong>Table</strong>: Unfiltered data-table properties loaded
+into R</em></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="37%" />
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>nCols (#samples)</th>
+<th>nRows (# barcodes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Plate A</td>
+<td>96</td>
+<td>300</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties, aes(log10(nCount), nProt)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~plate) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_prot_DS075-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between total counts and
+number of detected protein barcodes. We observe many more detected
+proteins than present in the staining.</em></p>
+<p>As we have a 96-wells plate, we can also have a look at total counts
+per plate detected:</p>
+<pre class="r"><code>options(repr.plot.width = 10, repr.plot.height = 6)
+
+rng &lt;- range(log10(data_properties$nCount))
+
+plot &lt;- raw_grid(data = log10(data_properties$nCount), well = data_properties$well, plate_id = data_properties$plate, plate = 96, size = 6) +
+  scale_fill_viridis(expression(&quot;Total counts Log&quot;[10]), limits = c(rng[1], rng[2])) +
+  theme_bw()
+
+print(plot)</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_plate_totalUMI_DS075-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Plate overviews of total
+counts.</em></p>
+</div>
+<div id="data-wrangling" class="section level3">
+<h3>Data wrangling</h3>
+<p>Calculate the following:</p>
+<ul>
+<li>Percentage contamination</li>
+</ul>
+<pre class="r"><code># Calculate percentage contamination for each BC
+counts_dtbl_percent &lt;- counts_dtbl %&gt;% 
+  left_join(data_properties) %&gt;%
+  dplyr::rename(counts_BC = counts, 
+                counts_total = nCount, 
+                measured_BC = barcode_nr_only, 
+                measured_BC_long = barcode_name) %&gt;%
+  mutate(counts_percent = (counts_BC / counts_total) * 100, 
+         plate_well = paste0(plate, &quot;_&quot;, well))
+
+# Calculate total percentage contamination
+data_total_cont &lt;- counts_dtbl_percent %&gt;%
+  dplyr::filter(measured_BC_long != expected_BC_long) %&gt;%
+  group_by(plate, well) %&gt;%
+  summarize(counts_total_cont = sum(counts_BC), 
+            counts_total_percent_cont = sum(counts_percent))
+counts_dtbl_percent &lt;- counts_dtbl_percent %&gt;%
+  left_join(data_total_cont)</code></pre>
+</div>
+<div id="save-data" class="section level3">
+<h3>Save data</h3>
+<p>Finally, we will save the datasets as .csv file</p>
+<ul>
+<li>IDseq_data_sample.csv: Dataset of counts per protein per sample</li>
+</ul>
+<pre class="r"><code># Dataset of counts per barcode per well
+meta_cols_well_DS075 &lt;- c(&quot;plate_well&quot;, &quot;plate&quot;, &quot;row&quot;, &quot;column&quot;, &quot;well&quot;, 
+                          &quot;experiment&quot;, &quot;expected_BC&quot;, &quot;expected_BC_long&quot;, &quot;measured_BC&quot;, &quot;measured_BC_long&quot;, 
+                          &quot;counts_BC&quot;, &quot;counts_total&quot;, &quot;counts_percent&quot;, &quot;counts_total_cont&quot;, &quot;counts_total_percent_cont&quot;)
+data_well_all &lt;- counts_dtbl_percent %&gt;% 
+  arrange(plate_well, measured_BC) %&gt;%
+  dplyr::select(meta_cols_well_DS075) # reorder columns for a more logical order
+
+write.csv(data_well_all, file = &quot;output/DS075_BarcodeCheck/IDseq_ann/IDseq_data_sample.csv&quot;, row.names = F)</code></pre>
+<pre class="r"><code>rm(list = ls(pattern = &quot;DS075&quot;))
+rm(list = ls(pattern = &quot;Plate&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  9281663 495.7   17312920 924.7 14227503 759.9
+Vcells 16762916 127.9   26853191 204.9 22306754 170.2</code></pre>
+</div>
+</div>
+<div id="ds078-blocking1" class="section level2">
+<h2>DS078: Blocking1</h2>
+<div id="raw-data-1" class="section level3">
+<h3>Raw data</h3>
+<pre class="r"><code># Load sparse matrix format all data
+counts_PlateA &lt;- read_count_output(&quot;data/DS078_Blocking1/counts/PlateA/featurecounts&quot;, name = &quot;featurecounts&quot;)
+meta_wellID &lt;- read_csv(&quot;data/DS078_Blocking1/config/DynSign.078_wellBC_metadata_seq.csv&quot;)
+
+meta_Abs_OG &lt;- read_excel(&quot;data/DS078_Blocking1/config/BulkIDseq_Ab_info_seq_analysis_202405.xlsx&quot;)
+meta_Abs_DS078 &lt;- read_csv(&quot;data/DS078_Blocking1/config/DynSign.078_Ab_metadata.csv&quot;)
+
+# Reshape counts in data table format
+counts_dtbl &lt;- data.frame(counts_PlateA) %&gt;% 
+  mutate(barcode_name = rownames(counts_PlateA)) %&gt;% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %&gt;%
+  gather(&quot;well_BC_seq&quot;, &quot;counts&quot;, 2:c(ncol(counts_PlateA)+1)) %&gt;%
+  dplyr::filter(counts &gt;= 1) %&gt;% # Remove undetected proteins counts
+  left_join(meta_Abs_DS078) %&gt;%
+  unique() %&gt;%
+  # dplyr::filter(!is.na(target_nospace)) %&gt;% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %&gt;%
+  arrange(plate, well)
+
+counts_dtbl &lt;- counts_dtbl %&gt;%
+  mutate(plate_well = paste0(plate, &quot;_&quot;, well))
+
+# Calculate per-sample properties
+data_properties &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID) # Add sample metadata </code></pre>
+<p><em><strong>Table</strong>: Unfiltered data-table properties loaded
+into R</em></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="37%" />
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>nCols (#samples)</th>
+<th>nRows (# barcodes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Plate A</td>
+<td>96</td>
+<td>300</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties, aes(log10(nCount), nProt, color = cell_treat)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_prot_DS078-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between total counts and
+number of detected protein barcodes. We observe many more detected
+proteins than present in the staining.</em></p>
+<p>As we have a 96-wells plate, we can also have a look at total counts
+per plate detected:</p>
+<pre class="r"><code>options(repr.plot.width = 10, repr.plot.height = 6)
+
+rng &lt;- range(log10(data_properties$nCount))
+
+plot &lt;- raw_grid(data = log10(data_properties$nCount), well = data_properties$well, plate_id = data_properties$plate, plate = 96, size = 6) +
+  scale_fill_viridis(expression(&quot;Total counts Log&quot;[10]), limits = c(rng[1], rng[2])) +
+  theme_bw()
+
+print(plot)</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_plate_totalUMI_DS078-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Plate overviews of total
+counts.</em></p>
+</div>
+<div id="barcode-combination" class="section level3">
+<h3>Barcode combination</h3>
+<p>Several barcodes are contaminated with other barcodes (all barcodes
+were sequenced individually to determine the contamination). We combined
+the counts of barcodes that are attached to the same antibody (same
+target).</p>
+<pre class="r"><code>counts_comp &lt;- counts_dtbl %&gt;%
+  drop_na(target_assign) %&gt;%
+  dplyr::select(plate_well, target_nospace, target_present, target_assign, counts) %&gt;%
+  group_by(plate_well, target_assign) %&gt;%
+  summarise(counts_target = sum(counts))
+
+counts_dtbl &lt;- left_join(counts_dtbl, counts_comp) %&gt;%
+  drop_na(target_assign)
+
+# Calculate per-sample properties
+data_properties_true &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount = sum(counts_target, na.rm = TRUE), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID) # Add sample metadata </code></pre>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties_true, aes(log10(nCount), nProt, color = cell_treat)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_raw_comp_DS078-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(drop_na(counts_dtbl, target_assign), aes(log10(counts), log10(counts_target), color = cell_treat)) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_conc, name = &quot;iSYK + iBTK + iNFkB&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation original counts and combined counts&quot;,
+       x = expression(&quot;Original counts Log&quot;[10]),
+       y = expression(&quot;Combined counts Log&quot;[10])) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_raw_comp_DS078-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between original counts and
+combined counts, and between compensated counts and detected number of
+barcodes.</em></p>
+</div>
+<div id="count-normalisation" class="section level3">
+<h3>Count normalisation</h3>
+<p>To remove variation between replicates, the data is normalised per
+target protein with a geometric mean scaling factor: First, the
+geometric mean of each target is calculated separately for each cell
+line, and then the median of the protein scaling factors is calculated
+separately for each sample.</p>
+<pre class="r"><code>scaling_factors &lt;- counts_dtbl %&gt;%
+  dplyr::filter(staining == &quot;yes&quot;) %&gt;%
+  # dplyr::filter() %&gt;% #target_nospace == &quot;GAPDH&quot; # modification == &quot;no&quot;
+  ungroup() %&gt;%
+  group_by(target_nospace) %&gt;%
+  mutate(scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor_geo = counts_target / exp(mean(log((counts_target))))) %&gt;%
+  ungroup() %&gt;%
+  group_by(description_rep) %&gt;%
+  summarize(scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl_norm &lt;- counts_dtbl %&gt;%
+  dplyr::filter(staining == &quot;yes&quot;) %&gt;%
+  left_join(scaling_factors) %&gt;%
+  ungroup() %&gt;%
+  mutate(counts_norm_geo = counts / scaling_factor_geo, 
+         counts_target_norm_geo = counts_target / true_scaling_factor_geo)
+
+counts_dtbl_no &lt;- counts_dtbl %&gt;%
+  dplyr::filter(staining == &quot;no&quot;)
+counts_dtbl_norm &lt;- full_join(counts_dtbl_norm, counts_dtbl_no) %&gt;%
+  dplyr::filter(!is.na(target_nospace))
+
+# Calculate per-sample properties
+data_properties_norm &lt;- counts_dtbl_norm %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount_norm = sum(counts_norm_geo), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID)
+
+data_properties_norm_true &lt;- counts_dtbl_norm %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount_norm = sum(counts_target_norm_geo), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID)</code></pre>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties_norm_true, aes(log10(nCount_norm), nProt, color = cell_treat)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_norm_DS078-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(counts_dtbl_norm, aes(log10(counts_target), log10(counts_target_norm_geo), color = cell_treat)) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_conc, name = &quot;iSYK + iBTK + iNFkB&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation original counts and combined counts&quot;,
+       x = expression(&quot;Original counts Log&quot;[10]),
+       y = expression(&quot;Combined counts Log&quot;[10])) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_norm_DS078-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between raw counts and
+compensated counts.</em></p>
+</div>
+<div id="data-wrangling-1" class="section level3">
+<h3>Data wrangling</h3>
+<p>Calculate the following:</p>
+<ul>
+<li>Mean + sd for replicates (counts_target +
+counts_target_norm_geo)</li>
+</ul>
+<pre class="r"><code># Calculate mean + sd of counts_target and counts_target_norm_geo
+mean_dtbl &lt;- counts_dtbl_norm %&gt;%
+  dplyr::group_by(description, target_assign) %&gt;%
+  summarise(
+    counts_sd = sd(counts_target, na.rm = T),
+    counts = mean(counts_target, na.rm = T), 
+    counts_norm_sd = sd(counts_target_norm_geo, na.rm = T),
+    counts_norm = mean(counts_target_norm_geo, na.rm = T)
+    )
+
+# Add metadata
+mean_dtbl &lt;- mean_dtbl %&gt;%
+  left_join(dplyr::select(counts_dtbl,
+                   c(barcode_name, DS_Ab_nr, target, DS_barcode_nr, DS_barcode_seq, target_nospace, target_assign, target_assign_unique, cell_line, stimulus, stim_clean, stim_stain, block_buf, cell_treat, staining, description))) %&gt;%
+  distinct()</code></pre>
+</div>
+<div id="save-data-1" class="section level3">
+<h3>Save data</h3>
+<p>Finally, we will save the datasets as .csv file</p>
+<ul>
+<li><p>IDseq_data_sample.csv: Dataset of counts per protein per
+sample</p></li>
+<li><p>IDseq_data_condition.csv: Dataset of counts per protein per
+condition (mean of replicates)</p></li>
+</ul>
+<pre class="r"><code># Dataset of counts per protein per sample 
+meta_cols_well_DS078 &lt;- c(&quot;plate_well&quot;, &quot;plate&quot;, &quot;well&quot;, &quot;experiment&quot;, &quot;cell_line&quot;, &quot;stimulus&quot;, &quot;stim_clean&quot;, &quot;stim_stain&quot;, &quot;block_buf&quot;, &quot;cell_treat&quot;, &quot;replicate&quot;, &quot;description&quot;, &quot;description_rep&quot;,
+                          &quot;target_nospace&quot;, &quot;target_assign&quot;, &quot;target_assign_unique&quot;, &quot;barcode_name&quot;, &quot;DS_Ab_nr&quot;, 
+                          &quot;counts&quot;, &quot;counts_target&quot;, &quot;true_scaling_factor_geo&quot;, &quot;counts_target_norm_geo&quot;)
+data_well_all &lt;- counts_dtbl_norm %&gt;% 
+  arrange(plate_well, target_assign) %&gt;%
+  dplyr::select(meta_cols_well_DS078) %&gt;% # reorder columns for a more logical order
+  dplyr::rename(Ab_BC_nr = barcode_name, 
+                scaling_factor = true_scaling_factor_geo, 
+                counts_target_norm = counts_target_norm_geo)
+
+write.csv(data_well_all, file = &quot;output/DS078_Blocking1/IDseq_ann/IDseq_data_sample.csv&quot;, row.names = F)
+
+# Dataset of mean counts per protein per condition (replicates combined)
+meta_cols_mean_DS078 &lt;- c(&quot;cell_line&quot;, &quot;stimulus&quot;, &quot;stim_clean&quot;, &quot;stim_stain&quot;, &quot;block_buf&quot;, &quot;cell_treat&quot;, &quot;description&quot;,
+                          &quot;target_nospace&quot;, &quot;target_assign&quot;, &quot;target_assign_unique&quot;, &quot;barcode_name&quot;, &quot;DS_Ab_nr&quot;, 
+                          &quot;counts&quot;, &quot;counts_sd&quot;, &quot;counts_norm&quot;, &quot;counts_norm_sd&quot;)
+data_mean_all &lt;- mean_dtbl %&gt;%
+  dplyr::select(meta_cols_mean_DS078) %&gt;% # reorder cols to more logical order
+  dplyr::rename(Ab_BC_nr = barcode_name)
+
+write.csv(data_mean_all, file = &quot;output/DS078_Blocking1/IDseq_ann/IDseq_data_condition.csv&quot;, row.names = F)</code></pre>
+<pre class="r"><code>rm(list = ls(pattern = &quot;DS078&quot;))
+rm(list = ls(pattern = &quot;Plate&quot;))
+rm(list = ls(pattern = &quot;comp&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  9304056 496.9   17312920 924.7 17312920 924.7
+Vcells 16831477 128.5   26853191 204.9 22306754 170.2</code></pre>
+</div>
+</div>
+<div id="ds091-immunostainingbio" class="section level2">
+<h2>DS091: ImmunostainingBio</h2>
+<div id="raw-data-2" class="section level3">
+<h3>Raw data</h3>
+<pre class="r"><code># Load sparse matrix format all data
+counts_PlateA &lt;- read_count_output(&quot;data/DS091_ImmunostainingBio/counts/PlateA/featurecounts&quot;, name = &quot;featurecounts&quot;)
+meta_wellID &lt;- read_csv(&quot;data/DS091_ImmunostainingBio/config/DynSign.091_wellBC_metadata_seq.csv&quot;)
+
+meta_Abs &lt;- read_excel(&quot;data/DS091_ImmunostainingBio/config/BulkIDseq_Ab_info_seq_analysis_202212.xlsx&quot;)
+
+# Reshape counts in data table format
+counts_dtbl &lt;- data.frame(counts_PlateA) %&gt;% 
+  mutate(barcode_name = rownames(counts_PlateA)) %&gt;% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %&gt;%
+  gather(&quot;well_BC_seq&quot;, &quot;counts&quot;, 2:c(ncol(counts_PlateA)+1)) %&gt;%
+  dplyr::filter(counts &gt;= 1) %&gt;% # Remove undetected proteins counts
+  left_join(meta_Abs) %&gt;%
+  unique() %&gt;%
+  # dplyr::filter(!is.na(target_nospace)) %&gt;% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %&gt;%
+  arrange(plate, well)
+
+counts_dtbl &lt;- counts_dtbl %&gt;%
+  mutate(plate_well = paste0(plate, &quot;_&quot;, well))
+
+# Calculate per-sample properties
+data_properties &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID) # Add sample metadata </code></pre>
+<p><em><strong>Table</strong>: Unfiltered data-table properties loaded
+into R</em></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="37%" />
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>nCols (#samples)</th>
+<th>nRows (# barcodes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Plate A</td>
+<td>96</td>
+<td>300</td>
+</tr>
+</tbody>
+</table>
+<p>The full panel of mapped barcodes and 96 wells are present in the
+data table. First have a look at the total counts and number of detected
+protein barcodes per sample: There are a lot more proteins detected than
+put in the panel, due to barcode contamination and cross-ver between
+wells. The nostain samples have relatively low counts and proteins
+detected.</p>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties, aes(log10(nCount), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  # scale_color_binned(type = &quot;viridis&quot;, name = &quot;Staining conc (ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_prot_DS091-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between total counts and
+number of detected protein barcodes. We observe many more detected
+proteins than present in the staining.</em></p>
+<p>As we have a 96-wells plate, we can also have a look at total counts
+per plate detected:</p>
+<pre class="r"><code>options(repr.plot.width = 10, repr.plot.height = 6)
+
+rng &lt;- range(log10(data_properties$nCount))
+
+plot &lt;- raw_grid(data = log10(data_properties$nCount), well = data_properties$well, plate_id = data_properties$plate, plate = 96, size = 6) +
+  scale_fill_viridis(expression(&quot;Total counts Log&quot;[10]), limits = c(rng[1], rng[2])) +
+  theme_bw()
+
+print(plot)</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_plate_totalUMI_DS091-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Plate overviews of total
+counts.</em></p>
+</div>
+<div id="barcode-contamination-comp" class="section level3">
+<h3>Barcode contamination comp</h3>
+<p>Several barcodes are contaminated with &lt;2.5% of other barcodes
+(all barcodes were sequenced individually to determine the
+contamination). As this can skew the results, especially for lowly
+present barcodes that are contaminated with highly present barcodes, we
+will compensate for this.</p>
+<pre class="r"><code>comp_matrix &lt;- read_csv(&quot;data/DS091_ImmunostainingBio/BC_compensation_matrix.csv&quot;)
+
+data_comp &lt;- counts_dtbl %&gt;%
+  # dplyr::filter(well == &quot;A01&quot;) %&gt;%
+  dplyr::select(plate, well, barcode_name, counts) %&gt;%
+  left_join(comp_matrix, by = join_by(barcode_name == BC_to_correct)) #, multiple = &quot;all&quot;
+
+# Get counts of OG BC
+data_comp_OG &lt;- data_comp %&gt;%
+  # dplyr::filter(well == &quot;A01&quot;) %&gt;%
+  dplyr::filter(barcode_name == OG_BC) %&gt;%
+  dplyr::select(plate, well, OG_BC, counts) %&gt;%
+  dplyr::rename(counts_OG_BC = counts)
+
+# Calculate false reads
+data_false &lt;- left_join(data_comp, data_comp_OG) %&gt;% 
+  mutate(false_counts = (counts_OG_BC / percent_OG_BC) * percent_BC_to_correct) %&gt;%
+  dplyr::filter(barcode_name != OG_BC) %&gt;%
+  group_by(plate, well, barcode_name, counts) %&gt;%
+  summarize(total_false_counts = sum(false_counts, na.rm = TRUE))
+
+counts_dtbl &lt;- counts_dtbl %&gt;%
+  # dplyr::filter(well == &quot;A01&quot;) %&gt;%
+  left_join(data_false) %&gt;% 
+  mutate(total_false_counts = replace_na(total_false_counts, 0), 
+         true_counts = as.integer(counts - total_false_counts), 
+         percent_true = (true_counts / counts) * 100) %&gt;%
+  dplyr::filter(!is.na(target_nospace)) # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+
+compensation &lt;- counts_dtbl %&gt;%
+  dplyr::select(plate, well, barcode_name, counts, total_false_counts, true_counts, percent_true, target_nospace)
+
+# Calculate per-sample properties
+data_properties_true &lt;- counts_dtbl %&gt;%
+  unique()%&gt;%
+  group_by(plate, well_BC_seq) %&gt;%
+  summarize(nCount = sum(true_counts), 
+            nProt = n()) %&gt;%
+  left_join(meta_wellID)</code></pre>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(counts_dtbl, aes(log10(counts), log10(true_counts), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation raw counts and compensated counts&quot;,
+       x = expression(&quot;Raw counts Log&quot;[10]),
+       y = expression(&quot;Compensated counts Log&quot;[10])) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_raw_comp_DS091-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data_properties_true, aes(log10(nCount), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  # scale_color_binned(type = &quot;viridis&quot;, name = &quot;Staining conc (ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation total counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Total counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_raw_comp_DS091-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between raw counts and
+compensated counts, and between compensated counts and detected number
+of barcodes. After compensation, all samples (except nostain samples)
+have 107 detected proteins (the number of Ab in the panel).</em></p>
+</div>
+<div id="count-normalisation-1" class="section level3">
+<h3>Count normalisation</h3>
+<p>To remove variation between replicates, the data is normalised per
+target protein with a geometric mean scaling factor: First, the
+geometric mean of each target is calculated separately for each cell
+line, and then the median of the protein scaling factors is calculated
+separately for each sample.</p>
+<pre class="r"><code>scaling_factors &lt;- counts_dtbl %&gt;%
+  dplyr::filter(cell_line %in% c(&quot;HBL1&quot;, &quot;DAUDI&quot;)) %&gt;%
+  # filter() %&gt;% #target_nospace == &quot;GAPDH&quot; # modification == &quot;no&quot;
+  ungroup() %&gt;%
+  group_by(cell_line, target_nospace) %&gt;%
+  mutate(scaling_factor = counts / median(counts),
+         scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor = true_counts / median(true_counts),
+         true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %&gt;%
+  ungroup() %&gt;%
+  group_by(cell_line, description_sample, description_staining) %&gt;%
+  summarize(scaling_factor = median(scaling_factor), .groups = &quot;keep&quot;,
+            scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor = median(true_scaling_factor),
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl_norm &lt;- counts_dtbl %&gt;%
+  dplyr::filter(cell_line %in% c(&quot;HBL1&quot;, &quot;DAUDI&quot;)) %&gt;%
+  left_join(scaling_factors) %&gt;%
+  ungroup() %&gt;%
+  mutate(counts_norm = counts / scaling_factor,
+         counts_norm_geo = counts / scaling_factor_geo, 
+         true_counts_norm = true_counts / true_scaling_factor, 
+         true_counts_norm_geo = true_counts / true_scaling_factor_geo)
+
+counts_dtbl_norm &lt;- dplyr::filter(counts_dtbl_norm, !is.na(target_nospace)) %&gt;%
+  mutate(stimulus = factor(stimulus, levels = c(&quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;)))
+
+# Calculate per-sample properties
+data_properties_norm &lt;- counts_dtbl_norm %&gt;%
+  unique()%&gt;%
+  group_by(well_BC_seq) %&gt;%
+  summarize(nCount_norm = sum(counts_norm_geo), 
+            nProt = n()) %&gt;%
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, &quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;))
+
+data_properties_norm_true &lt;- counts_dtbl_norm %&gt;%
+  unique()%&gt;%
+  group_by(well_BC_seq) %&gt;%
+  summarize(nCount_norm = sum(true_counts_norm_geo), 
+            nProt = n()) %&gt;%
+  left_join(subset(meta_wellID, plate == &quot;A&quot;)) %&gt;% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, &quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;))</code></pre>
+<pre class="r"><code>options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(counts_dtbl_norm, aes(log10(counts), log10(counts_norm_geo), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation raw counts and normalised counts&quot;,
+       x = expression(&quot;Raw counts Log&quot;[10]),
+       y = expression(&quot;Normalised counts Log&quot;[10])) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_norm_DS091-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data_properties_norm, aes(log10(nCount_norm), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = &quot;Staining conc \n(ug/mL)&quot;) +
+  # scale_color_binned(type = &quot;viridis&quot;, name = &quot;Staining conc (ug/mL)&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation normalised counts and number of detected barcodes&quot;, 
+       x = expression(&quot;Normalised counts Log&quot;[10]),
+       y = &quot;Detected number of protein barcodes&quot;) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/fig_count_norm_DS091-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em><strong>Figure:</strong> Correlation between raw counts and
+compensated counts.</em></p>
+<pre class="r"><code>scaling_factors_bio &lt;- counts_dtbl %&gt;%
+  dplyr::filter(staining_conc_text == &quot;0.125 ug/mL&quot;) %&gt;%
+  # filter() %&gt;% #target_nospace == &quot;GAPDH&quot; # modification == &quot;no&quot;
+  ungroup() %&gt;%
+  group_by(cell_line, target_nospace) %&gt;%
+  mutate(scaling_factor = counts / median(counts),
+         scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor = true_counts / median(true_counts),
+         true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %&gt;%
+  ungroup() %&gt;%
+  group_by(cell_line, description_sample, description_staining) %&gt;%
+  summarize(scaling_factor = median(scaling_factor), .groups = &quot;keep&quot;,
+            scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor = median(true_scaling_factor),
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl_bio &lt;- counts_dtbl %&gt;%
+  dplyr::filter(staining_conc_text == &quot;0.125 ug/mL&quot;) %&gt;%
+  left_join(scaling_factors) %&gt;%
+  ungroup() %&gt;%
+  mutate(counts_norm = counts / scaling_factor,
+         counts_norm_geo = counts / scaling_factor_geo, 
+         true_counts_norm = true_counts / true_scaling_factor, 
+         true_counts_norm_geo = true_counts / true_scaling_factor_geo)
+
+counts_dtbl_bio &lt;- dplyr::filter(counts_dtbl_bio, !is.na(target_nospace)) %&gt;%
+  mutate(stimulus = factor(stimulus, levels = c(&quot;PBS&quot;, &quot;anti-Ig&quot;, &quot;H2O2&quot;)))
+
+ggplot(counts_dtbl_bio, aes(log10(counts), log10(counts_norm_geo), color = stim_clean)) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;) + 
+  facet_wrap(~cell_line) +
+  scale_color_manual(values = colors_stim_clean, name = &quot;Stimulus&quot;) +
+  theme_bw() +
+  labs(title = &quot;Correlation raw counts and normalised counts&quot;,
+       x = expression(&quot;Raw counts Log&quot;[10]),
+       y = expression(&quot;Normalised counts Log&quot;[10])) +
+  textsize_small</code></pre>
+<p><img src="figure/e_IDseq_ann.Rmd/normalisation_bio_DS091-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="data-wrangling-2" class="section level3">
+<h3>Data wrangling</h3>
+<p>Calculate the following:</p>
+<ul>
+<li>Mean + sd for replicates (true_counts + true_counts_norm_geo)</li>
+</ul>
+<pre class="r"><code># Calculate mean + sd of true_counts and true_counts_norm_geo
+# Dataset with all samples
+mean_dtbl_norm &lt;- counts_dtbl_norm %&gt;%
+  dplyr::group_by(description_sample, description_staining, target_nospace) %&gt;%
+  summarise(
+    counts_sd = sd(true_counts, na.rm = T),
+    counts = mean(true_counts, na.rm = T), 
+    counts_norm_sd = sd(true_counts_norm_geo, na.rm = T),
+    counts_norm = mean(true_counts_norm_geo, na.rm = T)
+    )
+
+# Add metadata
+mean_dtbl_norm &lt;- mean_dtbl_norm %&gt;%
+  left_join(dplyr::select(counts_dtbl,
+                   c(barcode_name, DS_Ab_nr, target, modification, epitope, marker_cell, marker_pathway, marker_pathway_detail, isotype, DS_barcode_nr, DS_barcode_seq, target_nospace, cell_line, stimulus, stim_clean, staining_cells, staining_conc, staining_conc_text, staining_volume, description_sample, description_staining))) %&gt;%
+  distinct()
+
+# Dataset with bio samples
+mean_dtbl_bio &lt;- counts_dtbl_bio %&gt;%
+  dplyr::group_by(description_sample, description_staining, target_nospace) %&gt;%
+  summarise(
+    counts_sd = sd(true_counts, na.rm = T),
+    counts = mean(true_counts, na.rm = T), 
+    counts_norm_sd = sd(true_counts_norm_geo, na.rm = T),
+    counts_norm = mean(true_counts_norm_geo, na.rm = T)
+    )
+
+# Add metadata
+mean_dtbl_bio &lt;- mean_dtbl_bio %&gt;%
+  left_join(dplyr::select(counts_dtbl,
+                   c(barcode_name, DS_Ab_nr, target, modification, epitope, marker_cell, marker_pathway, marker_pathway_detail, isotype, DS_barcode_nr, DS_barcode_seq, target_nospace, cell_line, stimulus, stim_clean, staining_cells, staining_conc, staining_conc_text, staining_volume, description_sample, description_staining))) %&gt;%
+  distinct()</code></pre>
+</div>
+<div id="save-data-2" class="section level3">
+<h3>Save data</h3>
+<p>Finally, we will save the datasets as .csv file</p>
+<ul>
+<li><p>IDseq_data_sample.csv: Dataset of counts per protein per sample
+(all samples)</p></li>
+<li><p>bio_IDseq_data_sample.csv: Dataset of counts per protein per
+sample (bio samples)</p></li>
+<li><p>IDseq_data_condition.csv: Dataset of counts per protein per
+condition (mean of replicates) (all samples)</p></li>
+<li><p>bio_IDseq_data_condition.csv: Dataset of counts per protein per
+condition (mean of replicates) (bio samples)</p></li>
+</ul>
+<pre class="r"><code># Dataset of counts per protein per sample 
+meta_cols_well_DS091 &lt;- c(&quot;plate_well&quot;, &quot;plate&quot;, &quot;well&quot;, &quot;experiment&quot;, &quot;cell_line&quot;, &quot;stimulus&quot;, &quot;stim_clean&quot;, &quot;replicate&quot;, &quot;staining&quot;, &quot;staining_cells&quot;, &quot;staining_conc&quot;, &quot;staining_conc_text&quot;, &quot;staining_volume&quot;, &quot;description_sample&quot;, &quot;description_sample_rep&quot;, &quot;description_staining&quot;,
+                    &quot;target_nospace&quot;, &quot;target&quot;, &quot;modification&quot;, &quot;marker_cell&quot;, &quot;marker_pathway&quot;, &quot;marker_pathway_detail&quot;, &quot;barcode_name&quot;, &quot;DS_Ab_nr&quot;, 
+                    &quot;true_counts&quot;, &quot;true_scaling_factor_geo&quot;, &quot;true_counts_norm_geo&quot;)
+data_well_all &lt;- counts_dtbl_norm %&gt;% 
+  arrange(plate_well, target_nospace) %&gt;%
+  dplyr::select(meta_cols_well_DS091) %&gt;% # reorder columns for a more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name, 
+                counts = true_counts, 
+                scaling_factor = true_scaling_factor_geo, 
+                counts_norm = true_counts_norm_geo)
+write.csv(data_well_all, file = &quot;output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_sample.csv&quot;, row.names = F)
+
+data_well_bio &lt;- counts_dtbl_bio %&gt;% 
+  arrange(plate_well, target_nospace) %&gt;%
+  dplyr::select(meta_cols_well_DS091) %&gt;% # reorder columns for a more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name, 
+                counts = true_counts, 
+                scaling_factor = true_scaling_factor_geo, 
+                counts_norm = true_counts_norm_geo)
+write.csv(data_well_bio, file = &quot;output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_sample.csv&quot;, row.names = F)
+
+# Dataset of mean counts per protein per condition (replicates combined)
+meta_cols_mean_DS091 &lt;- c(&quot;cell_line&quot;, &quot;stimulus&quot;, &quot;stim_clean&quot;, &quot;staining_cells&quot;, &quot;staining_conc&quot;, &quot;staining_conc_text&quot;, &quot;staining_volume&quot;, &quot;description_sample&quot;, &quot;description_staining&quot;, 
+                    &quot;target_nospace&quot;, &quot;target&quot;, &quot;modification&quot;, &quot;marker_cell&quot;, &quot;marker_pathway&quot;, &quot;marker_pathway_detail&quot;, &quot;barcode_name&quot;, &quot;DS_Ab_nr&quot;, 
+                    &quot;counts&quot;, &quot;counts_sd&quot;, &quot;counts_norm&quot;, &quot;counts_norm_sd&quot;)
+data_mean_all &lt;- mean_dtbl_norm %&gt;%
+  dplyr::select(meta_cols_mean_DS091) %&gt;% # reorder cols to more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name)
+write.csv(data_mean_all, file = &quot;output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_condition.csv&quot;, row.names = F)
+
+data_mean_bio &lt;- mean_dtbl_bio %&gt;%
+  dplyr::select(meta_cols_mean_DS091) %&gt;% # reorder cols to more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name)
+write.csv(data_mean_bio, file = &quot;output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_condition.csv&quot;, row.names = F)</code></pre>
+<pre class="r"><code>rm(list = ls(pattern = &quot;DS091&quot;))
+rm(list = ls(pattern = &quot;Plate&quot;))
+rm(list = ls(pattern = &quot;comp&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  9323500 498.0   17312920 924.7 17312920 924.7
+Vcells 18023677 137.6   32303829 246.5 26853191 204.9</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 10 x64 (build 19045)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_Netherlands.utf8  LC_CTYPE=English_Netherlands.utf8   
+[3] LC_MONETARY=English_Netherlands.utf8 LC_NUMERIC=C                        
+[5] LC_TIME=English_Netherlands.utf8    
+
+time zone: Europe/Amsterdam
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] ashr_2.2-63                 apeglm_1.26.1              
+ [3] MASS_7.3-60.2               ggbreak_0.1.2              
+ [5] geomtextpath_0.1.4          ggh4x_0.2.8                
+ [7] cowplot_1.1.3               patchwork_1.2.0            
+ [9] greekLetters_1.0.2          ggpubr_0.6.0               
+[11] ggrepel_0.9.5               scales_1.3.0               
+[13] ggthemes_5.1.0              RColorBrewer_1.1-3         
+[15] scico_1.5.0                 viridis_0.6.5              
+[17] viridisLite_0.4.2           mmtable2_0.1.3             
+[19] gt_0.10.1                   ggvenn_0.1.10              
+[21] rgl_1.3.1                   plotly_4.10.4              
+[23] ggcorrplot_0.1.4.1          corrplot_0.92              
+[25] umap_0.2.10.0               ggplotify_0.1.2            
+[27] dendsort_0.3.4              vsn_3.72.0                 
+[29] ComplexHeatmap_2.20.0       platetools_0.1.7           
+[31] kableExtra_1.4.0            DESeq2_1.44.0              
+[33] SummarizedExperiment_1.34.0 Biobase_2.64.0             
+[35] MatrixGenerics_1.16.0       matrixStats_1.3.0          
+[37] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1        
+[39] IRanges_2.38.0              S4Vectors_0.42.0           
+[41] BiocGenerics_0.50.0         Seurat_5.1.0               
+[43] SeuratObject_5.0.2          sp_2.1-4                   
+[45] rstatix_0.7.2               factoextra_1.0.7           
+[47] FactoMineR_2.11             readxl_1.4.3               
+[49] Matrix_1.7-0                lubridate_1.9.3            
+[51] forcats_1.0.0               stringr_1.5.1              
+[53] dplyr_1.1.4                 purrr_1.0.2                
+[55] readr_2.1.5                 tidyr_1.3.1                
+[57] tibble_3.2.1                ggplot2_3.5.1              
+[59] tidyverse_2.0.0             workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] vroom_1.6.5             goftest_1.2-3           DT_0.33                
+  [4] TH.data_1.1-2           vctrs_0.6.5             spatstat.random_3.2-3  
+  [7] digest_0.6.36           png_0.1-8               shape_1.4.6.1          
+ [10] git2r_0.33.0            mixsqp_0.3-54           deldir_2.0-4           
+ [13] parallelly_1.37.1       SQUAREM_2021.1          reshape2_1.4.4         
+ [16] httpuv_1.6.15           foreach_1.5.2           withr_3.0.0            
+ [19] xfun_0.45               ggfun_0.1.5             survival_3.6-4         
+ [22] memoise_2.0.1           emmeans_1.10.2          systemfonts_1.1.0      
+ [25] zoo_1.8-12              GlobalOptions_0.1.2     pbapply_1.7-2          
+ [28] promises_1.3.0          scatterplot3d_0.3-44    httr_1.4.7             
+ [31] globals_0.16.3          fitdistrplus_1.1-11     ps_1.7.6               
+ [34] rstudioapi_0.16.0       UCSC.utils_1.0.0        miniUI_0.1.1.1         
+ [37] generics_0.1.3          base64enc_0.1-3         processx_3.8.4         
+ [40] zlibbioc_1.50.0         polyclip_1.10-6         GenomeInfoDbData_1.2.12
+ [43] SparseArray_1.4.8       xtable_1.8-4            doParallel_1.0.17      
+ [46] evaluate_0.24.0         S4Arrays_1.4.1          preprocessCore_1.66.0  
+ [49] hms_1.1.3               irlba_2.3.5.1           colorspace_2.1-0       
+ [52] ROCR_1.0-11             reticulate_1.38.0       spatstat.data_3.1-2    
+ [55] magrittr_2.0.3          lmtest_0.9-40           later_1.3.2            
+ [58] lattice_0.22-6          spatstat.geom_3.2-9     future.apply_1.11.2    
+ [61] getPass_0.2-4           scattermore_1.2         RcppAnnoy_0.0.22       
+ [64] pillar_1.9.0            nlme_3.1-164            iterators_1.0.14       
+ [67] compiler_4.4.1          RSpectra_0.16-1         stringi_1.8.4          
+ [70] tensor_1.5              plyr_1.8.9              crayon_1.5.3           
+ [73] abind_1.4-5             truncnorm_1.0-9         gridGraphics_0.5-1     
+ [76] emdbook_1.3.13          locfit_1.5-9.10         bit_4.0.5              
+ [79] sandwich_3.1-0          whisker_0.4.1           codetools_0.2-20       
+ [82] multcomp_1.4-25         textshaping_0.4.0       openssl_2.2.0          
+ [85] bslib_0.7.0             GetoptLong_1.0.5        mime_0.12              
+ [88] splines_4.4.1           circlize_0.4.16         Rcpp_1.0.12            
+ [91] fastDummies_1.7.3       cellranger_1.1.0        Rttf2pt1_1.3.12        
+ [94] leaps_3.2               knitr_1.47              utf8_1.2.4             
+ [97] clue_0.3-65             fs_1.6.4                listenv_0.9.1          
+[100] ggsignif_0.6.4          estimability_1.5.1      callr_3.7.6            
+[103] statmod_1.5.0           tzdb_0.4.0              svglite_2.1.3          
+[106] pkgconfig_2.0.3         tools_4.4.1             cachem_1.1.0           
+[109] numDeriv_2016.8-1.1     fastmap_1.2.0           rmarkdown_2.27         
+[112] ica_1.0-3               broom_1.0.6             sass_0.4.9             
+[115] coda_0.19-4.1           BiocManager_1.30.23     dotCall64_1.1-1        
+[118] carData_3.0-5           RANN_2.6.1              farver_2.1.2           
+[121] yaml_2.3.8              cli_3.6.3               leiden_0.4.3.1         
+[124] lifecycle_1.0.4         askpass_1.2.0           uwot_0.2.2             
+[127] mvtnorm_1.2-5           backports_1.5.0         BiocParallel_1.38.0    
+[130] timechange_0.3.0        gtable_0.3.5            rjson_0.2.21           
+[133] ggridges_0.5.6          progressr_0.14.0        parallel_4.4.1         
+[136] limma_3.60.3            jsonlite_1.8.8          RcppHNSW_0.6.0         
+[139] bit64_4.0.5             multcompView_0.1-10     assertthat_0.2.1       
+[142] Rtsne_0.17              yulab.utils_0.1.4       spatstat.utils_3.0-5   
+[145] bdsmatrix_1.3-7         highr_0.11              jquerylib_0.1.4        
+[148] lazyeval_0.2.2          shiny_1.8.1.1           htmltools_0.5.8.1      
+[151] affy_1.82.0             sctransform_0.4.1       glue_1.7.0             
+[154] spam_2.10-0             XVector_0.44.0          rprojroot_2.0.4        
+[157] gridExtra_2.3           flashClust_1.01-2       invgamma_1.1           
+[160] igraph_2.0.3            extrafontdb_1.0         R6_2.5.1               
+[163] labeling_0.4.3          bbmle_1.0.25.1          cluster_2.1.6          
+[166] aplot_0.2.3             DelayedArray_0.30.1     tidyselect_1.2.1       
+[169] xml2_1.3.6              car_3.1-2               future_1.33.2          
+[172] munsell_0.5.1           KernSmooth_2.23-24      affyio_1.74.0          
+[175] data.table_1.15.4       htmlwidgets_1.6.4       rlang_1.1.4            
+[178] spatstat.sparse_3.1-0   extrafont_0.19          spatstat.explore_3.2-7 
+[181] fansi_1.0.6            </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

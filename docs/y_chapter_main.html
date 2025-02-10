@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="mwitmond" />
+
+<meta name="date" content="2024-08-06" />
+
+<title>Chapter main figures</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Chapter IDseq tech</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="y_chapter_main.html">Figs main</a>
+</li>
+<li>
+  <a href="z_chapter_suppl.html">Figs suppl</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Flow
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="a_flow_gating.html">Gating</a>
+    </li>
+    <li>
+      <a href="b_flow_ann.html">Annotation</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    IDseq
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="d_IDseq_count.html">Count tables</a>
+    </li>
+    <li>
+      <a href="e_IDseq_ann.html">Annotation</a>
+    </li>
+    <li>
+      <a href="DS078_IDseq_analysis.html">DS078 analysis</a>
+    </li>
+    <li>
+      <a href="DS091_IDseq_analysis.html">DS091 analysis</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Chapter main figures</h1>
+<h4 class="author">mwitmond</h4>
+<h4 class="date">2024-08-06</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-02-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>chapter_IDseq_tech/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240806code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240806)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240806code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240806)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong31f8444">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 31f8444
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong31f8444"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 31f8444.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
+
+Untracked files:
+    Untracked:  code/DS075_combined_analysis.R
+    Untracked:  code/packages_FACS.R
+    Untracked:  code/packages_seq.R
+    Untracked:  data/BB014_LibraryIndex/
+    Untracked:  data/DS027_FirstIDseq/
+    Untracked:  data/DS055_LibraryKlenowAmp/
+    Untracked:  data/DS056_LibraryAmp1/
+    Untracked:  data/DS059_LibraryByproducts/
+    Untracked:  data/DS072_LibraryAmp2/
+    Untracked:  data/DS075_BarcodeCheck/
+    Untracked:  data/DS078_Blocking1/
+    Untracked:  data/DS080_Blocking2/
+    Untracked:  data/DS084_BioInhibition/
+    Untracked:  data/DS091_ImmunostainingBio/
+    Untracked:  data/DSxxx_Conjugations/
+    Untracked:  data/annotated_gels_batch1-10_digital.pptx
+    Untracked:  output/BioAnalyzer_plots/
+    Untracked:  output/DS075_BarcodeCheck/
+    Untracked:  output/DS078_Blocking1/
+    Untracked:  output/DS091_ImmunostainingBio/
+    Untracked:  output/figures/
+    Untracked:  output/network_visual/
+
+Unstaged changes:
+    Deleted:    analysis/about.Rmd
+    Deleted:    analysis/c_flow_vis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/y_chapter_main.Rmd</code>) and
+HTML (<code>docs/y_chapter_main.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+31f8444
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+Revised ch3 figs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+a92dfa0
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2024-08-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+4e7f883
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2024-08-06
+</td>
+<td>
+Publish initial project files
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level2">
+<h2>Set-up</h2>
+<pre class="r"><code>row_order = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;)
+col_order = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;10&quot;, &quot;11&quot;, &quot;12&quot;)
+panel_labels &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;,&quot;d&quot;, &quot;e&quot;, &quot;f&quot;, &quot;g&quot;, &quot;h&quot;, &quot;i&quot;, &quot;j&quot;, &quot;k&quot;, &quot;l&quot;, &quot;m&quot;)
+PANEL_labels &lt;- c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;,&quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;, &quot;H&quot;, &quot;I&quot;, &quot;J&quot;, &quot;K&quot;, &quot;L&quot;, &quot;M&quot;)
+
+textsize &lt;- theme(axis.text.x = element_text(colour = &quot;grey&quot;, size = 11), #, face = &quot;bold&quot;
+                  axis.text.y = element_text(colour = &quot;grey&quot;, size = 11),
+                  axis.title = element_text(colour = &quot;black&quot;, size = 12), 
+                  legend.title = element_text(colour = &quot;black&quot;, size = 12),
+                  # legend.title = element_blank(), 
+                  legend.text = element_text(colour = &quot;grey&quot;, size = 11), 
+                  strip.text.x = element_text(colour = &quot;black&quot;, size = 12)
+)
+
+textsize_small &lt;- theme(text = element_text(size = 8, family = &quot;sans&quot;, colour = &quot;black&quot;),
+                        plot.title = element_text(size = 9)
+)
+textsize_medium &lt;- theme(text = element_text(size = 10, family = &quot;sans&quot;, colour = &quot;black&quot;),
+                         strip.text.x = element_text(size = 10), 
+                         plot.title = element_text(size = 10)
+)</code></pre>
+<pre class="r"><code>colors_nord &lt;- c(&quot;#2e3440&quot;, &quot;#3b4252&quot;, &quot;#434c5e&quot;, &quot;#4c566a&quot;, 
+                 &quot;#d8dee9&quot;, &quot;#e5e9f0&quot;, &quot;#eceff4&quot;, 
+                 &quot;#8fbcbb&quot;, &quot;#88c0d0&quot;, &quot;#81a1c1&quot;, &quot;#5e81ac&quot;, 
+                 &quot;#bf616a&quot;, &quot;#d08770&quot;, &quot;#ebcb8b&quot;, &quot;#a3be8c&quot;, &quot;#b48ead&quot;)
+
+colors_toll_bright &lt;- c(&quot;#4477AA&quot;, &quot;#66CCEE&quot;, &quot;#228833&quot;, &quot;#CCBB44&quot;, &quot;#EE6677&quot;, &quot;#AA3377&quot;, &quot;#BBBBBB&quot;)
+colors_toll_mute &lt;- c(&quot;#332288&quot;, &quot;#88CCEE&quot;, &quot;#44AA99&quot;, &quot;#117733&quot;, &quot;#999933&quot;, &quot;#DDCC77&quot;, &quot;#CC6677&quot;, &quot;#882255&quot;, &quot;#AA4499&quot;, &quot;#DDDDDD&quot;)
+colors_toll_br &lt;- c(&quot;#364B9A&quot;, &quot;#4A7BB7&quot;, &quot;#6EA6CD&quot;, &quot;#98CAE1&quot;, &quot;#C2E4EF&quot;, &quot;#EAECCC&quot;, &quot;#FEDA8B&quot;, &quot;#FDB366&quot;, &quot;#F67A4B&quot;, &quot;#DD3D2D&quot;, &quot;#A50026&quot;)
+
+colors_blue9 &lt;- c(&quot;#f7fbff&quot;, &quot;#deebf7&quot;, &quot;#c6dbef&quot;, &quot;#9ecae1&quot;, &quot;#6baed6&quot;, &quot;#4292c6&quot;, &quot;#2171b5&quot;, &quot;#08519c&quot;, &quot;#08306b&quot;)
+colors_green9 &lt;- c(&quot;#f7fcf5&quot;, &quot;#e5f5e0&quot;, &quot;#c7e9c0&quot;, &quot;#a1d99b&quot;, &quot;#74c476&quot;, &quot;#41ab5d&quot;, &quot;#238b45&quot;, &quot;#006d2c&quot;, &quot;#00441b&quot;)
+colors_purple9 &lt;- c(&quot;#fcfbfd&quot;, &quot;#efedf5&quot;, &quot;#dadaeb&quot;, &quot;#bcbddc&quot;, &quot;#9e9ac8&quot;, &quot;#807dba&quot;, &quot;#6a51a3&quot;, &quot;#54278f&quot;, &quot;#3f007d&quot;)
+colors_red9 &lt;- c(&quot;#fff5f0&quot;, &quot;#fee0d2&quot;, &quot;#fcbba1&quot;, &quot;#fc9272&quot;, &quot;#fb6a4a&quot;, &quot;#ef3b2c&quot;, &quot;#cb181d&quot;, &quot;#a50f15&quot;, &quot;#67000d&quot;)
+colors_orange9 &lt;- c(&quot;#fff5eb&quot;, &quot;#fee6ce&quot;, &quot;#fdd0a2&quot;, &quot;#fdae6b&quot;, &quot;#fd8d3c&quot;, &quot;#f16913&quot;, &quot;#d94801&quot;, &quot;#a63603&quot;, &quot;#7f2704&quot;)
+colors_grey9 &lt;- c(&quot;#ffffff&quot;, &quot;#f0f0f0&quot;, &quot;#d9d9d9&quot;, &quot;#bdbdbd&quot;, &quot;#969696&quot;, &quot;#737373&quot;, &quot;#525252&quot;, &quot;#252525&quot;, &quot;#000000&quot;)
+colors_yb9 &lt;- c(&quot;#ffffd9&quot;, &quot;#edf8b1&quot;, &quot;#c7e9b4&quot;, &quot;#7fcdbb&quot;, &quot;#41b6c4&quot;, &quot;#1d91c0&quot;, &quot;#225ea8&quot;, &quot;#253494&quot;, &quot;#081d58&quot;)
+colors_pr9 &lt;- c(&quot;#f7f4f9&quot;, &quot;#e7e1ef&quot;, &quot;#d4b9da&quot;, &quot;#c994c7&quot;, &quot;#df65b0&quot;, &quot;#e7298a&quot;, &quot;#ce1256&quot;, &quot;#980043&quot;, &quot;#67001f&quot;)
+
+# Variable-specific colors
+# colors_stim &lt;- c(&quot;PBS&quot; = &quot;#737373&quot;, &quot;anti-Ig&quot; = &quot;#74c476&quot;, &quot;H2O2&quot; = &quot;#6EA6CD&quot;, 
+#                  &quot;Basal&quot; = &quot;#737373&quot;, &quot;Activated (anti-Ig)&quot; = &quot;#74c476&quot;, &quot;Activated (H2O2)&quot; = &quot;#6EA6CD&quot;)
+colors_stim &lt;- c(&quot;PBS&quot; = &quot;#737373&quot;, &quot;anti-Ig&quot; = &quot;#2cb142&quot;, &quot;H2O2&quot; = &quot;#66CCEE&quot;, 
+                 &quot;Basal&quot; = &quot;#737373&quot;, &quot;Activated (anti-Ig)&quot; = &quot;#2cb142&quot;, &quot;Activated (H2O2)&quot; = &quot;#66CCEE&quot;)
+colors_cell &lt;- c(&quot;HBL1&quot; = &quot;#df65b0&quot;, &quot;DAUDI&quot; = &quot;#41b6c4&quot;, &quot;OCI-Ly8&quot; = &quot;#332288&quot;)
+# colors_cell_alt &lt;- c(&quot;HBL1&quot; = &quot;#AA4499&quot;, &quot;OCI-Ly8&quot; = &quot;#332288&quot;)
+colors_block_buf &lt;- c(&quot;ID-seq&quot; = &quot;#88CCEE&quot;, 
+                      &quot;RAID&quot; = &quot;#44AA99&quot;, 
+                      &quot;QuRIE-seq&quot; = &quot;#117733&quot;, 
+                      &quot;Ab-seq&quot; = &quot;#AA4499&quot;, 
+                      &quot;CITE-seq&quot; = &quot;#CC6677&quot;, 
+                      &quot;NEAT-seq&quot; = &quot;#A50026&quot;)
+colors_stain_conc &lt;- c(&quot;0.5 ug/mL&quot; = &quot;#3f007d&quot;, 
+                          &quot;0.25 ug/mL&quot; = &quot;#54278f&quot;, 
+                          &quot;0.125 ug/mL&quot; = &quot;#807dba&quot;, 
+                          &quot;0.063 ug/mL&quot; = &quot;#9e9ac8&quot;, 
+                          &quot;0.031 ug/mL&quot; = &quot;#bcbddc&quot;, 
+                          &quot;0 ug/mL&quot; = &quot;#d9d9d9&quot;)
+colors_stain_cell &lt;- c(&quot;0M (no cell)&quot; = &quot;#d9d9d9&quot;, &quot;0.25M&quot; = &quot;#9e9ac8&quot;, &quot;0.5M&quot; = &quot;#54278f&quot;)
+colors_stain_volume &lt;- c(&quot;20 uL&quot; = &quot;#fdbe85&quot;, &quot;30 uL&quot; = &quot;#fd8d3c&quot;, &quot;40 uL&quot; = &quot;#e6550d&quot;)</code></pre>
+</div>
+<div id="figure-1" class="section level2">
+<h2>Figure 1</h2>
+<p><em>Detailed overview of the adapted ID-seq methodology.</em></p>
+<p>Input: - BioRender schematic figure</p>
+<div id="panels" class="section level3 tabset">
+<h3 class="tabset">Panels</h3>
+<div id="panel-a" class="section level4">
+<h4>Panel A</h4>
+<pre class="r"><code># Placeholder
+fig1_panelA &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig1_panelA
+
+# PNG
+png_fig1_panelA &lt;- image_read(&quot;output/figures/non_R_figs/ch3_IDseq_workflow_detailed.png&quot;) %&gt;%
+  image_ggplot()
+png_fig1_panelA</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig1_panelA-1.png" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="combined-fig" class="section level3">
+<h3>Combined fig</h3>
+<pre class="r"><code># Combine all panels of the figure
+png_fig1_panelA</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig1_combi-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save figure as pdf, jpg, and png
+ggsave(
+  fig1_panelA,
+  filename = &quot;output/figures/main_fig1_place.pdf&quot;,
+  width = 6,
+  height = 6,
+  units = &quot;in&quot;,
+  dpi = 300
+  )
+ggsave(
+  fig1_panelA,
+  filename = &quot;output/figures/main_fig1_place.jpg&quot;,
+  width = 6,
+  height = 6,
+  units = &quot;in&quot;,
+  dpi = 300
+  )</code></pre>
+<p><em>Figure 1: Detailed overview of the adapted ID-seq
+methodology.</em></p>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;fig1&quot;))
+rm(list = ls(pattern = &quot;png&quot;))
+rm(list = ls(pattern = &quot;results_&quot;))
+rm(list = ls(pattern = &quot;volc_&quot;))
+rm(list = ls(pattern = &quot;list_&quot;))
+rm(list = ls(pattern = &quot;names_&quot;))
+rm(list = ls(pattern = &quot;titles_&quot;))
+rm(list = ls(pattern = &quot;data_&quot;))
+rm(list = ls(pattern = &quot;heat_&quot;))
+rm(list = ls(pattern = &quot;rld&quot;))
+rm(list = ls(pattern = &quot;pca&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 10594142 565.8   17081285 912.3 12780881 682.6
+Vcells 18433348 140.7   68199703 520.4 84166888 642.2</code></pre>
+</div>
+</div>
+<div id="figure-2" class="section level2">
+<h2>Figure 2</h2>
+<p><em>The ID-seq antibody panel, comprising of 111 targets, was
+constructed by conjugating antibodies to unique DNA oligo
+barcodes.</em></p>
+<p>Input: - BioRender schematic figures</p>
+<ul>
+<li><p>Conjugation gel images</p></li>
+<li><p>Conjugation barcode count table</p></li>
+</ul>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<pre class="r"><code>fig2_data &lt;- meta_Abs_OG &lt;- read_excel(&quot;data/DSxxx_Conjugations/Ab_barcode_counts.xlsx&quot;)</code></pre>
+</div>
+<div id="panels-1" class="section level3 tabset">
+<h3 class="tabset">Panels</h3>
+<div id="panel-a-1" class="section level4">
+<h4>Panel A</h4>
+<pre class="r"><code># Placeholder
+fig2_panelA &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig2_panelA
+
+# PNG
+png_fig2_panelA &lt;- image_read(&quot;output/figures/non_R_figs/ch3_Bcell_network_panel_202411.png&quot;) %&gt;%
+  image_ggplot()
+png_fig2_panelA</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig2_panelA-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-b" class="section level4">
+<h4>Panel B</h4>
+<pre class="r"><code># Placeholder
+fig2_panelB &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig2_panelB
+
+# PNG
+png_fig2_panelB &lt;- image_read(&quot;output/figures/non_R_figs/ch3_Ab_well_barcode_design.png&quot;) %&gt;%
+  image_ggplot()
+png_fig2_panelB</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig2_panelB-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-c" class="section level4">
+<h4>Panel C</h4>
+<pre class="r"><code># Placeholder
+fig2_panelC &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig2_panelC
+
+# PNG
+png_fig2_panelC &lt;- image_read(&quot;output/figures/non_R_figs/conjugation_example_2.3.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig2_panelC</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig2_panelC-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-d" class="section level4">
+<h4>Panel D</h4>
+<pre class="r"><code># Placeholder
+fig2_panelD &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig2_panelD
+
+# PNG
+png_fig2_panelD &lt;- image_read(&quot;output/figures/non_R_figs/conjugation_example_2.4.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig2_panelD</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig2_panelD-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-e" class="section level4">
+<h4>Panel E</h4>
+<pre class="r"><code># Select data
+
+# Figure
+fig2_panelE &lt;- ggplot(fig2_data) + 
+  geom_bar(aes(x = barcode_count, group = factor(barcode_count), fill = factor(barcode_count))) + 
+  scale_fill_manual(values = colors_blue9[c(3, 5, 7, 9)]) +
+  scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50)) +
+  labs(x = &quot;Max nr of barcodes\nattached&quot;, y = &quot;Nr of antibodies&quot;) +
+  theme_bw() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(), legend.key.size = unit(0.5, &quot;cm&quot;), legend.spacing.y = unit(0.2, &quot;cm&quot;), legend.box.spacing = unit(0.1, &quot;cm&quot;), legend.position = &quot;none&quot;, legend.justification = &quot;right&quot;) +
+  textsize_medium
+fig2_panelE</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig2_panelE-1.png" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="combined-fig-1" class="section level3">
+<h3>Combined fig</h3>
+<pre class="r"><code># Combine all panels of the figure
+# fig2_CDEF &lt;- plot_grid(png_fig2_panelC, png_fig2_panelD, png_fig2_panelE, fig2_panelF, labels = PANEL_labels[c(3:6)], ncol = 2, rel_widths = c(1, 1.4), rel_heights = c(1, 1), label_size = 10)
+
+fig2_CD &lt;- plot_grid(png_fig2_panelC, png_fig2_panelD, labels = PANEL_labels[c(3:4)], ncol = 2, rel_widths = c(1, 1.355),label_size = 10)
+fig2_CDE &lt;- plot_grid(fig2_CD, fig2_panelE, labels = c(NA, PANEL_labels[c(5)]), ncol = 1, rel_heights = c(1.15, 1),label_size = 10)
+fig2_top &lt;- plot_grid(png_fig2_panelA, fig2_CDE, labels = PANEL_labels[1], nrow = 1, rel_widths = c(1.55, 1), label_size = 10)
+fig2 &lt;- plot_grid(fig2_top, png_fig2_panelB, labels = c(NA, PANEL_labels[2]), ncol = 1, rel_heights = c(1.5, 1), label_size = 10)
+fig2</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig2_combi-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save figure as pdf, jpg, and png
+ggsave(
+  fig2,
+  filename = &quot;output/figures/main_fig2.pdf&quot;,
+  width = 6,
+  height = 7,
+  units = &quot;in&quot;,
+  dpi = 300
+  )
+ggsave(
+  fig2,
+  filename = &quot;output/figures/main_fig2.jpg&quot;,
+  width = 6,
+  height = 7,
+  units = &quot;in&quot;,
+  dpi = 300
+  )</code></pre>
+<p><em>Figure 2: The ID-seq antibody panel, comprising of 111 targets,
+was constructed by conjugating antibodies to unique DNA oligo
+barcodes.</em></p>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;fig2&quot;))
+rm(list = ls(pattern = &quot;png&quot;))
+rm(list = ls(pattern = &quot;results_&quot;))
+rm(list = ls(pattern = &quot;volc_&quot;))
+rm(list = ls(pattern = &quot;list_&quot;))
+rm(list = ls(pattern = &quot;names_&quot;))
+rm(list = ls(pattern = &quot;titles_&quot;))
+rm(list = ls(pattern = &quot;data_&quot;))
+rm(list = ls(pattern = &quot;heat_&quot;))
+rm(list = ls(pattern = &quot;rld&quot;))
+rm(list = ls(pattern = &quot;pca&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger   (Mb)  max used  (Mb)
+Ncells 10678595 570.3   17081285  912.3  17081285 912.3
+Vcells 42722313 326.0  132198610 1008.6 130989777 999.4</code></pre>
+</div>
+</div>
+<div id="figure-3" class="section level2">
+<h2>Figure 3</h2>
+<p><em>Adjustments in the immunostaining section of the experimental
+protocol improved the quality of the ID-seq data while maintaining
+efficient reagent use.</em></p>
+<p>Input:</p>
+<ul>
+<li><p>DS078 ID-seq data</p></li>
+<li><p>DS091 ID-seq data</p></li>
+</ul>
+<div id="data-1" class="section level3">
+<h3>Data</h3>
+<pre class="r"><code># ID-seq data DS078 (counts per well/sample and mean per condition)
+fig3_data_id_DS078 &lt;- read_csv(&quot;output/DS078_Blocking1/IDseq_ann/IDseq_data_sample.csv&quot;)
+fig3_mean_id_DS078 &lt;- read_csv(&quot;output/DS078_Blocking1/IDseq_ann/IDseq_data_condition.csv&quot;)
+
+# ID-seq data DS091 (counts per well/sample and mean per condition)
+fig3_data_id_DS091 &lt;- read_csv(&quot;output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_sample.csv&quot;)
+fig3_mean_id_DS091 &lt;- read_csv(&quot;output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_condition.csv&quot;)</code></pre>
+<pre class="r"><code>fig3_block_buf &lt;- c(&quot;ID-seq&quot;, &quot;RAID&quot;, &quot;QuRIE-seq&quot;, &quot;CITE-seq&quot;, &quot;Ab-seq&quot;, &quot;NEAT-seq&quot;)
+fig3_cells &lt;- c(&quot;HBL1&quot;, &quot;Jurkat&quot;, &quot;No cells&quot;)
+fig3_stim &lt;- c(&quot;Activated&quot;, &quot;Basal&quot;, &quot;Control&quot;)
+fig3_stim_label &lt;- c(&quot;Act.&quot;, &quot;Bas.&quot;, &quot;Ctrl&quot;)
+fig3_stim_stain &lt;- c(&quot;Activated&quot;, &quot;Activated (no stain)&quot;, &quot;Basal&quot;, &quot;Basal (no stain)&quot;, &quot;Control&quot;, &quot;Control (no stain)&quot;)
+fig3_stim_stain_label &lt;- c(&quot;Activated&quot;, &quot;Activated\n(no stain)&quot;, &quot;Basal&quot;, &quot;Basal\n(no stain)&quot;, &quot;Control&quot;, &quot;Control\n(no stain)&quot;)
+fig3_stim_stain_colors &lt;- c(&quot;Activated&quot; = &quot;#228833&quot;, &quot;Basal&quot; = &quot;#737373&quot;, &quot;Control&quot; = &quot;#4292c6&quot;, 
+                            &quot;Activated (no stain)&quot; = &quot;#c7e9c0&quot;, &quot;Basal (no stain)&quot; = &quot;#d9d9d9&quot;, &quot;Control (no stain)&quot; = &quot;#c6dbef&quot;)</code></pre>
+</div>
+<div id="panels-2" class="section level3 tabset">
+<h3 class="tabset">Panels</h3>
+<div id="panel-a-2" class="section level4">
+<h4>Panel A</h4>
+<pre class="r"><code># Select data
+fig3A_data &lt;- fig3_data_id_DS078 %&gt;%
+  unique()%&gt;%
+  group_by(plate, well) %&gt;%
+  summarise(total_counts = sum(counts_target),
+            total_counts_norm = sum(counts_target_norm)) %&gt;%
+  left_join(fig3_data_id_DS078[, 1:13]) %&gt;%
+  distinct()
+
+fig3A_data_background &lt;- fig3A_data %&gt;%
+  dplyr::filter(cell_treat == &quot;No cells - Control (no stain)&quot;) %&gt;%
+  group_by(block_buf) %&gt;% 
+  summarise(back_nocellstain_total = mean(total_counts))
+
+fig3A_data &lt;- fig3A_data %&gt;%
+  left_join(fig3A_data_background) %&gt;%
+  mutate(count_over_back = total_counts / back_nocellstain_total)
+
+# Figure
+fig3_panelA &lt;- ggplot() +
+  geom_jitter(data = fig3A_data,
+              aes(x = interaction(factor(stim_clean, levels = fig3_stim, labels = fig3_stim_label),
+                                  factor(cell_line, levels = fig3_cells), sep = &quot;!&quot;),
+                  y = total_counts,
+                  color = stim_stain),
+              alpha = 1, size = 1.5, width = 0.1) +
+  scale_x_discrete(guide = guide_axis_nested(delim = &quot;!&quot;), name = &quot;&quot;) +
+  scale_y_log10() +
+  facet_wrap(vars(factor(block_buf, levels = fig3_block_buf))) +
+  scale_color_manual(values = fig3_stim_stain_colors, breaks = fig3_stim_stain, labels = fig3_stim_stain_label, name = &quot;Treatment&quot;) +
+  labs(x = element_blank(), y = &quot;Normalised counts&quot;) +
+  theme_bw() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), legend.key.size = unit(0.2, &quot;cm&quot;), legend.spacing.y = unit(0.1, &quot;cm&quot;), legend.box.spacing = unit(0.01, &quot;cm&quot;), legend.position = &quot;bottom&quot;, legend.justification = &quot;right&quot;, strip.text.x = element_text(margin = margin(0.05, 0, 0.05, 0, &quot;cm&quot;), size = 7)) +
+  guides(color = guide_legend(nrow = 1, byrow = TRUE)) +
+  textsize_small
+fig3_panelA</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_panelA-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-b-1" class="section level4">
+<h4>Panel B</h4>
+<p>Differential expression analysis of the effect of staining conc on
+H2O2 vs PBS</p>
+<p>DESeq2 analysis parameters:</p>
+<ul>
+<li><p>HBL1 cells: 2 stimuli, 6 staining conc, 3 staining cell nr, 3
+staining volumes</p></li>
+<li><p>Compensated counts (&gt;= 1)</p></li>
+<li><p>Model design: staining_conc_text (ref: 0.5 ug/mL) + stimulus (
+ref: PBS) + staining_conc_text:stimulus</p></li>
+</ul>
+<pre class="r"><code># Select data
+fig3B_data &lt;- fig3_data_id_DS091 %&gt;%
+  dplyr::filter(cell_line == &quot;HBL1&quot; &amp; staining_cells == &quot;0.25M&quot; &amp; staining_volume != &quot;20 uL&quot; &amp; counts &gt;= 1)
+
+# Differential expression analysis
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts &lt;- fig3B_data  %&gt;%
+  dplyr::select(target_nospace, plate_well, counts) %&gt;%
+  dplyr::filter(!is.na(counts)) %&gt;%
+  spread(plate_well, counts) %&gt;%
+  replace(is.na(.), 0) %&gt;%
+  column_to_rownames(&quot;target_nospace&quot;)
+
+cts &lt;- as.matrix(as.data.frame(cts))
+
+coldata &lt;- data.frame(plate_well = colnames(cts)) %&gt;%
+  left_join(fig3B_data[, c(1:16)]) %&gt;% 
+  distinct() %&gt;%
+  mutate(staining_conc_text = factor(staining_conc_text, levels = c(&quot;0.5 ug/mL&quot;, &quot;0.25 ug/mL&quot;, &quot;0.125 ug/mL&quot;, &quot;0.063 ug/mL&quot;, &quot;0.031 ug/mL&quot;, &quot;0 ug/mL&quot;)))
+
+rownames(coldata) &lt;- coldata$plate_well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign &lt;- ~ staining_conc_text + stimulus + staining_conc_text:stimulus
+
+# Then create the DESeq dataset
+dds &lt;- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+# dds$staining_conc_text &lt;- relevel(dds$staining_conc_text, ref = &quot;0.5 ug/mL&quot;)
+dds$stimulus &lt;- relevel(dds$stimulus, ref = &quot;PBS&quot;)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+
+dds &lt;- DESeq(dds, test = &quot;Wald&quot;, fitType = &quot;local&quot;)
+DESeq_comparisons &lt;- resultsNames(dds) # lists the coefficients
+# DESeq_comparisons
+
+# Results
+results_H2O2 &lt;- results(dds, name = &quot;stimulus_H2O2_vs_PBS&quot;, alpha = 0.05)
+# summary(results_H2O2, padj = 0.05)
+results_conc_0.25 &lt;- results(dds, name = &quot;staining_conc_text_0.25.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0.125 &lt;- results(dds, name = &quot;staining_conc_text_0.125.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0.063 &lt;- results(dds, name = &quot;staining_conc_text_0.063.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0.031 &lt;- results(dds, name = &quot;staining_conc_text_0.031.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+results_conc_0 &lt;- results(dds, name = &quot;staining_conc_text_0.ug.mL_vs_0.5.ug.mL&quot;, alpha = 0.05)
+
+results_stim_0.25 &lt;- results(dds, name = &quot;staining_conc_text0.25.ug.mL.stimulusH2O2&quot;, alpha = 0.05)
+results_stim_0.125 &lt;- results(dds, name = &quot;staining_conc_text0.125.ug.mL.stimulusH2O2&quot;, alpha = 0.05)
+results_stim_0.063 &lt;- results(dds, name = &quot;staining_conc_text0.063.ug.mL.stimulusH2O2&quot;, alpha = 0.05)
+results_stim_0.031 &lt;- results(dds, name = &quot;staining_conc_text0.031.ug.mL.stimulusH2O2&quot;, alpha = 0.05)
+results_stim_0 &lt;- results(dds, name = &quot;staining_conc_text0.ug.mL.stimulusH2O2&quot;, alpha = 0.05)
+
+list_results &lt;- list(results_H2O2, 
+                     results_conc_0.25, results_conc_0.125, results_conc_0.063, results_conc_0.031, results_conc_0, 
+                     results_stim_0.25, results_stim_0.125, results_stim_0.063, results_stim_0.031, results_stim_0)
+
+# Data transformation
+# Regularized log transform
+rld_HBL1 &lt;- rlog(dds, blind = FALSE)
+
+# Data wrangling
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins &lt;- rownames(dataset)
+  dataset$target_nospace &lt;- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express &lt;- &quot;NO&quot;
+  dataset$diff_express[dataset$log2FoldChange &gt; foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;UP&quot;
+  dataset$diff_express[dataset$log2FoldChange &lt; -foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;DOWN&quot;
+  
+  # Add a column for labeling
+  dataset$delabel &lt;- NA
+  dataset$delabel[dataset$diff_express != &quot;NO&quot;] &lt;- dataset$proteins[dataset$diff_express != &quot;NO&quot;]
+  
+  # Add Ab metadata
+  # dataset &lt;- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# Apply function to each dataset
+# Applied thresholds:
+# padj &lt; 0.05
+# log2FC &gt; log2(1.2)
+names_volc &lt;- c(&quot;volc_H2O2&quot;, 
+                &quot;volc_conc_0.25&quot;, &quot;volc_conc_0.125&quot;, &quot;volc_conc_0.063&quot;, &quot;volc_conc_0.031&quot;, &quot;volc_conc_0&quot;, 
+                &quot;volc_stim_0.25&quot;, &quot;volc_stim_0.125&quot;, &quot;volc_stim_0.063&quot;, &quot;volc_stim_0.031&quot;, &quot;volc_stim_0&quot;)
+
+for(dataset in c(1:length(list_results))){
+  assign(names_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], foldchange_filter = log2(1.2)))
+}
+
+# Function to filter the data
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+filter_heatmap &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5), select_top = TRUE, select_n = 10) {
+  data &lt;- as.data.frame(dataset) %&gt;%
+    dplyr::filter(padj &lt;= padj_filter &amp; abs(log2FoldChange) &gt;= foldchange_filter) %&gt;%
+    arrange(-log2FoldChange) 
+  rownames(data) &lt;- data$target_nospace
+  
+  # Select top 10 proteins with most increased and decreased expression
+  if (select_top == TRUE) {
+    data_top &lt;- data %&gt;%
+      slice_max(order_by = abs(log2FoldChange), n = select_n)
+    return(data_top)
+  } else {
+    return(data)
+  }
+}
+
+# Apply function to each dataset
+list_results_volc &lt;- list(volc_H2O2, 
+                          volc_conc_0.25, volc_conc_0.125, volc_conc_0.063, volc_conc_0.031, volc_conc_0, 
+                          volc_stim_0.25, volc_stim_0.125, volc_stim_0.063, volc_stim_0.031, volc_stim_0)
+names_heat &lt;- c(&quot;heat_H2O2&quot;, 
+                &quot;heat_conc_0.25&quot;, &quot;heat_conc_0.125&quot;, &quot;heat_conc_0.063&quot;, &quot;heat_conc_0.031&quot;, &quot;heat_conc_0&quot;, 
+                &quot;heat_stim_0.25&quot;, &quot;heat_stim_0.125&quot;, &quot;heat_stim_0.063&quot;, &quot;heat_stim_0.031&quot;, &quot;heat_stim_0&quot;)
+
+for(dataset in c(1:length(list_results_volc))){
+  assign(names_heat[[dataset]], filter_heatmap(dataset = list_results_volc[[dataset]], select_top = FALSE, foldchange_filter = log2(1.2)))
+  dataset
+}</code></pre>
+<pre class="r"><code># Data
+# Combine heatmap datasets (without DESeq2 analysis values)
+heat_combi_HBL1 &lt;- list(heat_H2O2#, 
+                        # heat_conc_0.25, heat_conc_0.125, heat_conc_0.063, heat_conc_0.031, heat_conc_0, 
+                        # heat_stim_0.25, heat_stim_0.125, heat_stim_0.063, heat_stim_0.031, heat_stim_0
+                        ) %&gt;%
+  purrr::reduce(full_join) %&gt;%
+  dplyr::select(-c(baseMean, log2FoldChange, lfcSE, stat, pvalue, padj, diff_express)) %&gt;%
+  left_join(fig3_data_id_DS091[, 17:24]) %&gt;%
+  # dplyr::filter(modification == &quot;phospho&quot;) %&gt;%
+  distinct()
+
+# Subset the full dataframe to get metadata for heatmap plotting
+fig3B_info_HBL1 &lt;- fig3B_data %&gt;%
+  dplyr::select(plate_well, staining_volume, staining_conc_text, stim_clean) %&gt;%
+  distinct() %&gt;%
+  # dplyr::filter(cell_line == &quot;HBL1&quot; &amp;inhibitor == &quot;iBTK&quot; &amp; inhib_conc %in% fig2_conc_all &amp; !(stim_clean == &quot;Basal&quot; &amp; inhib_conc %in% fig2_conc_all[2:5])) %&gt;%
+  mutate(stim_clean = factor(stim_clean, levels = c(&quot;Basal&quot;, &quot;Activated (H2O2)&quot;)), 
+         staining_conc_text = factor(staining_conc_text, levels = c(&quot;0.5 ug/mL&quot;, &quot;0.25 ug/mL&quot;, &quot;0.125 ug/mL&quot;, &quot;0.063 ug/mL&quot;, &quot;0.031 ug/mL&quot;, &quot;0 ug/mL&quot;)), 
+         staining_conc_label = factor(str_replace(staining_conc_text, &quot; &quot;, &quot;\n&quot;), levels = c(&quot;0.5\nug/mL&quot;, &quot;0.25\nug/mL&quot;, &quot;0.125\nug/mL&quot;, &quot;0.063\nug/mL&quot;, &quot;0.031\nug/mL&quot;, &quot;0\nug/mL&quot;))) %&gt;%
+  as.data.frame()
+rownames(fig3B_info_HBL1) &lt;- fig3B_info_HBL1$plate_well
+fig3B_info_HBL1 &lt;- dplyr::select(fig3B_info_HBL1, -c(plate_well))
+
+# Get the rld transformed data for the heatmap and scale per row
+fig3B_data_heat_HBL1 &lt;- t(scale(t(assay(rld_HBL1)[c(heat_combi_HBL1$target_nospace), rownames(fig3B_info_HBL1)])))
+# sort_hclust &lt;- function(...) as.hclust(dendsort(as.dendrogram(...)))
+# data_cluster_rows &lt;- sort_hclust(hclust(dist(data_cell)))
+# plot(data_cluster_rows, main = &quot;Unsorted Dendrogram&quot;, xlab = &quot;&quot;, sub = &quot;&quot;)
+
+# Figure
+fig3B_ann_colors &lt;- list(#Cells = colors_stain_cell,
+                         &quot;Staining volume&quot; = colors_stain_volume, 
+                         &quot;Panel conc.&quot; = colors_stain_conc, 
+                         Stimulus = colors_stim)
+fig3B_heat_legend &lt;- list(title = &quot;Scaled\nexpression&quot;, title_gp = gpar(fontsize = 7), labels_gp = gpar(fontsize = 7), 
+                          grid_width = unit(2, &quot;mm&quot;), grid_height = unit(20, &quot;mm&quot;))
+
+fig3B_col_ann &lt;- HeatmapAnnotation(#Cells = fig3B_info_HBL1$staining_cells, 
+                                   &quot;Staining volume&quot; = fig3B_info_HBL1$staining_volume, 
+                                   &quot;Panel conc.&quot; = fig3B_info_HBL1$staining_conc_text,
+                                   Stimulus = fig3B_info_HBL1$stim_clean, 
+                                   simple_anno_size = unit(2.5, &quot;mm&quot;), 
+                                   annotation_name_gp = gpar(fontsize = 7),
+                                   col = fig3B_ann_colors, 
+                                   annotation_legend_param = list(#Cells = list(title = &quot;Cells&quot;, 
+                                                                                   # title_gp = gpar(fontsize = 6), 
+                                                                                   # labels_gp = gpar(fontsize = 6), 
+                                                                                   # grid_width = unit(2, &quot;mm&quot;), 
+                                                                                   # grid_height = unit(1, &quot;mm&quot;)), 
+                                                                  &quot;Staining volume&quot; = list(title = &quot;Staining\nvolume&quot;, 
+                                                                                   title_gp = gpar(fontsize = 7), 
+                                                                                   labels_gp = gpar(fontsize = 7), 
+                                                                                   grid_width = unit(2.5, &quot;mm&quot;), 
+                                                                                   grid_height = unit(1, &quot;mm&quot;)), 
+                                                                  &quot;Panel conc.&quot; = list(title = &quot;Panel\nconcentration&quot;, 
+                                                                                   title_gp = gpar(fontsize = 7), 
+                                                                                   labels_gp = gpar(fontsize = 7), 
+                                                                                   grid_width = unit(2.5, &quot;mm&quot;), 
+                                                                                   grid_height = unit(1, &quot;mm&quot;)), 
+                                                                  Stimulus = list(title = &quot;Stimulus&quot;, 
+                                                                                   title_gp = gpar(fontsize = 7), 
+                                                                                   labels_gp = gpar(fontsize = 7), 
+                                                                                   grid_width = unit(2.5, &quot;mm&quot;), 
+                                                                                   grid_height = unit(1, &quot;mm&quot;))), 
+                                   show_legend = c(TRUE, TRUE, TRUE))
+
+fig3_panelB &lt;- ggplotify::as.ggplot(ComplexHeatmap::pheatmap(
+  fig3B_data_heat_HBL1,
+  scale = &quot;none&quot;,
+  cluster_rows = TRUE,
+  # treeheight_row = 20,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  top_annotation = fig3B_col_ann,
+  annotation_colors = fig3B_ann_colors,
+  colorRampPalette(c(&quot;navy&quot;, &quot;white&quot;, &quot;firebrick3&quot;))(50),
+  column_split = fig3B_info_HBL1$staining_conc_label,
+  row_split = heat_combi_HBL1$modification,
+  row_gap = unit(1, &quot;mm&quot;), 
+  # cellwidth = 10,
+  # cellheight = 10,
+  fontsize = 5.5,
+  row_title_gp = gpar(fontsize = 8),
+  column_title_gp = gpar(fontsize = 7),
+  annotation_names_col = gpar(fontsize = 7),
+  border_color = NA,
+  heatmap_legend_param = fig3B_heat_legend,
+  # annotation_legend = FALSE,
+  # main = &quot; &quot;,
+)) +
+  # ggtitle(&quot;          Signaling activation in HBL1 under different staining conditions&quot;) +
+  textsize_medium
+fig3_panelB</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_panelB-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-c-1" class="section level4">
+<h4>Panel C</h4>
+<pre class="r"><code># Placeholder
+fig3_panelC &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig3_panelC
+
+# PNG
+png_fig3_panelC &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_DS027_original_2.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig3_panelC</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_panelC-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-d-1" class="section level4">
+<h4>Panel D</h4>
+<pre class="r"><code># Placeholder
+fig3_panelD &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig3_panelD
+
+# PNG
+png_fig3_panelD &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_BB014_input_table.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig3_panelD</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_panelD-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fig3D_data &lt;- tibble(&quot;Sample&quot; = c(1, 2, 3, 4, 5, 6), 
+                     &quot;DNA input&quot; = c(&quot;5 uL (36 ng)&quot;, &quot;5 uL (36 ng)&quot;, &quot;7.2 ng&quot;, &quot;7.2 ng&quot;, &quot;7.2 ng&quot;, &quot;3.6 ng&quot;), 
+                     &quot;Primer conc.&quot; = c(&quot;0.2 uM&quot;, &quot;0.2 uM&quot;, &quot;0.3 uM&quot;, &quot;0.3 uM&quot;, &quot;0.5 uM&quot;, &quot;0.3 uM&quot;),
+                     &quot;Nr of cycles&quot; = c(5, 3, 5, 3, 5, 5), 
+                     &quot;DNA output&quot; = c(&quot;14.3 ng/uL&quot;, &quot;25.6 ng/uL&quot;, &quot;23.8 ng/uL&quot;, &quot;7.84 ng/uL&quot;, &quot;23.4 ng/uL&quot;, &quot;14.7 ng/uL&quot;))
+# fig3D_data</code></pre>
+</div>
+<div id="panel-e-1" class="section level4">
+<h4>Panel E</h4>
+<pre class="r"><code># Placeholder
+fig3_panelE &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig3_panelE
+
+# PNG
+png_fig3_panelE &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_BB014_indexPCR_2.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig3_panelE</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_panelE-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-f" class="section level4">
+<h4>Panel F</h4>
+<pre class="r"><code># Placeholder
+fig3_panelF &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig3_panelF
+
+# PNG
+png_fig3_panelF &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_DS091_adapted_2.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig3_panelF</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_panelF-1.png" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="combined-fig-2" class="section level3">
+<h3>Combined fig</h3>
+<pre class="r"><code># Combine all panels of the figure
+fig3_DE &lt;- plot_grid(png_fig3_panelD, png_fig3_panelE, labels = PANEL_labels[c(4, 5)], ncol = 2, rel_widths = c(1, 1), label_size = 10)
+fig3_CF &lt;- plot_grid(png_fig3_panelC, png_fig3_panelF, labels = PANEL_labels[c(3, 6)], ncol = 2, rel_widths = c(1, 1), label_size = 10)
+# fig3_CDEF &lt;- plot_grid(png_fig3_panelC, png_fig3_panelD, png_fig3_panelE, fig3_panelF, labels = PANEL_labels[c(3:6)], ncol = 2, rel_widths = c(1, 1), rel_heights = c(1, 1), label_size = 10, scale = 0.9)
+fig3_big &lt;- plot_grid(fig3_panelA, fig3_panelB, fig3_CF, fig3_DE, labels = c(PANEL_labels[c(1:2)]), ncol = 1, rel_heights = c(2, 2, 1, 1), label_size = 10)
+fig3_big</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_combi_big-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save figure as pdf, jpg, and png
+# ggsave(
+#   fig3_big,
+#   filename = &quot;output/figures/main_fig3_big.pdf&quot;,
+#   width = 6,
+#   height = 8.5,
+#   units = &quot;in&quot;,
+#   dpi = 300
+#   )
+ggsave(
+  fig3_big,
+  filename = &quot;output/figures/main_fig3_big.jpg&quot;,
+  width = 6,
+  height = 8.5,
+  units = &quot;in&quot;,
+  dpi = 300
+  )</code></pre>
+<pre class="r"><code># Combine all panels of the figure
+fig3 &lt;- plot_grid(fig3_panelA, fig3_panelB, labels = c(PANEL_labels[c(1:2)]), ncol = 1, rel_heights = c(1, 1), label_size = 10)
+fig3</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig3_combi-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save figure as pdf, jpg, and png
+ggsave(
+  fig3,
+  filename = &quot;output/figures/main_fig3.pdf&quot;,
+  width = 6,
+  height = 6,
+  units = &quot;in&quot;,
+  dpi = 300
+  )
+ggsave(
+  fig3,
+  filename = &quot;output/figures/main_fig3.jpg&quot;,
+  width = 6,
+  height = 6,
+  units = &quot;in&quot;,
+  dpi = 300
+  )</code></pre>
+<p><em>Figure 3: Adjustments in the immunostaining section of the
+experimental protocol improved the quality of the ID-seq data while
+maintaining efficient reagent use.</em></p>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;fig3&quot;))
+rm(list = ls(pattern = &quot;png&quot;))
+rm(list = ls(pattern = &quot;results_&quot;))
+rm(list = ls(pattern = &quot;volc_&quot;))
+rm(list = ls(pattern = &quot;list_&quot;))
+rm(list = ls(pattern = &quot;names_&quot;))
+rm(list = ls(pattern = &quot;titles_&quot;))
+rm(list = ls(pattern = &quot;data_&quot;))
+rm(list = ls(pattern = &quot;heat_&quot;))
+rm(list = ls(pattern = &quot;rld&quot;))
+rm(list = ls(pattern = &quot;pca&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb)  max used  (Mb)
+Ncells 11091323 592.4   17081285 912.3  17081285 912.3
+Vcells 19447081 148.4   84607111 645.6 130989777 999.4</code></pre>
+</div>
+</div>
+<div id="figure-4" class="section level2">
+<h2>Figure 4</h2>
+<p><em>Adjustments in the library preparation section of the
+experimental protocol greatly improved the quality of the sequencing
+library.</em></p>
+<p>Input:</p>
+<ul>
+<li><p>DS027 BioAnalyzer data</p></li>
+<li><p>BB014 BioAnalyzer data</p></li>
+<li><p>DS091 BioAnalyzer data</p></li>
+</ul>
+<div id="panels-3" class="section level3 tabset">
+<h3 class="tabset">Panels</h3>
+<div id="panel-a-3" class="section level4">
+<h4>Panel A</h4>
+<pre class="r"><code># Placeholder
+fig4_panelA &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig4_panelA
+
+# PNG
+png_fig4_panelA &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_DS027_original_2.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE) + 
+  ggtitle(&quot;                       Initial library preparation&quot;) +
+  textsize_small
+png_fig4_panelA</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig4_panelA-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-b-2" class="section level4">
+<h4>Panel B</h4>
+<pre class="r"><code># Placeholder
+fig4_panelB &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig4_panelB
+
+# PNG
+png_fig4_panelB &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_BB014_input_table.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE)
+png_fig4_panelB</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig4_panelB-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fig4B_data &lt;- tibble(&quot;Sample&quot; = c(1, 2, 3, 4, 5, 6), 
+                     &quot;DNA input&quot; = c(&quot;5 uL (36 ng)&quot;, &quot;5 uL (36 ng)&quot;, &quot;7.2 ng&quot;, &quot;7.2 ng&quot;, &quot;7.2 ng&quot;, &quot;3.6 ng&quot;), 
+                     &quot;Primer conc.&quot; = c(&quot;0.2 uM&quot;, &quot;0.2 uM&quot;, &quot;0.3 uM&quot;, &quot;0.3 uM&quot;, &quot;0.5 uM&quot;, &quot;0.3 uM&quot;),
+                     &quot;Nr of cycles&quot; = c(5, 3, 5, 3, 5, 5), 
+                     &quot;DNA output&quot; = c(&quot;14.3 ng/uL&quot;, &quot;25.6 ng/uL&quot;, &quot;23.8 ng/uL&quot;, &quot;7.84 ng/uL&quot;, &quot;23.4 ng/uL&quot;, &quot;14.7 ng/uL&quot;))
+# fig4B_data</code></pre>
+</div>
+<div id="panel-c-2" class="section level4">
+<h4>Panel C</h4>
+<pre class="r"><code># Placeholder
+fig4_panelC &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig4_panelC
+
+# PNG
+png_fig4_panelC &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_BB014_indexPCR_2.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE) + 
+  ggtitle(&quot;                        Index PCR optimisation&quot;) +
+  textsize_small
+png_fig4_panelC</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig4_panelC-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-d-2" class="section level4">
+<h4>Panel D</h4>
+<pre class="r"><code># Placeholder
+fig4_panelD &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig4_panelD
+
+# PNG
+png_fig4_panelD &lt;- image_read(&quot;output/figures/non_R_figs/BioAnalyzer_DS091_adapted_2.png&quot;) %&gt;%
+  image_ggplot(interpolate = TRUE) + 
+  ggtitle(&quot;                     Adapted library preparation&quot;) +
+  textsize_small
+png_fig4_panelD</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig4_panelD-1.png" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="combined-fig-3" class="section level3">
+<h3>Combined fig</h3>
+<pre class="r"><code># Combine all panels of the figure
+fig4 &lt;- plot_grid(png_fig4_panelA, png_fig4_panelB, png_fig4_panelD, png_fig4_panelC, labels = c(PANEL_labels[c(1, 2, 4, 3)]), ncol = 2, rel_widths = c(1, 1), rel_heights = c(1, 1), label_size = 10, align = &quot;h&quot;)
+fig4</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig4_combi-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save figure as pdf, jpg, and png
+ggsave(
+  fig4,
+  filename = &quot;output/figures/main_fig4.pdf&quot;,
+  width = 6,
+  height = 4,
+  units = &quot;in&quot;,
+  dpi = 300
+  )
+ggsave(
+  fig4,
+  filename = &quot;output/figures/main_fig4.jpg&quot;,
+  width = 6,
+  height = 4,
+  units = &quot;in&quot;,
+  dpi = 300
+  )</code></pre>
+<p><em>Figure 4: Adjustments in the library preparation section of the
+experimental protocol greatly improved the quality of the sequencing
+library.</em></p>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;fig4&quot;))
+rm(list = ls(pattern = &quot;png&quot;))
+rm(list = ls(pattern = &quot;results_&quot;))
+rm(list = ls(pattern = &quot;volc_&quot;))
+rm(list = ls(pattern = &quot;list_&quot;))
+rm(list = ls(pattern = &quot;names_&quot;))
+rm(list = ls(pattern = &quot;titles_&quot;))
+rm(list = ls(pattern = &quot;data_&quot;))
+rm(list = ls(pattern = &quot;heat_&quot;))
+rm(list = ls(pattern = &quot;rld&quot;))
+rm(list = ls(pattern = &quot;pca&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb)  max used  (Mb)
+Ncells 11075118 591.5   17081285 912.3  17081285 912.3
+Vcells 22307328 170.2   67685689 516.5 130989777 999.4</code></pre>
+</div>
+</div>
+<div id="figure-5" class="section level2">
+<h2>Figure 5</h2>
+<p><em>ID-seq reveals network-wide phosphorylation events upon
+activation of the B-cell signaling network.</em></p>
+<p>Input: - BioRender schematic figures</p>
+<ul>
+<li><p>DS091 ID-seq data</p>
+<ul>
+<li><p>DESeq2 analysis</p></li>
+<li><p>PCA</p></li>
+</ul></li>
+</ul>
+<div id="data-2" class="section level3">
+<h3>Data</h3>
+<pre class="r"><code># ID-seq data DS091 (counts per well/sample and mean per condition)
+fig5_data_id &lt;- read_csv(&quot;output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_sample.csv&quot;)
+fig5_mean_id &lt;- read_csv(&quot;output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_condition.csv&quot;)
+
+# File for network projection info
+fig5_node_info &lt;- read_excel(&quot;output/network_visual/node_info2.xlsx&quot;)</code></pre>
+<pre class="r"><code>fig5_cells &lt;- c(&quot;DAUDI&quot;, &quot;HBL1&quot;)
+fig5_stim &lt;- c(&quot;Basal&quot;, &quot;Activated (anti-Ig)&quot;, &quot;Activated (H2O2)&quot;)
+fig5_stim_label &lt;- c(&quot;Basal&quot;, &quot;Activated\n(anti-Ig)&quot;, &quot;Activated\n(H2O2)&quot;)
+fig5_cell_stim &lt;- c(&quot;DAUDI - Basal&quot;, &quot;DAUDI - Activated (anti-Ig)&quot;, &quot;HBL1 - Basal&quot;, &quot;HBL1 - Activated (H2O2)&quot;)
+fig5_cell_stim_label &lt;- c(&quot;Burkitt&#39;s bas.&quot;, &quot;Burkitt&#39;s act.\n(anti-Ig)&quot;, &quot;DLBCL bas.&quot;, &quot;DLBCL act.\n(H2O2)&quot;)
+
+fig5_meta_cols &lt;- c(&quot;plate_well&quot;, &quot;plate&quot;, &quot;well&quot;, &quot;experiment&quot;, &quot;cell_line&quot;, &quot;stimulus&quot;, &quot;stim_clean&quot;, &quot;replicate&quot;, &quot;description_sample&quot;, &quot;description_sample_rep&quot;, &quot;description_staining&quot;)</code></pre>
+</div>
+<div id="diff-express-analysis" class="section level3 tabset">
+<h3 class="tabset">Diff express analysis</h3>
+<div id="daudi-anti-ig-vs-pbs" class="section level4">
+<h4>DAUDI anti-Ig vs PBS</h4>
+<p>Differential expression analysis of stimulation in DAUDI cells
+(separately)</p>
+<p>DESeq2 analysis parameters:</p>
+<ul>
+<li><p>DAUDI anti-Ig + PBS</p></li>
+<li><p>Compensated counts (&gt;= 1)</p></li>
+<li><p>Model design: stimulus (ref: PBS)</p></li>
+</ul>
+<pre class="r"><code># Differential expression analysis
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts &lt;- fig5_data_id  %&gt;%
+  dplyr::filter(cell_line == &quot;DAUDI&quot; &amp; counts &gt;= 1) %&gt;%
+  dplyr::select(target_nospace, plate_well, counts) %&gt;%
+  dplyr::filter(!is.na(counts)) %&gt;%
+  spread(plate_well, counts) %&gt;%
+  replace(is.na(.), 0) %&gt;%
+  column_to_rownames(&quot;target_nospace&quot;)
+
+cts &lt;- as.matrix(as.data.frame(cts))
+
+coldata &lt;- data.frame(plate_well = colnames(cts)) %&gt;%
+  left_join(fig5_data_id[1:16]) %&gt;% 
+  distinct() 
+rownames(coldata) &lt;- coldata$plate_well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign &lt;- ~ stimulus
+
+# Then create the DESeq dataset
+dds &lt;- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stimulus &lt;- relevel(dds$stimulus, ref = &quot;PBS&quot;)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+
+dds &lt;- DESeq(dds, test = &quot;Wald&quot;, fitType = &quot;local&quot;)
+DESeq_comparisons &lt;- resultsNames(dds) # lists the coefficients
+# DESeq_comparisons
+
+# Results
+results_DAUDI &lt;- results(dds, name = &quot;stimulus_anti.Ig_vs_PBS&quot;, alpha = 0.05)
+# summary(results_HBL1, padj = 0.05)
+
+# Data transformation
+# Regularized log transform
+rld &lt;- rlog(dds, blind = FALSE)
+
+# Volcano preparation/data wrangling
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins &lt;- rownames(dataset)
+  dataset$target_nospace &lt;- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express &lt;- &quot;NO&quot;
+  dataset$diff_express[dataset$log2FoldChange &gt; foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;UP&quot;
+  dataset$diff_express[dataset$log2FoldChange &lt; -foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;DOWN&quot;
+  
+  # Add a column for labeling
+  dataset$delabel &lt;- NA
+  dataset$delabel[dataset$diff_express != &quot;NO&quot;] &lt;- dataset$proteins[dataset$diff_express != &quot;NO&quot;]
+  
+  # Add Ab metadata
+  # dataset &lt;- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(as.data.frame(dataset))
+}
+
+# Apply function to each dataset
+# Applied thresholds:
+# padj &lt; 0.05
+volc_DAUDI &lt;- prep_forvulcano(dataset = results_DAUDI, foldchange_filter = 0, padj_filter = 0.05) %&gt;%
+  subset(diff_express == &quot;UP&quot; | diff_express == &quot;DOWN&quot;) %&gt;%
+  mutate(log10padj = -log10(padj)) %&gt;%
+  dplyr::select(c(target_nospace, log2FoldChange, padj, log10padj, diff_express)) %&gt;%
+  full_join(fig5_node_info) %&gt;%
+  mutate(log2FoldChange = case_when(in_panel == &quot;yes&quot; &amp; is.na(log2FoldChange) ~ 0, 
+                               .default = log2FoldChange), 
+         padj = case_when(in_panel == &quot;yes&quot; &amp; is.na(padj) ~ 0.051, 
+                               .default = padj)) %&gt;%
+  subset(in_network == &quot;yes&quot; &amp; in_panel == &quot;yes&quot;) %&gt;%
+  dplyr::rename(ch3_aIgvsPBS_DAUDI_log2FC = log2FoldChange, 
+                ch3_aIgvsPBS_DAUDI_padj = padj,
+                ch3_aIgvsPBS_DAUDI_log10padj = log10padj, 
+                ch3_aIgvsPBS_DAUDI_DE = diff_express)
+
+write.csv(volc_DAUDI, file = &quot;output/network_visual/node_info_DAUDI_aIgvsPBS.csv&quot;, row.names = F, na = &quot;&quot;)</code></pre>
+</div>
+<div id="hbl1-h2o2-vs-pbs" class="section level4">
+<h4>HBL1 H2O2 vs PBS</h4>
+<p>Differential expression analysis of stimulation in HBL1 cells
+(separately)</p>
+<p>DESeq2 analysis parameters:</p>
+<ul>
+<li><p>HBL1 H2O2 + PBS samples</p></li>
+<li><p>Compensated counts (&gt;= 1)</p></li>
+<li><p>Model design: stimulus (ref: PBS)</p></li>
+</ul>
+<pre class="r"><code># Differential expression analysis
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts &lt;- fig5_data_id  %&gt;%
+  dplyr::filter(cell_line == &quot;HBL1&quot; &amp; counts &gt;= 1) %&gt;%
+  dplyr::select(target_nospace, plate_well, counts) %&gt;%
+  dplyr::filter(!is.na(counts)) %&gt;%
+  spread(plate_well, counts) %&gt;%
+  replace(is.na(.), 0) %&gt;%
+  column_to_rownames(&quot;target_nospace&quot;)
+
+cts &lt;- as.matrix(as.data.frame(cts))
+
+coldata &lt;- data.frame(plate_well = colnames(cts)) %&gt;%
+  left_join(fig5_data_id[1:16]) %&gt;% 
+  distinct() 
+rownames(coldata) &lt;- coldata$plate_well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign &lt;- ~ stimulus
+
+# Then create the DESeq dataset
+dds &lt;- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stimulus &lt;- relevel(dds$stimulus, ref = &quot;PBS&quot;)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+
+dds &lt;- DESeq(dds, test = &quot;Wald&quot;, fitType = &quot;local&quot;)
+DESeq_comparisons &lt;- resultsNames(dds) # lists the coefficients
+# DESeq_comparisons
+
+# Results
+results_HBL1 &lt;- results(dds, name = &quot;stimulus_H2O2_vs_PBS&quot;, alpha = 0.05)
+# summary(results_HBL1, padj = 0.05)
+
+# Data transformation
+# Regularized log transform
+rld &lt;- rlog(dds, blind = FALSE)
+
+# Volcano preparation/data wrangling
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano &lt;- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins &lt;- rownames(dataset)
+  dataset$target_nospace &lt;- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express &lt;- &quot;NO&quot;
+  dataset$diff_express[dataset$log2FoldChange &gt; foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;UP&quot;
+  dataset$diff_express[dataset$log2FoldChange &lt; -foldchange_filter &amp; dataset$padj &lt; padj_filter] &lt;- &quot;DOWN&quot;
+  
+  # Add a column for labeling
+  dataset$delabel &lt;- NA
+  dataset$delabel[dataset$diff_express != &quot;NO&quot;] &lt;- dataset$proteins[dataset$diff_express != &quot;NO&quot;]
+  
+  # Add Ab metadata
+  # dataset &lt;- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(as.data.frame(dataset))
+}
+
+# Apply function to each dataset
+# Applied thresholds:
+# padj &lt; 0.05
+volc_HBL1 &lt;- prep_forvulcano(dataset = results_HBL1, foldchange_filter = 0, padj_filter = 0.05) %&gt;%
+  subset(diff_express == &quot;UP&quot; | diff_express == &quot;DOWN&quot;) %&gt;%
+  mutate(log10padj = -log10(padj)) %&gt;%
+  dplyr::select(c(target_nospace, log2FoldChange, padj, log10padj, diff_express)) %&gt;%
+  full_join(fig5_node_info) %&gt;%
+  mutate(log2FoldChange = case_when(in_panel == &quot;yes&quot; &amp; is.na(log2FoldChange) ~ 0, 
+                               .default = log2FoldChange), 
+         padj = case_when(in_panel == &quot;yes&quot; &amp; is.na(padj) ~ 0.051, 
+                               .default = padj)) %&gt;%
+  subset(in_network == &quot;yes&quot; &amp; in_panel == &quot;yes&quot;) %&gt;%
+  dplyr::rename(ch3_H2O2vsPBS_HBL1_log2FC = log2FoldChange, 
+                ch3_H2O2vsPBS_HBL1_padj = padj,
+                ch3_H2O2vsPBS_HBL1_log10padj = log10padj, 
+                ch3_H2O2vsPBS_HBL1_DE = diff_express)
+
+write.csv(volc_HBL1, file = &quot;output/network_visual/node_info_HBL1_H2O2vsPBS_PBSctrl.csv&quot;, row.names = F, na = &quot;&quot;)</code></pre>
+</div>
+<div id="combined-dataset" class="section level4">
+<h4>Combined dataset</h4>
+<pre class="r"><code>fig5_DESeq2_node_info &lt;- list(volc_DAUDI, volc_HBL1) %&gt;%
+  purrr::reduce(full_join)
+write.csv(fig5_DESeq2_node_info, file = &quot;output/network_visual/node_info_ch3_fig5_all.csv&quot;, row.names = F, na = &quot;&quot;)</code></pre>
+</div>
+</div>
+<div id="panels-4" class="section level3 tabset">
+<h3 class="tabset">Panels</h3>
+<div id="panel-a-4" class="section level4">
+<h4>Panel A</h4>
+<pre class="r"><code># Placeholder
+fig5_panelA &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig5_panelA
+
+# PNG
+# DAUDI anti-Ig vs PBS (DS091)
+png_fig5_panelA &lt;- magick::image_read(&quot;output/figures/non_R_figs/CytoScape_DAUDI_aIgvsPBS_Panel0125.png&quot;) %&gt;%
+  magick::image_border(color = &quot;black&quot;, geometry = &quot;1x1&quot;) %&gt;%
+  magick::image_ggplot(interpolate = TRUE) +
+  ggtitle(&quot;     Burkitt&#39;s model (DAUDI)\n     anti-Ig vs PBS&quot;) +
+  # theme(axis.title = element_text(colour = &quot;white&quot;), axis.text = element_blank()) +
+  textsize_small
+png_fig5_panelA</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelA-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># legend
+png_fig5_legend &lt;- magick::image_read(&quot;output/figures/non_R_figs/CytoScape_legend.png&quot;) %&gt;%
+  # magick::image_border(color = &quot;black&quot;, geometry = &quot;1x1&quot;) %&gt;%
+  magick::image_ggplot(interpolate = TRUE) +
+  # ggtitle(&quot;\n&quot;) +
+  textsize_small
+# png_fig5_legend</code></pre>
+</div>
+<div id="panel-b-3" class="section level4">
+<h4>Panel B</h4>
+<pre class="r"><code># Select data
+# fig5B_prot &lt;- sort(unique(heat_DAUDI_select$target_nospace)) 
+# From panel B: &quot;BTK_Y551&quot;, &quot;CD79a_Y182&quot;, &quot;CREB_S133&quot;, &quot;PYK2_Y402&quot;, &quot;S6_S235_S236&quot;, &quot;S6_S240_S244&quot;, &quot;VAV1_Y174&quot;
+fig5B_prot &lt;- c(&quot;BTK_Y551&quot;, &quot;CREB_S133&quot;, &quot;PYK2_Y402&quot;, &quot;S6_S240_S244&quot;, &quot;VAV1_Y174&quot;)
+fig5B_prot_label &lt;- c(&quot;BTK\n(Y551)&quot;, &quot;CREB\n(S133)&quot;, &quot;PYK2\n(Y402)&quot;, &quot;S6\n(S240/S244)&quot;, &quot;VAV1\n(Y174)&quot;)
+fig5B_data &lt;- fig5_data_id %&gt;%
+  dplyr::filter(cell_line == &quot;DAUDI&quot;) %&gt;%
+  subset(target_nospace %in% fig5B_prot)
+fig5B_mean &lt;- fig5_mean_id %&gt;%
+  dplyr::filter(cell_line == &quot;DAUDI&quot;) %&gt;%
+  subset(target_nospace %in% fig5B_prot)
+
+# Figure
+fig5_panelB &lt;- ggplot() +
+  geom_jitter(data = fig5B_data,
+              aes(x = factor(target_nospace, levels = fig5B_prot, labels = fig5B_prot_label),
+                  y = counts_norm,
+                  color = factor(stim_clean, levels = fig5_stim)),
+              alpha = 1, size = 1, width = 0.1) +
+  geom_errorbar(data = fig5B_mean,
+                aes(x = factor(target_nospace, levels = fig5B_prot, labels = fig5B_prot_label),
+                    ymin = counts_norm, ymax = counts_norm,
+                    group = factor(stim_clean, levels = fig5_stim),
+                    color = factor(stim_clean, levels = fig5_stim)),
+                width = 0.35, size = 0.75) +
+  # facet_wrap(vars(factor(target, label = &quot;pCD79a (Y182)&quot;)), nrow = 1) +
+  scale_color_manual(values = colors_stim, breaks = fig5_stim, labels = fig5_stim_label, name = &quot;Treatment&quot;) +
+  labs(x = element_blank(), y = &quot;Normalised\ncounts&quot;) +
+  theme_bw() +
+  RotatedAxis() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), legend.key.size = unit(0.5, &quot;cm&quot;), legend.spacing.y = unit(0.2, &quot;cm&quot;), legend.box.spacing = unit(0.05, &quot;cm&quot;), legend.position = &quot;right&quot;, legend.justification = &quot;left&quot;, axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.75)) +
+  textsize_small
+fig5_panelB</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelB-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-c-3" class="section level4">
+<h4>Panel C</h4>
+<pre class="r"><code># Placeholder
+fig5_panelC &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig5_panelC
+
+# PNG
+# HBL1 H2O2 vs PBS (DS091)
+png_fig5_panelC &lt;- magick::image_read(&quot;output/figures/non_R_figs/CytoScape_HBL1_H2O2vsPBS_Panel0125.png&quot;) %&gt;%
+  magick::image_border(color = &quot;black&quot;, geometry = &quot;1x1&quot;) %&gt;%
+  magick::image_ggplot(interpolate = TRUE) +
+  ggtitle(&quot;     DLBCL model (HBL1)\n     H2O2 vs PBS&quot;) +
+  # theme(axis.title = element_text(colour = &quot;white&quot;), axis.text = element_blank()) +
+  textsize_small
+png_fig5_panelC</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelC-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-d-3" class="section level4">
+<h4>Panel D</h4>
+<pre class="r"><code># Select data
+# fig5D_prot &lt;- sort(unique(heat_HBL1_select$target_nospace))
+# From panel D: &quot;ATF2_T71&quot;, &quot;BLNK_Y84&quot;, &quot;BTK&quot;, &quot;BTK_Y223&quot;, &quot;BTK_Y551&quot;, &quot;CD79a_Y182&quot;, &quot;CDK1_T14_Y15&quot;, &quot;GAPDH&quot;, &quot;JAK1_Y1022_Y1023&quot;, &quot;LYN_Y397&quot;, &quot;MKK4_S257_T261&quot;, &quot;PI3K_p110d&quot;, &quot;PYK2_Y402&quot;, &quot;SHP2_Y580&quot;, &quot;SRC_Y416&quot;, &quot;SYK_Y525_Y526&quot;, &quot;VAV1_Y174&quot;, &quot;ZAP70_Y319&quot;
+# From panel B: &quot;BTK_Y551&quot;, &quot;CD79a_Y182&quot;, &quot;CREB_S133&quot;, &quot;PYK2_Y402&quot;, &quot;S6_S235_S236&quot;, &quot;S6_S240_S244&quot;, &quot;VAV1_Y174&quot;
+# fig5D_prot &lt;- c(&quot;BTK_Y551&quot;, &quot;CREB_S133&quot;, &quot;PYK2_Y402&quot;, &quot;S6_S240_S244&quot;, &quot;VAV1_Y174&quot;)
+fig5D_prot &lt;- c(&quot;BLNK_Y84&quot;, &quot;BTK_Y223&quot;, &quot;LYN_Y397&quot;, &quot;SHP2_Y580&quot;, &quot;SYK_Y525_Y526&quot;)
+fig5D_prot_label &lt;- c(&quot;BLNK\n(Y84)&quot;, &quot;BTK\n(Y223)&quot;, &quot;LYN\n(Y397)&quot;, &quot;SHP2\n(Y580)&quot;, &quot;SYK\n(Y525/Y526)&quot;)
+fig5D_data &lt;- fig5_data_id %&gt;%
+  dplyr::filter(cell_line == &quot;HBL1&quot;) %&gt;%
+  subset(target_nospace %in% fig5D_prot)
+fig5D_mean &lt;- fig5_mean_id %&gt;%
+  dplyr::filter(cell_line == &quot;HBL1&quot;) %&gt;%
+  subset(target_nospace %in% fig5D_prot)
+
+# Figure
+fig5_panelD &lt;- ggplot() +
+  geom_jitter(data = fig5D_data,
+              aes(x = factor(target_nospace, levels = fig5D_prot, labels = fig5D_prot_label),
+                  y = counts_norm,
+                  color = factor(stim_clean, levels = fig5_stim)),
+              alpha = 1, size = 1, width = 0.1) +
+  geom_errorbar(data = fig5D_mean,
+                aes(x = factor(target_nospace, levels = fig5D_prot, labels = fig5D_prot_label),
+                    ymin = counts_norm, ymax = counts_norm,
+                    group = factor(stim_clean, levels = fig5_stim),
+                    color = factor(stim_clean, levels = fig5_stim)),
+                width = 0.35, size = 0.75) +
+  # facet_wrap(vars(factor(target, label = &quot;pCD79a (Y182)&quot;)), nrow = 1) +
+  scale_color_manual(values = colors_stim, breaks = fig5_stim, labels = fig5_stim_label, name = &quot;Treatment&quot;) +
+  labs(x = element_blank(), y = &quot;Normalised\ncounts&quot;) +
+  theme_bw() +
+  RotatedAxis() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), legend.key.size = unit(0.5, &quot;cm&quot;), legend.spacing.y = unit(0.2, &quot;cm&quot;), legend.box.spacing = unit(0.05, &quot;cm&quot;), legend.position = &quot;right&quot;, legend.justification = &quot;left&quot;, axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.75)) +
+  textsize_small
+fig5_panelD</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelD-1.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-e-2" class="section level4">
+<h4>Panel E</h4>
+<pre class="r"><code># Prepare data for FactoMineR package
+# cts_pca: dataframe with wells as row names, proteins as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts_pca &lt;- fig5_data_id  %&gt;%
+  dplyr::filter(counts_norm &gt;= 1) %&gt;%
+  dplyr::select(target_nospace, plate_well, counts_norm) %&gt;%
+  dplyr::filter(!is.na(counts_norm)) %&gt;%
+  spread(target_nospace, counts_norm) %&gt;%
+  replace(is.na(.), 0) %&gt;% 
+  column_to_rownames(&quot;plate_well&quot;)
+
+# cts_pca &lt;- scale(cts_pca)
+
+coldata &lt;- data.frame(plate_well = rownames(cts_pca)) %&gt;%
+  left_join(distinct(dplyr::select(fig5_data_id, all_of(fig5_meta_cols)))) %&gt;%
+  mutate(stimulus = factor(stim_clean, levels = fig5_stim), 
+         cell_line = factor(cell_line, levels = fig5_cells)) #If necessary, make factors of some metadata columns
+
+rownames(coldata) &lt;- coldata$plate_well
+
+# Results
+pca_results &lt;- PCA(cts_pca, scale.unit = FALSE, ncp = 5, graph = FALSE)
+
+pca_expl_var &lt;- as.data.frame(get_eigenvalue(pca_results)) %&gt;% # Percentage variance explained by each PC
+  rownames_to_column(&quot;PC&quot;) %&gt;%
+  pull(var = variance.percent, name = PC) %&gt;%
+  round(digits = 1)
+
+pca_variab &lt;- get_pca_var(pca_results) # Results focused on variables (proteins)
+pca_indiv &lt;- get_pca_ind(pca_results) # Results focused on individuals (wells)
+
+pca_data &lt;- as.data.frame(pca_indiv$coord[, 1:3]) %&gt;%
+  rownames_to_column(&quot;plate_well&quot;) %&gt;%
+  dplyr::rename(PC1 = Dim.1, PC2 = Dim.2, PC3 = Dim.3) %&gt;% 
+  left_join(coldata)</code></pre>
+<pre class="r"><code># Select data
+fig5E_select_colors &lt;- c(&quot;DAUDI - Basal&quot; = &quot;#737373&quot;, &quot;DAUDI - Activated (anti-Ig)&quot; = &quot;#2cb142&quot;, 
+                         &quot;HBL1 - Basal&quot; = &quot;#737373&quot;, &quot;HBL1 - Activated (H2O2)&quot; = &quot;#66CCEE&quot;)
+fig5E_select_shape &lt;- c(&quot;DAUDI - Basal&quot; = 16, &quot;DAUDI - Activated (anti-Ig)&quot; = 16, 
+                        &quot;HBL1 - Basal&quot; = 17, &quot;HBL1 - Activated (H2O2)&quot; = 17)
+# Figure
+fig5_panelE &lt;- ggplot(pca_data) + 
+  geom_point(aes(x = PC1, y = PC2, shape = description_sample, color = description_sample), size = 2.5, alpha = 0.9) +
+  scale_color_manual(values = fig5E_select_colors, breaks = fig5_cell_stim, label = fig5_cell_stim_label, name = &quot;Treatment&quot;) +
+  scale_shape_manual(values = fig5E_select_shape, breaks = fig5_cell_stim, label = fig5_cell_stim_label, name = &quot;Treatment&quot;) +
+  xlab(paste0(&quot;PC1: &quot;, pca_expl_var[1], &quot;% variance&quot;)) +
+  ylab(paste0(&quot;PC2: &quot;, pca_expl_var[2], &quot;% variance&quot;)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(), legend.key.size = unit(0.35, &quot;cm&quot;), legend.spacing.y = unit(0.5, &quot;cm&quot;), legend.box.spacing = unit(0.01, &quot;cm&quot;), legend.position = &quot;right&quot;, legend.justification = &quot;left&quot;) +
+  textsize_small
+fig5_panelE</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelE-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># PC1-3
+fig5E_PC12 &lt;- ggplot(pca_data) +
+  geom_point(aes(x = PC1, y = PC2, shape = cell_line, color = stim_clean), size = 2.5) +
+  # scale_color_manual(values = select_colors, breaks = names(select_colors), name = &quot;Inhibitor&quot;) +
+  # scale_shape_manual(values = c(16, 17), labels = c(&quot;Basal&quot;, &quot;Activated&quot;), name = &quot;Stimulation&quot;) +
+  xlab(paste0(&quot;PC1: &quot;, pca_expl_var[1], &quot;% variance&quot;)) +
+  ylab(paste0(&quot;PC2: &quot;, pca_expl_var[2], &quot;% variance&quot;)) +
+  ggtitle(&quot;PC1 vs PC2&quot;) +
+  theme_bw() +
+  theme(legend.position = &quot;none&quot;) +
+  textsize_medium
+# fig_PC12
+fig5E_PC13 &lt;- ggplot(pca_data) +
+  geom_point(aes(x = PC1, y = PC3, shape = cell_line, color = stim_clean), size = 2.5) +
+  xlab(paste0(&quot;PC1: &quot;, pca_expl_var[1], &quot;% variance&quot;)) +
+  ylab(paste0(&quot;PC3: &quot;, pca_expl_var[3], &quot;% variance&quot;)) +
+  ggtitle(&quot;PC1 vs PC3&quot;) +
+  theme_bw() +
+  theme(legend.position = &quot;none&quot;) +
+  textsize_medium
+# fig_PC13
+fig5E_PC23 &lt;- ggplot(pca_data) +
+  geom_point(aes(x = PC2, y = PC3, shape = cell_line, color = stim_clean), size = 2.5) +
+  xlab(paste0(&quot;PC2: &quot;, pca_expl_var[2], &quot;% variance&quot;)) +
+  ylab(paste0(&quot;PC3: &quot;, pca_expl_var[3], &quot;% variance&quot;)) +
+  ggtitle(&quot;PC2 vs PC3&quot;) +
+  theme_bw() +
+  # theme(legend.position = &quot;none&quot;) +
+  textsize_medium
+# fig_PC23
+fig5E_pca_PC13 &lt;- plot_grid(fig5E_PC12, fig5E_PC13, fig5E_PC23, ncol = 3, align = &quot;h&quot;, rel_widths = c(1, 1, 1.4))
+fig5E_pca_PC13</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelE-2.png" style="display: block; margin: auto;" /></p>
+</div>
+<div id="panel-f-1" class="section level4">
+<h4>Panel F</h4>
+<pre class="r"><code># Idea:
+# Visualise proteins contributing to PCs
+# Quality of representation: cos2 - size of dot
+# Percentage contribution to one PC: contrib - colour of dot
+
+# Select data
+data_contrib_2.5p &lt;- as.data.frame(pca_variab$contrib) %&gt;%
+  dplyr::filter(Dim.1 &gt;= 2.5 | Dim.2 &gt;= 2.5 | Dim.3 &gt;= 2.5) %&gt;% # | Dim.4 &gt;= 1 | Dim.5 &gt;= 1
+  dplyr::rename(PC1 = Dim.1, PC2 =  Dim.2, PC3 = Dim.3, PC4 = Dim.4, PC5 = Dim.5) %&gt;%
+  dplyr::select(c(PC1, PC2, PC3)) %&gt;%
+  mutate_all(function(x){x/100}) %&gt;%
+  as.matrix()
+data_contrib_prot &lt;- factor(rownames(data_contrib_2.5p))
+
+data_cos2_2.5p &lt;- as.data.frame(pca_variab$cos2) %&gt;%
+  rownames_to_column(&quot;target_nospace&quot;) %&gt;%
+  dplyr::filter(target_nospace %in% data_contrib_prot) %&gt;%
+  column_to_rownames(&quot;target_nospace&quot;) %&gt;%
+  dplyr::rename(PC1 = Dim.1, PC2 =  Dim.2, PC3 = Dim.3, PC4 = Dim.4, PC5 = Dim.5) %&gt;%
+  dplyr::select(c(PC1, PC2, PC3)) %&gt;%
+  as.matrix()
+
+# Tidy data format
+data_cos2_tidy &lt;- as.data.frame(data_cos2_2.5p) %&gt;%
+  rownames_to_column(&quot;target_nospace&quot;) %&gt;%
+  pivot_longer(2:4, names_to = &quot;PC&quot;, values_to = &quot;cos2&quot;)
+data_contrib_tidy &lt;- as.data.frame(data_contrib_2.5p) %&gt;%
+  rownames_to_column(&quot;target_nospace&quot;) %&gt;%
+  pivot_longer(2:4, names_to = &quot;PC&quot;, values_to = &quot;contrib&quot;) %&gt;%
+  mutate(contrib = contrib * 100)
+data_contrib_all &lt;- full_join(data_cos2_tidy, data_contrib_tidy) %&gt;%
+  left_join(distinct(dplyr::select(fig5_data_id, c(target_nospace, target))))
+fig5F_prot &lt;- sort(unique(data_contrib_all$target))
+fig5F_prot_label &lt;- c(&quot;AMPKa1/2 (T183/T172)&quot;, &quot;BLNK (Y84)&quot;, &quot;BTK (Y551)&quot;, &quot;CD38&quot;, &quot;CD43&quot;, &quot;GAPDH&quot;, &quot;IgM&quot;, &quot;LYN (Y397)&quot;, &quot;PARP (D214)&quot;, &quot;PKC-b1&quot;, &quot;PKC-b1 (T642)&quot;, &quot;S6 (S235/S236)&quot;, &quot;SRC (Y416)&quot;, &quot;VAV1 (Y174)&quot;, &quot;ZAP70 (Y319)&quot;)
+
+fig5F_PC_percent &lt;- c(paste0(&quot;PC1\n(&quot;, pca_expl_var[1], &quot;%)&quot;), 
+                      paste0(&quot;PC2\n(&quot;, pca_expl_var[2], &quot;%)&quot;), 
+                      paste0(&quot;PC3\n(&quot;, pca_expl_var[3], &quot;%)&quot;))
+
+# Figure
+fig5_panelF &lt;- ggplot() +
+  geom_point(data = data_contrib_all, 
+             aes(x = factor(target, levels = fig5F_prot, label = fig5F_prot_label), 
+                 y = factor(PC, levels = rev(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;)), labels = rev(fig5F_PC_percent)), 
+                 size = cos2, fill = contrib), 
+             color = &quot;black&quot;, pch = 21) +
+  scale_size_area(max_size = 3, breaks = c(0, 0.25, 0.5, 0.75, 1), name = &quot;Quality of\nrepresentation\nin PCs&quot;) +
+  scale_fill_gradient(low = &quot;#FEDA8B&quot;, high = &quot;#73001a&quot;, name = &quot;Percentage\ncontribution\nwithin one PC&quot;) + #7f2704 #67000d
+  labs(x = &quot;&quot;, y = &quot;&quot;) + 
+  theme_bw() +
+  theme(legend.key.size = unit(0.2, &quot;cm&quot;), legend.spacing.y = unit(0.1, &quot;cm&quot;), legend.box.spacing = unit(0.1, &quot;cm&quot;), axis.text.x = element_text(size = 5.75), legend.title = element_text(size = 7), legend.position = &quot;right&quot;) + 
+  RotatedAxis() +
+  textsize_small
+fig5_panelF</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_panelF-1.png" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="combined-fig-4" class="section level3">
+<h3>Combined fig</h3>
+<pre class="r"><code># Combine all panels of the figure
+fig5_AC &lt;- plot_grid(png_fig5_panelA, png_fig5_panelC, labels = PANEL_labels[c(1, 3)], nrow = 1, rel_widths = c(1, 1), label_size = 10)
+fig5_ACleg &lt;- plot_grid(fig5_AC, png_fig5_legend, nrow = 2, rel_heights = c(6.5, 1), label_size = 10)
+fig5_BD &lt;- plot_grid(fig5_panelB, fig5_panelD, labels = PANEL_labels[c(2, 4)], nrow = 1, rel_widths = c(1, 1), label_size = 10)
+fig5_EF &lt;- plot_grid(fig5_panelE, fig5_panelF, labels = PANEL_labels[c(5, 6)], nrow = 1, rel_widths = c(1, 1.2), label_size = 10)
+fig5 &lt;- plot_grid(fig5_ACleg, fig5_BD, fig5_EF, ncol = 1, rel_heights = c(2.2, 1.2, 1), label_size = 10)
+fig5</code></pre>
+<p><img src="figure/y_chapter_main.Rmd/fig5_combi-1.png" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save figure as pdf, jpg, and png
+ggsave(
+  fig5,
+  filename = &quot;output/figures/main_fig5.pdf&quot;,
+  width = 6,
+  height = 7.25,
+  units = &quot;in&quot;,
+  dpi = 300
+  )
+ggsave(
+  fig5,
+  filename = &quot;output/figures/main_fig5.jpg&quot;,
+  width = 6,
+  height = 7.25,
+  units = &quot;in&quot;,
+  dpi = 300
+  )</code></pre>
+<p><em>Figure 5: ID-seq reveals network-wide phosphorylation events upon
+activation of the B-cell signaling network.</em></p>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;fig5&quot;))
+rm(list = ls(pattern = &quot;png&quot;))
+rm(list = ls(pattern = &quot;results_&quot;))
+rm(list = ls(pattern = &quot;volc_&quot;))
+rm(list = ls(pattern = &quot;list_&quot;))
+rm(list = ls(pattern = &quot;names_&quot;))
+rm(list = ls(pattern = &quot;titles_&quot;))
+rm(list = ls(pattern = &quot;data_&quot;))
+rm(list = ls(pattern = &quot;heat_&quot;))
+rm(list = ls(pattern = &quot;rld&quot;))
+rm(list = ls(pattern = &quot;pca&quot;))
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb)  max used  (Mb)
+Ncells 11137960 594.9   17081285 912.3  17081285 912.3
+Vcells 21648063 165.2   67685689 516.5 130989777 999.4</code></pre>
+</div>
+</div>
+<div id="figure-0" class="section level2">
+<h2>Figure 0</h2>
+<p><em>Figure title.</em></p>
+<p>Input: - BioRender schematic figures</p>
+<ul>
+<li><p>… phosphoflow data</p></li>
+<li><p>… ID-seq data</p></li>
+</ul>
+<div id="data-3" class="section level3">
+<h3>Data</h3>
+</div>
+<div id="panels-5" class="section level3 tabset">
+<h3 class="tabset">Panels</h3>
+<div id="panel-a-5" class="section level4">
+<h4>Panel A</h4>
+<pre class="r"><code># Placeholder
+fig0_panelA &lt;- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = &quot;BCR signaling network&quot;) + 
+  theme_bw() +
+  theme(axis.text = element_text(color = &quot;white&quot;), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# fig0_panelA
+
+# PNG
+png_fig0 &lt;- image_read(&quot;output/figures/non_R_figs/xxx.png&quot;) %&gt;%
+  image_ggplot()
+# png_fig0</code></pre>
+</div>
+<div id="panel-b-4" class="section level4">
+<h4>Panel B</h4>
+<pre class="r"><code># Select data
+
+# Figure</code></pre>
+</div>
+<div id="panel-c-4" class="section level4">
+<h4>Panel C</h4>
+<pre class="r"><code># Select data
+
+# Figure</code></pre>
+</div>
+</div>
+<div id="combined-fig-5" class="section level3">
+<h3>Combined fig</h3>
+<pre class="r"><code># Combine all panels of the figure
+fig0 &lt;- plot_grid(panelA, panelB, labels = panel_labels[c(1, 2)], ncol = 1, rel_heights = c(1, 1), label_size = 10)
+fig0
+
+# Save figure as pdf, jpg, and png
+# ggsave(
+#   fig0,
+#   filename = &quot;output/figures/fig0.pdf&quot;,
+#   width = 6,
+#   height = 3,
+#   units = &quot;in&quot;,
+#   dpi = 300
+#   )
+ggsave(
+  fig0,
+  filename = &quot;output/figures/fig0.jpg&quot;,
+  width = 6,
+  height = 3,
+  units = &quot;in&quot;,
+  dpi = 300
+  )
+# ggsave(
+#   fig0,
+#   filename = &quot;output/figures/fig0.png&quot;,
+#   width = 6,
+#   height = 3,
+#   units = &quot;in&quot;,
+#   dpi = 300
+#   )</code></pre>
+<p><em>Figure title.</em></p>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;fig0&quot;))
+rm(list = ls(pattern = &quot;png&quot;))
+rm(list = ls(pattern = &quot;results_&quot;))
+rm(list = ls(pattern = &quot;volc_&quot;))
+rm(list = ls(pattern = &quot;list_&quot;))
+rm(list = ls(pattern = &quot;names_&quot;))
+rm(list = ls(pattern = &quot;titles_&quot;))
+rm(list = ls(pattern = &quot;data_&quot;))
+rm(list = ls(pattern = &quot;heat_&quot;))
+rm(list = ls(pattern = &quot;rld&quot;))
+rm(list = ls(pattern = &quot;pca&quot;))
+gc()</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 10 x64 (build 19045)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_Netherlands.utf8  LC_CTYPE=English_Netherlands.utf8   
+[3] LC_MONETARY=English_Netherlands.utf8 LC_NUMERIC=C                        
+[5] LC_TIME=English_Netherlands.utf8    
+
+time zone: Europe/Amsterdam
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] png_0.1-8                   magick_2.8.3               
+ [3] ggridges_0.5.6              forecast_8.23.0            
+ [5] zoo_1.8-12                  ggcyto_1.32.0              
+ [7] flowWorkspace_4.16.0        ncdfFlow_2.50.0            
+ [9] BH_1.84.0-0                 flowCore_2.16.0            
+[11] ashr_2.2-63                 apeglm_1.26.1              
+[13] MASS_7.3-60.2               ggbreak_0.1.2              
+[15] geomtextpath_0.1.4          ggh4x_0.2.8                
+[17] cowplot_1.1.3               patchwork_1.2.0            
+[19] greekLetters_1.0.2          ggpubr_0.6.0               
+[21] ggrepel_0.9.5               scales_1.3.0               
+[23] ggthemes_5.1.0              RColorBrewer_1.1-3         
+[25] scico_1.5.0                 viridis_0.6.5              
+[27] viridisLite_0.4.2           mmtable2_0.1.3             
+[29] gt_0.10.1                   ggvenn_0.1.10              
+[31] rgl_1.3.1                   plotly_4.10.4              
+[33] ggcorrplot_0.1.4.1          corrplot_0.92              
+[35] umap_0.2.10.0               ggplotify_0.1.2            
+[37] dendsort_0.3.4              vsn_3.72.0                 
+[39] ComplexHeatmap_2.20.0       platetools_0.1.7           
+[41] kableExtra_1.4.0            DESeq2_1.44.0              
+[43] SummarizedExperiment_1.34.0 Biobase_2.64.0             
+[45] MatrixGenerics_1.16.0       matrixStats_1.3.0          
+[47] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1        
+[49] IRanges_2.38.0              S4Vectors_0.42.0           
+[51] BiocGenerics_0.50.0         Seurat_5.1.0               
+[53] SeuratObject_5.0.2          sp_2.1-4                   
+[55] rstatix_0.7.2               factoextra_1.0.7           
+[57] FactoMineR_2.11             readxl_1.4.3               
+[59] Matrix_1.7-0                lubridate_1.9.3            
+[61] forcats_1.0.0               stringr_1.5.1              
+[63] dplyr_1.1.4                 purrr_1.0.2                
+[65] readr_2.1.5                 tidyr_1.3.1                
+[67] tibble_3.2.1                ggplot2_3.5.1              
+[69] tidyverse_2.0.0             workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] vroom_1.6.5             nnet_7.3-19             goftest_1.2-3          
+  [4] DT_0.33                 TH.data_1.1-2           vctrs_0.6.5            
+  [7] spatstat.random_3.2-3   digest_0.6.36           shape_1.4.6.1          
+ [10] git2r_0.33.0            mixsqp_0.3-54           deldir_2.0-4           
+ [13] parallelly_1.37.1       SQUAREM_2021.1          reshape2_1.4.4         
+ [16] httpuv_1.6.15           foreach_1.5.2           withr_3.0.0            
+ [19] xfun_0.45               ggfun_0.1.5             survival_3.6-4         
+ [22] memoise_2.0.1           hexbin_1.28.3           RProtoBufLib_2.16.0    
+ [25] emmeans_1.10.2          systemfonts_1.1.0       ragg_1.3.2             
+ [28] GlobalOptions_0.1.2     quantmod_0.4.26         pbapply_1.7-2          
+ [31] promises_1.3.0          scatterplot3d_0.3-44    httr_1.4.7             
+ [34] globals_0.16.3          fitdistrplus_1.1-11     ps_1.7.6               
+ [37] rstudioapi_0.16.0       UCSC.utils_1.0.0        miniUI_0.1.1.1         
+ [40] generics_0.1.3          base64enc_0.1-3         processx_3.8.4         
+ [43] curl_5.2.1              zlibbioc_1.50.0         polyclip_1.10-6        
+ [46] quadprog_1.5-8          GenomeInfoDbData_1.2.12 SparseArray_1.4.8      
+ [49] xtable_1.8-4            doParallel_1.0.17       evaluate_0.24.0        
+ [52] S4Arrays_1.4.1          preprocessCore_1.66.0   fracdiff_1.5-3         
+ [55] hms_1.1.3               irlba_2.3.5.1           colorspace_2.1-0       
+ [58] urca_1.3-4              ROCR_1.0-11             reticulate_1.38.0      
+ [61] spatstat.data_3.1-2     Rgraphviz_2.48.0        magrittr_2.0.3         
+ [64] lmtest_0.9-40           later_1.3.2             lattice_0.22-6         
+ [67] spatstat.geom_3.2-9     future.apply_1.11.2     getPass_0.2-4          
+ [70] XML_3.99-0.17           scattermore_1.2         xts_0.14.0             
+ [73] RcppAnnoy_0.0.22        pillar_1.9.0            nlme_3.1-164           
+ [76] iterators_1.0.14        compiler_4.4.1          RSpectra_0.16-1        
+ [79] stringi_1.8.4           tensor_1.5              plyr_1.8.9             
+ [82] crayon_1.5.3            abind_1.4-5             truncnorm_1.0-9        
+ [85] gridGraphics_0.5-1      emdbook_1.3.13          locfit_1.5-9.10        
+ [88] bit_4.0.5               sandwich_3.1-0          whisker_0.4.1          
+ [91] codetools_0.2-20        multcomp_1.4-25         textshaping_0.4.0      
+ [94] TTR_0.24.4              openssl_2.2.0           bslib_0.7.0            
+ [97] GetoptLong_1.0.5        mime_0.12               splines_4.4.1          
+[100] circlize_0.4.16         Rcpp_1.0.12             fastDummies_1.7.3      
+[103] tseries_0.10-56         cellranger_1.1.0        Rttf2pt1_1.3.12        
+[106] leaps_3.2               knitr_1.47              utf8_1.2.4             
+[109] clue_0.3-65             fs_1.6.4                listenv_0.9.1          
+[112] ggsignif_0.6.4          estimability_1.5.1      callr_3.7.6            
+[115] statmod_1.5.0           tzdb_0.4.0              svglite_2.1.3          
+[118] pkgconfig_2.0.3         tools_4.4.1             cachem_1.1.0           
+[121] numDeriv_2016.8-1.1     fastmap_1.2.0           rmarkdown_2.27         
+[124] ica_1.0-3               broom_1.0.6             sass_0.4.9             
+[127] coda_0.19-4.1           BiocManager_1.30.23     dotCall64_1.1-1        
+[130] graph_1.82.0            carData_3.0-5           RANN_2.6.1             
+[133] farver_2.1.2            yaml_2.3.8              cli_3.6.3              
+[136] leiden_0.4.3.1          lifecycle_1.0.4         askpass_1.2.0          
+[139] uwot_0.2.2              mvtnorm_1.2-5           backports_1.5.0        
+[142] cytolib_2.16.0          BiocParallel_1.38.0     timechange_0.3.0       
+[145] gtable_0.3.5            rjson_0.2.21            progressr_0.14.0       
+[148] parallel_4.4.1          limma_3.60.3            jsonlite_1.8.8         
+[151] RcppHNSW_0.6.0          bit64_4.0.5             multcompView_0.1-10    
+[154] assertthat_0.2.1        Rtsne_0.17              yulab.utils_0.1.4      
+[157] spatstat.utils_3.0-5    bdsmatrix_1.3-7         highr_0.11             
+[160] jquerylib_0.1.4         timeDate_4032.109       lazyeval_0.2.2         
+[163] shiny_1.8.1.1           htmltools_0.5.8.1       affy_1.82.0            
+[166] sctransform_0.4.1       glue_1.7.0              spam_2.10-0            
+[169] XVector_0.44.0          rprojroot_2.0.4         gridExtra_2.3          
+[172] flashClust_1.01-2       invgamma_1.1            igraph_2.0.3           
+[175] extrafontdb_1.0         R6_2.5.1                labeling_0.4.3         
+[178] bbmle_1.0.25.1          cluster_2.1.6           aplot_0.2.3            
+[181] DelayedArray_0.30.1     tidyselect_1.2.1        xml2_1.3.6             
+[184] car_3.1-2               future_1.33.2           munsell_0.5.1          
+[187] KernSmooth_2.23-24      affyio_1.74.0           data.table_1.15.4      
+[190] htmlwidgets_1.6.4       rlang_1.1.4             spatstat.sparse_3.1-0  
+[193] extrafont_0.19          spatstat.explore_3.2-7  fansi_1.0.6            </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

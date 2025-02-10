@@ -1,0 +1,385 @@
+wellID	barcode	sample_repl	sample	replicate
+A1	AGACTC	control_01	control	1
+A2	AGCTAG	control_02	control	2
+A3	AGCTCA	control_03	control	3
+A4	AGCTTC	aIg_01	aIg	1
+A5	CATGAG	aIg_02	aIg	2
+A6	CATGCA	aIg_03	aIg	3
+A7	CATGTC	noAb	noAb	1
+A8	CACTAG	noCells	noCells	1
+A9	CAGATC	unused_01	unused	1
+A10	TCACAG	unused_02	unused	2
+A11	AGGATC	unused_03	unused	3
+A12	AGTGCA	unused_04	unused	4
+B1	AGTGTC	unused_05	unused	5
+B2	TCCTAG	unused_06	unused	6
+B3	TCTGAG	unused_07	unused	7
+B4	TCTGCA	unused_08	unused	8
+B5	TCGAAG	unused_09	unused	9
+B6	TCGACA	unused_10	unused	10
+B7	TCGATC	unused_11	unused	11
+B8	GTACAG	unused_12	unused	12
+B9	GTACCA	unused_13	unused	13
+B10	GTACTC	unused_14	unused	14
+B11	GTCTAG	unused_15	unused	15
+B12	GTCTCA	unused_16	unused	16
+C1	GTTGCA	unused_17	unused	17
+C2	GTGACA	unused_18	unused	18
+C3	GTGATC	unused_19	unused	19
+C4	ACAGTG	unused_20	unused	20
+C5	ACCATG	unused_21	unused	21
+C6	ACTCTG	unused_22	unused	22
+C7	ACTCGA	unused_23	unused	23
+C8	ACGTAC	unused_24	unused	24
+C9	ACGTTG	unused_25	unused	25
+C10	ACGTGA	unused_26	unused	26
+C11	CTAGAC	unused_27	unused	27
+C12	CTAGTG	unused_28	unused	28
+D1	CTAGGA	unused_29	unused	29
+D2	CTCATG	unused_30	unused	30
+D3	CTCAGA	unused_31	unused	31
+D4	CTTCGA	unused_32	unused	32
+D5	CTGTAC	unused_33	unused	33
+D6	CTGTGA	unused_34	unused	34
+D7	TGAGAC	unused_35	unused	35
+D8	TGCAAC	unused_36	unused	36
+D9	TGCATG	unused_37	unused	37
+D10	TGCAGA	unused_38	unused	38
+D11	TGTCAC	unused_39	unused	39
+D12	TGTCGA	unused_40	unused	40
+		unused_41	unused	41
+		unused_42	unused	42
+		unused_43	unused	43
+		unused_44	unused	44
+		unused_45	unused	45
+		unused_46	unused	46
+		unused_47	unused	47
+		unused_48	unused	48
+		unused_49	unused	49
+		unused_50	unused	50
+		unused_51	unused	51
+		unused_52	unused	52
+		unused_53	unused	53
+		unused_54	unused	54
+		unused_55	unused	55
+		unused_56	unused	56
+		unused_57	unused	57
+		unused_58	unused	58
+		unused_59	unused	59
+		unused_60	unused	60
+		unused_61	unused	61
+		unused_62	unused	62
+		unused_63	unused	63
+		unused_64	unused	64
+		unused_65	unused	65
+		unused_66	unused	66
+		unused_67	unused	67
+		unused_68	unused	68
+		unused_69	unused	69
+		unused_70	unused	70
+		unused_71	unused	71
+		unused_72	unused	72
+		unused_73	unused	73
+		unused_74	unused	74
+		unused_75	unused	75
+		unused_76	unused	76
+		unused_77	unused	77
+		unused_78	unused	78
+		unused_79	unused	79
+		unused_80	unused	80
+		unused_81	unused	81
+		unused_82	unused	82
+		unused_83	unused	83
+		unused_84	unused	84
+		unused_85	unused	85
+		unused_86	unused	86
+		unused_87	unused	87
+		unused_88	unused	88
+		unused_89	unused	89
+		unused_90	unused	90
+		unused_91	unused	91
+		unused_92	unused	92
+		unused_93	unused	93
+		unused_94	unused	94
+		unused_95	unused	95
+		unused_96	unused	96
+		unused_97	unused	97
+		unused_98	unused	98
+		unused_99	unused	99
+		unused_100	unused	100
+		unused_101	unused	101
+		unused_102	unused	102
+		unused_103	unused	103
+		unused_104	unused	104
+		unused_105	unused	105
+		unused_106	unused	106
+		unused_107	unused	107
+		unused_108	unused	108
+		unused_109	unused	109
+		unused_110	unused	110
+		unused_111	unused	111
+		unused_112	unused	112
+		unused_113	unused	113
+		unused_114	unused	114
+		unused_115	unused	115
+		unused_116	unused	116
+		unused_117	unused	117
+		unused_118	unused	118
+		unused_119	unused	119
+		unused_120	unused	120
+		unused_121	unused	121
+		unused_122	unused	122
+		unused_123	unused	123
+		unused_124	unused	124
+		unused_125	unused	125
+		unused_126	unused	126
+		unused_127	unused	127
+		unused_128	unused	128
+		unused_129	unused	129
+		unused_130	unused	130
+		unused_131	unused	131
+		unused_132	unused	132
+		unused_133	unused	133
+		unused_134	unused	134
+		unused_135	unused	135
+		unused_136	unused	136
+		unused_137	unused	137
+		unused_138	unused	138
+		unused_139	unused	139
+		unused_140	unused	140
+		unused_141	unused	141
+		unused_142	unused	142
+		unused_143	unused	143
+		unused_144	unused	144
+		unused_145	unused	145
+		unused_146	unused	146
+		unused_147	unused	147
+		unused_148	unused	148
+		unused_149	unused	149
+		unused_150	unused	150
+		unused_151	unused	151
+		unused_152	unused	152
+		unused_153	unused	153
+		unused_154	unused	154
+		unused_155	unused	155
+		unused_156	unused	156
+		unused_157	unused	157
+		unused_158	unused	158
+		unused_159	unused	159
+		unused_160	unused	160
+		unused_161	unused	161
+		unused_162	unused	162
+		unused_163	unused	163
+		unused_164	unused	164
+		unused_165	unused	165
+		unused_166	unused	166
+		unused_167	unused	167
+		unused_168	unused	168
+		unused_169	unused	169
+		unused_170	unused	170
+		unused_171	unused	171
+		unused_172	unused	172
+		unused_173	unused	173
+		unused_174	unused	174
+		unused_175	unused	175
+		unused_176	unused	176
+		unused_177	unused	177
+		unused_178	unused	178
+		unused_179	unused	179
+		unused_180	unused	180
+		unused_181	unused	181
+		unused_182	unused	182
+		unused_183	unused	183
+		unused_184	unused	184
+		unused_185	unused	185
+		unused_186	unused	186
+		unused_187	unused	187
+		unused_188	unused	188
+		unused_189	unused	189
+		unused_190	unused	190
+		unused_191	unused	191
+		unused_192	unused	192
+		unused_193	unused	193
+		unused_194	unused	194
+		unused_195	unused	195
+		unused_196	unused	196
+		unused_197	unused	197
+		unused_198	unused	198
+		unused_199	unused	199
+		unused_200	unused	200
+		unused_201	unused	201
+		unused_202	unused	202
+		unused_203	unused	203
+		unused_204	unused	204
+		unused_205	unused	205
+		unused_206	unused	206
+		unused_207	unused	207
+		unused_208	unused	208
+		unused_209	unused	209
+		unused_210	unused	210
+		unused_211	unused	211
+		unused_212	unused	212
+		unused_213	unused	213
+		unused_214	unused	214
+		unused_215	unused	215
+		unused_216	unused	216
+		unused_217	unused	217
+		unused_218	unused	218
+		unused_219	unused	219
+		unused_220	unused	220
+		unused_221	unused	221
+		unused_222	unused	222
+		unused_223	unused	223
+		unused_224	unused	224
+		unused_225	unused	225
+		unused_226	unused	226
+		unused_227	unused	227
+		unused_228	unused	228
+		unused_229	unused	229
+		unused_230	unused	230
+		unused_231	unused	231
+		unused_232	unused	232
+		unused_233	unused	233
+		unused_234	unused	234
+		unused_235	unused	235
+		unused_236	unused	236
+		unused_237	unused	237
+		unused_238	unused	238
+		unused_239	unused	239
+		unused_240	unused	240
+		unused_241	unused	241
+		unused_242	unused	242
+		unused_243	unused	243
+		unused_244	unused	244
+		unused_245	unused	245
+		unused_246	unused	246
+		unused_247	unused	247
+		unused_248	unused	248
+		unused_249	unused	249
+		unused_250	unused	250
+		unused_251	unused	251
+		unused_252	unused	252
+		unused_253	unused	253
+		unused_254	unused	254
+		unused_255	unused	255
+		unused_256	unused	256
+		unused_257	unused	257
+		unused_258	unused	258
+		unused_259	unused	259
+		unused_260	unused	260
+		unused_261	unused	261
+		unused_262	unused	262
+		unused_263	unused	263
+		unused_264	unused	264
+		unused_265	unused	265
+		unused_266	unused	266
+		unused_267	unused	267
+		unused_268	unused	268
+		unused_269	unused	269
+		unused_270	unused	270
+		unused_271	unused	271
+		unused_272	unused	272
+		unused_273	unused	273
+		unused_274	unused	274
+		unused_275	unused	275
+		unused_276	unused	276
+		unused_277	unused	277
+		unused_278	unused	278
+		unused_279	unused	279
+		unused_280	unused	280
+		unused_281	unused	281
+		unused_282	unused	282
+		unused_283	unused	283
+		unused_284	unused	284
+		unused_285	unused	285
+		unused_286	unused	286
+		unused_287	unused	287
+		unused_288	unused	288
+		unused_289	unused	289
+		unused_290	unused	290
+		unused_291	unused	291
+		unused_292	unused	292
+		unused_293	unused	293
+		unused_294	unused	294
+		unused_295	unused	295
+		unused_296	unused	296
+		unused_297	unused	297
+		unused_298	unused	298
+		unused_299	unused	299
+		unused_300	unused	300
+		unused_301	unused	301
+		unused_302	unused	302
+		unused_303	unused	303
+		unused_304	unused	304
+		unused_305	unused	305
+		unused_306	unused	306
+		unused_307	unused	307
+		unused_308	unused	308
+		unused_309	unused	309
+		unused_310	unused	310
+		unused_311	unused	311
+		unused_312	unused	312
+		unused_313	unused	313
+		unused_314	unused	314
+		unused_315	unused	315
+		unused_316	unused	316
+		unused_317	unused	317
+		unused_318	unused	318
+		unused_319	unused	319
+		unused_320	unused	320
+		unused_321	unused	321
+		unused_322	unused	322
+		unused_323	unused	323
+		unused_324	unused	324
+		unused_325	unused	325
+		unused_326	unused	326
+		unused_327	unused	327
+		unused_328	unused	328
+		unused_329	unused	329
+		unused_330	unused	330
+		unused_331	unused	331
+		unused_332	unused	332
+		unused_333	unused	333
+		unused_334	unused	334
+		unused_335	unused	335
+		unused_336	unused	336
+		unused_337	unused	337
+		unused_338	unused	338
+		unused_339	unused	339
+		unused_340	unused	340
+		unused_341	unused	341
+		unused_342	unused	342
+		unused_343	unused	343
+		unused_344	unused	344
+		unused_345	unused	345
+		unused_346	unused	346
+		unused_347	unused	347
+		unused_348	unused	348
+		unused_349	unused	349
+		unused_350	unused	350
+		unused_351	unused	351
+		unused_352	unused	352
+		unused_353	unused	353
+		unused_354	unused	354
+		unused_355	unused	355
+		unused_356	unused	356
+		unused_357	unused	357
+		unused_358	unused	358
+		unused_359	unused	359
+		unused_360	unused	360
+		unused_361	unused	361
+		unused_362	unused	362
+		unused_363	unused	363
+		unused_364	unused	364
+		unused_365	unused	365
+		unused_366	unused	366
+		unused_367	unused	367
+		unused_368	unused	368
+		unused_369	unused	369
+		unused_370	unused	370
+		unused_371	unused	371
+		unused_372	unused	372
+		unused_373	unused	373
+		unused_374	unused	374
+		unused_375	unused	375
+		unused_376	unused	376

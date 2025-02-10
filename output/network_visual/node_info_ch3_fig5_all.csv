@@ -1,0 +1,44 @@
+"target_nospace","ch3_aIgvsPBS_DAUDI_log2FC","ch3_aIgvsPBS_DAUDI_padj","ch3_aIgvsPBS_DAUDI_log10padj","ch3_aIgvsPBS_DAUDI_DE","shared name","in_panel","in_network","target","modification","marker_path","ch3_H2O2vsPBS_HBL1_log2FC","ch3_H2O2vsPBS_HBL1_padj","ch3_H2O2vsPBS_HBL1_log10padj","ch3_H2O2vsPBS_HBL1_DE"
+"BTK_Y551",0.526500995335002,9.51083882025596e-17,16.0217811782315,"UP","BTK","yes","yes","BTK (Y551)","phospho","BCR_upstream",1.93378359875157,8.85012198003795e-206,205.053050743439,"UP"
+"CD79a_Y182",0.565228456856886,1.42587366869e-05,4.84591895093664,"UP","CD79a/b","yes","yes","CD79a (Iga) (Y182)","phospho","BCR_upstream",0.85945196794917,2.61327504802162e-08,7.58281487823607,"UP"
+"CREB_S133",0.292613940595296,1.53381616680761e-06,5.81422668896935,"UP","CREB","yes","yes","CREB (S133)","phospho","MAPK-JNK_signaling",0.203921329042038,0.00221888185438029,2.65386582140778,"UP"
+"PYK2_Y402",0.40626902722043,0.001435266726776,2.84306738310923,"UP","PYK2","yes","yes","PYK2 (Y402)","phospho","PLCy2_signaling",1.69660380720154,3.47409034553129e-36,35.4591588916876,"UP"
+"S6_S235_S236",0.300714178783191,5.39056763306131e-16,15.2683655006896,"UP","S6","yes","yes","S6 (S235/S236)","phospho","PI3K-Akt_signaling",0,0.051,,
+"VAV1_Y174",0.947209788563055,6.47229710663594e-54,53.1889415549293,"UP","VAV1","yes","yes","VAV1 (Y174)","phospho","BCR_upstream",2.64658420547913,4.36495133571796e-294,293.360020593825,"UP"
+"AKT_T308",0,0.051,,,"AKT","yes","yes","AKT (T308)","phospho","PI3K-Akt_signaling",0,0.051,,
+"AMPKa1_2_T183_T172",0,0.051,,,"AMPKa1/2","yes","yes","AMPKa1/2 (T183/T172)","phospho","metabolism",0,0.051,,
+"ATF2_T71",0,0.051,,,"ATF2","yes","yes","ATF2 (T71)","phospho","MAPK-JNK_signaling",0.394531471697268,2.28593994599243e-08,7.64093518315626,"UP"
+"BLNK_Y84",0,0.051,,,"BLNK","yes","yes","BLNK (SLP-65) (Y84)","phospho","ERK_signaling",1.50049866745336,9.13128123941859e-145,144.039468280936,"UP"
+"CD19",0,0.051,,,"CD19","yes","yes","CD19","no","PI3K-Akt_signaling",0,0.051,,
+"CD22_Y822",0,0.051,,,"CD22","yes","yes","CD22 (Y822)","phospho","BCR_upstream",0,0.051,,
+"cFOS_S32",0,0.051,,,"cFOS","yes","yes","c-FOS (S32)","phospho","ERK_signaling",-0.28456063037495,0.0375052637120165,1.42590777652135,"DOWN"
+"cJUN_S63",0,0.051,,,"cJUN","yes","yes","c-JUN (S63)","phospho","MAPK-JNK_signaling",0,0.051,,
+"cMYC_T58",0,0.051,,,"cMYC","yes","yes","c-MYC (T58)","phospho","ERK_signaling",-0.221776577181898,0.00587305108065835,2.2311362218794,"DOWN"
+"ERK1_2_T202_Y204",0,0.051,,,"ERK1/2","yes","yes","ERK1/2 (T202/Y204)","phospho","ERK_signaling",0,0.051,,
+"GSK3b_S9",0,0.051,,,"GSK3b","yes","yes","GSK-3b (S9)","phospho","PI3K-Akt_signaling",0,0.051,,
+"IkB",0,0.051,,,"IkB","yes","yes","IkB","no","NFkB_signaling",-0.204904205322928,0.0448247415468074,1.34848220583982,"DOWN"
+"IKKa_b_S176_S180",0,0.051,,,"IKKa/b","yes","yes","IKKa/b (S176/S180)","phospho","NFkB_signaling",-0.278377550077941,0.0378718228516021,1.42168379085647,"DOWN"
+"IRF3_S396",0,0.051,,,"IRF3","yes","yes","IRF3 (S396)","phospho","JAK-STAT_signaling",0,0.051,,
+"IRF7_S477_S479",0,0.051,,,"IRF7","yes","yes","IRF7 (S477/S479)","phospho","JAK-STAT_signaling",0,0.051,,
+"JAK1_Y1022_Y1023",0,0.051,,,"JAK1","yes","yes","JAK1 (Y1022/Y1023)","phospho","JAK-STAT_signaling",1.22224110523845,6.77323082134525e-72,71.1692041240499,"UP"
+"JNK1_2_SAPK_T183_Y185",0,0.051,,,"JNK1/2","yes","yes","JNK1/2 (SAPK) (T183/Y185)","phospho","MAPK-JNK_signaling",0,0.051,,
+"LYN_Y397",0,0.051,,,"LYN","yes","yes","LYN (SRC) (Y397)","phospho","BCR_upstream",1.31272678509637,1.32187603066139e-71,70.8788092723271,"UP"
+"MEF2C",0,0.051,,,"MEF2C","yes","yes","MEF2C","no","MAPK-JNK_signaling",0,0.051,,
+"MEK1_2_S218_S222",0,0.051,,,"MEK1/2","yes","yes","MEK1/2 (S218/S222)","phospho","ERK_signaling",0,0.051,,
+"MKK4_S257_T261",0,0.051,,,"MKK4","yes","yes","MKK4 (S257/T261)","phospho","MAPK-JNK_signaling",0.403876661339908,0.000740195402917155,3.13065361647667,"UP"
+"MKK7_S271_T275",0,0.051,,,"MKK7","yes","yes","MKK7 (S271/T275)","phospho","MAPK-JNK_signaling",0,0.051,,
+"mTOR_S2448",0,0.051,,,"mTOR","yes","yes","mTOR (S2448)","phospho","PI3K-Akt_signaling",0,0.051,,
+"NFkB_p50",0,0.051,,,"NFkB p50","yes","yes","NFkB p50","no","NFkB_signaling",0,0.051,,
+"NFkB_p65_S536",0,0.051,,,"NFkB p65","yes","yes","NFkB p65 (RelA) (S536)","phospho","NFkB_signaling",0,0.051,,
+"MAPK_p38_T180_Y182",0,0.051,,,"p38","yes","yes","MAPK p38 (T180/Y182)","phospho","MAPK-JNK_signaling",0.317613725391595,0.000159121001895499,3.7982724953668,"UP"
+"PFKFB3_S461",0,0.051,,,"PFKFB3","yes","yes","PFKFB3 (S461)","phospho","metabolism",0,0.051,,
+"PI3K_p110d",0,0.051,,,"PI3K p110d","yes","yes","PI3K p110d (PIK3CD)","no","PI3K-Akt_signaling",-0.51862920796171,0.00162846161269376,2.78822247449043,"DOWN"
+"PKCb1_T642",0,0.051,,,"PKCb1","yes","yes","PKC-b1 (T642)","phospho","NFkB_signaling",-0.27125467907945,0.000212060574424893,3.6735400665201,"DOWN"
+"PLCy2_Y759",0,0.051,,,"PLCy2","yes","yes","PLCy2 (Y759)","phospho","PLCy2_signaling",0,0.051,,
+"SHP1",0,0.051,,,"SHP1","yes","yes","SHP-1","no","BCR_upstream",0,0.051,,
+"SHP2_Y580",0,0.051,,,"SHP2","yes","yes","SHP-2 (Y580)","phospho","BCR_upstream",0.668895249444867,2.42756361326413e-06,5.61482938077007,"UP"
+"STAT1_Y701",0,0.051,,,"STAT1","yes","yes","STAT1 (Y701)","phospho","JAK-STAT_signaling",0,0.051,,
+"STAT3_S727",0,0.051,,,"STAT3","yes","yes","STAT3 (S727)","phospho","JAK-STAT_signaling",0,0.051,,
+"STAT5a_Y694",0,0.051,,,"STAT5a","yes","yes","STAT5a (Y694)","phospho","JAK-STAT_signaling",0,0.051,,
+"STAT6_Y641",0,0.051,,,"STAT6","yes","yes","STAT6 (Y641)","phospho","JAK-STAT_signaling",0,0.051,,
+"SYK_Y525_Y526",0,0.051,,,"SYK","yes","yes","SYK (Y525/Y526)","phospho","BCR_upstream",0.486963847771997,3.92201306434519e-05,4.40649096401765,"UP"

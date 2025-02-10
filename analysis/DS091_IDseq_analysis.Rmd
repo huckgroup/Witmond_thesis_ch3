@@ -1,0 +1,1285 @@
+---
+title: "DS091 IDseq analysis"
+author: "mwitmond"
+date: "2023-02-23"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    toc_float: 
+      collapsed: FALSE
+    toc_depth: 3
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = F
+)
+
+# Load required packages
+source("code/packages_seq.R", local = knitr::knit_global())
+```
+
+```{r fig_settings}
+row_order = c("A", "B", "C", "D", "E", "F", "G", "H")
+col_order = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+panel_labels <- c("A", "B", "C","D", "E", "F", "G", "H", "I", "J", "K", "L", "M")
+
+textsize <- theme(axis.text.x = element_text(colour = "grey", size = 12, face = "bold"),
+                  axis.text.y = element_text(colour = "grey", size = 12, face = "bold"),
+                  axis.title = element_text(colour = "black", size = 12, face = "bold"), 
+                  legend.title = element_text(colour = "black", size = 12, face = "bold"),
+                  # legend.title = element_blank(), 
+                  legend.text = element_text(colour = "grey", size = 12, face = "bold"), 
+                  strip.text.x = element_text(colour = "black", size = 12, face = "bold")
+)
+
+textsize_small <- theme(text = element_text(size = 8, family = "sans", colour = "black"),
+                        plot.title = element_text(size = 9)
+)
+
+colors_dark9 <- c("#4daf4a", "#984ea3", "#377eb8", "#ff7f00", "#ffff33", "#e41a1c", "#f781bf", "#a65628", "#999999")
+colors_light12 <- c("#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f")
+colors_paired10 <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#fb9a99", "#e31a1c")
+colors_blue9 <- c("#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c", "#08306b")
+colors_yellow_blue9 <- c("#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58")
+```
+
+
+
+## Data
+
+### Raw data
+```{r data}
+# Load sparse matrix format all data
+counts_PlateA <- read_count_output("data/counts/PlateA/featurecounts", name = "featurecounts")
+
+meta_wellID <- read_csv("data/config/DynSign.091_wellBC_metadata_seq.csv")
+meta_Abs <- read_excel("data/config/BulkIDseq_Ab_info_seq_analysis_202212.xlsx")
+
+# Reshape counts in data table format
+counts_dtbl <- data.frame(counts_PlateA) %>% 
+  mutate(barcode_name = rownames(counts_PlateA)) %>% #barcode_name #Barcodename
+  select(barcode_name, everything()) %>%
+  gather("well_BC_seq", "counts", 2:c(ncol(counts_PlateA)+1)) %>%
+  filter(counts >= 1) %>% # Remove undetected proteins counts
+  left_join(meta_Abs) %>%
+  unique() %>%
+  # filter(!is.na(target_nospace)) %>% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata
+  filter(!is.na(experiment)) %>%
+  arrange(plate, well)
+
+# Calculate per-sample properties
+data_properties <- counts_dtbl %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, plate == "A")) # Add sample metadata 
+```
+
+
+The full panel of mapped barcodes and 96 wells are present in the data table. After removing non-detected barcodes and proteins not present in metadata file (not conjugated) we will explore the data properties. First have a look at the total counts and number of detected protein barcodes per sample:
+
+```{r fig_count_prot, fig.width=8, fig.height=3}
+options(repr.plot.width = 8, repr.plot.height = 3)
+
+ggplot(data_properties, aes(log10(nCount), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = "Staining conc \n(ug/mL)") +
+  # scale_color_binned(type = "viridis", name = "Staining conc (ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+**Figure:** Correlation between total counts and number of detected protein barcodes. We observe many more detected proteins than present in the staining.
+
+As we have a 96-wells plate, we can also have a look at total counts per plate detected:
+
+```{r fig_plate_totalUMI, fig.width=8, fig.height=3}
+options(repr.plot.width = 8, repr.plot.height = 3)
+
+raw_map(data = log10(data_properties$nCount), well = data_properties$well, plate = 96, size = 7) +
+  scale_fill_viridis(expression("Total counts Log"[10])) +
+  theme_bw()
+```
+**Figure:** Plate overview of total counts. We can see several patterns of samples with high total counts. This is expected, as in these wells we have the stained HBL1 cells. In other wells we do not expect counts as these are different types of negative controls (MQ, no-stain, no-cell).
+
+
+### Barcode contamination compensation
+
+```{r comp_apply}
+comp_matrix <- read_csv("data/BC_compensation_matrix.csv")
+
+data_comp <- counts_dtbl %>%
+  # filter(well == "A01") %>%
+  select(plate, well, barcode_name, counts) %>%
+  left_join(comp_matrix, by = join_by(barcode_name == BC_to_correct)) #, multiple = "all"
+
+# Get counts of OG BC
+data_comp_OG <- data_comp %>%
+  # filter(well == "A01") %>%
+  filter(barcode_name == OG_BC) %>%
+  select(plate, well, OG_BC, counts) %>%
+  dplyr::rename(counts_OG_BC = counts)
+
+# Calculate false reads
+data_false <- left_join(data_comp, data_comp_OG) %>% 
+  mutate(false_counts = (counts_OG_BC / percent_OG_BC) * percent_BC_to_correct) %>%
+  filter(barcode_name != OG_BC) %>%
+  group_by(plate, well, barcode_name, counts) %>%
+  summarize(total_false_counts = sum(false_counts, na.rm = TRUE))
+
+counts_dtbl <- counts_dtbl %>%
+  # filter(well == "A01") %>%
+  left_join(data_false) %>% 
+  mutate(total_false_counts = replace_na(total_false_counts, 0), 
+         true_counts = as.integer(counts - total_false_counts), 
+         percent_true = (true_counts / counts) * 100) %>%
+  filter(!is.na(target_nospace)) # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+
+compensation <- counts_dtbl %>%
+  select(well, barcode_name, counts, total_false_counts, true_counts, percent_true, target_nospace, description_sample, description_staining)
+
+# Calculate per-sample properties
+data_properties_true <- counts_dtbl %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount = sum(true_counts), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, plate == "A")) # Add sample metadata 
+```
+
+```{r fig_count_raw_comp, fig.width=8, fig.height=3}
+options(repr.plot.width = 8, repr.plot.height = 3)
+
+ggplot(counts_dtbl, aes(log10(counts), log10(true_counts), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = "Staining conc \n(ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation raw counts and compensated counts",
+       x = expression("Raw counts Log"[10]),
+       y = expression("Compensated counts Log"[10])) +
+  textsize_small
+```
+**Figure:** Correlation between raw counts and compensated counts. 
+
+
+### Count normalisation
+
+```{r normalisation}
+scaling_factors <- counts_dtbl %>%
+  filter(cell_line %in% c("HBL1", "DAUDI")) %>%
+  # filter() %>% #target_nospace == "GAPDH" # modification == "no"
+  ungroup() %>%
+  group_by(cell_line, target_nospace) %>%
+  mutate(scaling_factor = counts / median(counts),
+         scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor = true_counts / median(true_counts),
+         true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %>%
+  ungroup() %>%
+  group_by(cell_line, description_sample, description_staining) %>%
+  summarize(scaling_factor = median(scaling_factor), .groups = "keep",
+            scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor = median(true_scaling_factor),
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl <- counts_dtbl %>%
+  filter(cell_line %in% c("HBL1", "DAUDI")) %>%
+  left_join(scaling_factors) %>%
+  ungroup() %>%
+  mutate(counts_norm = counts / scaling_factor,
+         counts_norm_geo = counts / scaling_factor_geo, 
+         true_counts_norm = true_counts / true_scaling_factor, 
+         true_counts_norm_geo = true_counts / true_scaling_factor_geo)
+
+counts_dtbl <- filter(counts_dtbl, !is.na(target_nospace)) %>%
+  mutate(stimulus = factor(stimulus, levels = c("PBS", "anti-Ig", "H2O2")))
+
+# Calculate per-sample properties
+data_properties_norm <- counts_dtbl %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount_norm = sum(counts_norm_geo), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, "PBS", "anti-Ig", "H2O2"))
+
+data_properties_norm_true <- counts_dtbl %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount_norm = sum(true_counts_norm_geo), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, "PBS", "anti-Ig", "H2O2"))
+```
+
+```{r fig_count_norm, fig.width=8, fig.height=3}
+options(repr.plot.width = 8, repr.plot.height = 3)
+
+ggplot(counts_dtbl, aes(log10(counts), log10(counts_norm_geo), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = "Staining conc \n(ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation raw counts and normalised counts",
+       x = expression("Raw counts Log"[10]),
+       y = expression("Normalised counts Log"[10])) +
+  textsize_small
+
+ggplot(data_properties_norm, aes(log10(nCount_norm), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = "Staining conc \n(ug/mL)") +
+  # scale_color_binned(type = "viridis", name = "Staining conc (ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation normalised counts and number of detected barcodes", 
+       x = expression("Normalised counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+**Figure:** Correlation between raw counts and compensated counts. 
+
+
+
+## Counts analysis
+
+### Counts per sample
+
+To gain insight into effect of staining conditions on number signal in all different samples, we first have a look at not-normalized (raw) counts per buffer per sample.
+
+```{r fig_counts_sample, fig.width=12, fig.height=7}
+# Total counts
+fig_sample_total <- ggplot(data_properties, aes(stimulus, nCount, color = paste(staining_cells, "-", staining_volume))) +
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = "free_x", independent = "x") +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = "Cells - volume") + 
+  labs(x = "Stimulus", y = "Total counts", title = "Total counts") + 
+  theme(legend.position = "none") +
+  textsize_small
+
+# Compensated counts
+fig_sample_true <- ggplot(data_properties_true, aes(stimulus, nCount, color = paste(staining_cells, "-", staining_volume))) +
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = "free_x", independent = "x") +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = "Cells - volume") + 
+  labs(x = "Stimulus", y = "Compensated counts", title = "Compensated counts") + 
+  textsize_small
+
+# Normalised total counts
+fig_sample_norm <- ggplot(data_properties_norm, aes(stimulus, nCount_norm, color = paste(staining_cells, "-", staining_volume))) + 
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = "free_x", independent = "x") +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = "Cells - volume") + 
+  labs(x = "Stimulus", y = "Normalised total counts", title = "Normalised total counts") + 
+  theme(legend.position = "none") +
+  textsize_small
+
+# Normalised compensated counts
+fig_sample_norm_true <- ggplot(data_properties_norm_true, aes(stimulus, nCount_norm, color = paste(staining_cells, "-", staining_volume))) + 
+  geom_jitter(alpha = 1, size = 1, width = 0.1) +
+  facet_grid2(cell_line~staining_conc, scales = "free_x", independent = "x") +
+  theme_bw() +
+  # RotatedAxis() +
+  scale_y_log10() +
+  scale_color_manual(values = colors_dark9, name = "Cells - volume") + 
+  labs(x = "Stimulus", y = "Normalised compensated counts", title = "Normalised compensated counts") + 
+  textsize_small
+
+plot_grid(fig_sample_total, fig_sample_true, fig_sample_norm, fig_sample_norm_true, ncol = 2)
+
+plot_grid(fig_sample_true, fig_sample_norm_true, ncol = 1)
+```
+**Figure:** Distribution counts per sample with/without compensation and normalisation.
+
+
+### Counts per Ab
+
+```{r fig_Ab_counts, fig.width=12, fig.height=10}
+# Total counts
+fig_Ab_total <- ggplot(unique(subset(counts_dtbl, cell_line %in% c("DAUDI", "HBL1") & staining_conc_text == "0.125 ug/mL")), 
+       aes(x = reorder(target_nospace, counts), 
+           y = counts, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = "black", size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x))) +
+  annotation_logticks(sides = "l") +
+  labs(x = "Protein", y = "Total counts", title = "Total counts") +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+# Compensated counts
+fig_Ab_true <- ggplot(unique(subset(counts_dtbl, cell_line %in% c("DAUDI", "HBL1") & staining_conc_text == "0.125 ug/mL")), 
+       aes(x = reorder(target_nospace, true_counts), 
+           y = true_counts, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = "black", size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x))) +
+  annotation_logticks(sides = "l") +
+  labs(x = "Protein", y = "Compensated counts", title = "Compensated counts") +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+plot_grid(fig_Ab_total, fig_Ab_true, ncol = 1)
+```
+**Figure:** Distribution of total or compensated counts per Ab-barcode for the 0.125 ug/mL samples (non-normalised). 
+
+```{r fig_Ab_counts_norm, fig.width=12, fig.height=10}
+# Total counts
+fig_Ab_total <- ggplot(unique(subset(counts_dtbl, cell_line %in% c("DAUDI", "HBL1") & staining_conc_text == "0.125 ug/mL")), 
+       aes(x = reorder(target_nospace, counts_norm_geo), 
+           y = counts_norm_geo, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = "black", size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x))) +
+  annotation_logticks(sides = "l") +
+  labs(x = "Protein", y = "Normalised total counts", title = "Normalised total counts") +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+# Compensated counts
+fig_Ab_true <- ggplot(unique(subset(counts_dtbl, cell_line %in% c("DAUDI", "HBL1") & staining_conc_text == "0.125 ug/mL")), 
+       aes(x = reorder(target_nospace, true_counts_norm_geo), 
+           y = true_counts_norm_geo, 
+           color = as.factor(stimulus), 
+           shape = as.factor(replicate))) +
+  geom_point(alpha = 0.7) +
+  scale_x_reordered() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, colour = "black", size = 6)) +
+  scale_y_log10(
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x))) +
+  annotation_logticks(sides = "l") +
+  labs(x = "Protein", y = "Normalised compensated counts", title = "Normalised compensated counts") +
+  theme_bw() +
+  facet_grid2(cell_line~staining_conc_text) +
+  RotatedAxis() +
+  scale_color_colorblind() +
+  textsize_small
+
+plot_grid(fig_Ab_total, fig_Ab_true, ncol = 1)
+```
+**Figure:** Distribution of normalised total or compensated counts per Ab-barcode for the 0.125 ug/mL samples.
+
+
+
+## DEseq2 analysis DAUDI
+
+https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html
+
+DESeq2 analysis parameters:
+
+- DAUDI cells (anti-Ig stimulation)
+
+- Compensated counts (>= 1)
+
+- Model design: staining_conc_text + stimulus
+
+```{r DESeq_DAUDI}
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts <- counts_dtbl  %>%
+  filter(cell_line == "DAUDI" & true_counts >= 1) %>%
+  select(target_nospace, well, true_counts) %>%
+  filter(!is.na(true_counts)) %>%
+  spread(well, true_counts) %>%
+  replace(is.na(.), 0)
+
+rownames(cts) <- cts$target_nospace
+cts <- as.matrix(as.data.frame(cts[2:ncol(cts)]))
+
+coldata <- data.frame(well = colnames(cts)) %>%
+  left_join(meta_wellID) %>%
+  mutate(staining_conc_text = factor(staining_conc_text, levels = c("0.5 ug/mL", "0.25 ug/mL", "0.125 ug/mL", "0.063 ug/mL", "0.031 ug/mL", "0 ug/mL")))
+
+rownames(coldata) <- coldata$well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign <- ~ staining_conc_text + stimulus
+
+# Then create the DESeq dataset
+dds <- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stimulus <- relevel(dds$stimulus, ref = "PBS")
+
+# OPTIONAL: Make a list of control genes that should not change (non-phospho proteins)
+# ctrl_genes: logical list with TRUE/FALSE for each protein in cts (same order). TRUE means use for normalisation
+ctrl_genes <- counts_dtbl  %>%
+  filter(cell_line == "DAUDI" & true_counts >= 1) %>%
+  select(target_nospace, modification) %>%
+  unique() %>%
+  mutate(ctrl_genes = case_when(modification == "no" ~ TRUE,
+                                modification == "cleaved" | modification == "phospho" ~ FALSE)) %>%
+  pull(ctrl_genes)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+# dds <- estimateSizeFactors(dds, controlGenes = ctrl_genes) # OPTIONAL: normalise data with specified control genes
+dds <- DESeq(dds, test = "Wald", fitType = "local")
+DESeq_comparisons <- resultsNames(dds) # lists the coefficients
+DESeq_comparisons
+```
+
+
+### Log2FC results
+
+Significance threshold: padj < 0.05
+```{r log2FC_DAUDI}
+# Test LFC shrinkage
+results_aIg <- results(dds, name = "stimulus_anti.Ig_vs_PBS", alpha = 0.05)
+results_aIg_lfc <- lfcShrink(dds, coef = "stimulus_anti.Ig_vs_PBS", type = "apeglm", lfcThreshold = 0.05)
+results_aIg_ashr <- lfcShrink(dds, coef = "stimulus_anti.Ig_vs_PBS", type = "ashr", lfcThreshold = 0.05)
+
+results_conc_0.25 <- results(dds, name = "staining_conc_text_0.25.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0.125 <- results(dds, name = "staining_conc_text_0.125.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0.063 <- results(dds, name = "staining_conc_text_0.063.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0.031 <- results(dds, name = "staining_conc_text_0.031.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0 <- results(dds, name = "staining_conc_text_0.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+
+list_results <- list(results_aIg, results_conc_0.25, results_conc_0.125, results_conc_0.063, results_conc_0.031, results_conc_0)
+
+# Results summary
+results_aIg_ordered <- results_aIg[order(results_aIg$pvalue),] # Order on lowest p-value
+summary(results_aIg, padj = 0.05)
+sum(results_aIg$padj < 0.05, na.rm = TRUE)
+```
+
+```{r fig_log2FC_DAUDI, fig.width=7, fig.height=3}
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff <- 0.05
+plotMA(results_aIg, alpha = signcutoff, main = "no shrinking")
+plotMA(results_aIg_lfc, alpha = signcutoff, main = "apeglm")
+plotMA(results_aIg_ashr, alpha = signcutoff, main = "ashr")
+
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff <- 0.05
+plotMA(results_aIg, alpha = signcutoff, main = "aIg vs PBS")
+plotMA(results_conc_0.25, alpha = signcutoff, main = "0.25 ug/mL vs 0.5 ug/mL")
+plotMA(results_conc_0.031, alpha = signcutoff, main = "0.031 ug/mL vs 0.5 ug/mL")
+```
+
+
+### Data transformation {.tabset}
+
+```{r transformation_DAUDI}
+# Normtransform (log2(n+1))
+ntd <- normTransform(dds)
+
+# Variance stabilising transform
+vsd <- vst(dds, blind = FALSE, nsub = nrow(dds))
+
+# Regularized log transform
+rld <- rlog(dds, blind = FALSE)
+```
+
+#### PCA
+
+```{r fig_PCA_DAUDI, fig.width=6, fig.height=3}
+list_datatransform <- list(ntd, vsd, rld)
+titles_datatransform <- c("ntd", "vsd", "rld")
+
+for (data in 1:3){
+  options(repr.plot.width = 6, repr.plot.height = 3)
+  pcaData <- plotPCA(unlist(list_datatransform[[data]]), intgroup = c("stimulus", "staining_conc_text", "staining_cells", "staining_volume"), returnData = TRUE)
+  percentVar <- round(100 * attr(pcaData, "percentVar"))
+  
+  plot <- ggplot(pcaData, aes(PC1, PC2, color = stimulus, fill = stimulus, shape = paste(staining_cells, "-", staining_volume))) +
+    geom_point(size = 2) +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+    ylab(paste0("PC2: ", percentVar[2], "% variance")) + 
+    coord_fixed() +
+    facet_wrap(~staining_conc_text) +
+    scale_color_manual(values = c("PBS" = "black", "anti-Ig"= "orange")) + 
+    scale_fill_manual(values = c("PBS" = "black", "anti-Ig"= "orange")) + 
+    scale_shape_manual(values = c(21:25), name = "Cells - volume") +
+    ggtitle(titles_datatransform[data]) +
+    theme_bw() +
+    textsize_small
+  
+  print(plot)
+}
+```
+
+#### Variance
+
+```{r fig_sd_DAUDI, fig.width=8, fig.height=3}
+options(repr.plot.width = 8, repr.plot.height = 3)
+
+msd_ntd <- meanSdPlot(assay(ntd))
+plot_ntd <- msd_ntd$gg + 
+  labs(x = "Ranked mean", y = "Standard deviation", title = "Normtransform (log2(n+1))") + 
+  theme_bw() + theme(legend.position = "none") + textsize_small
+
+msd_vsd <- meanSdPlot(assay(vsd))
+plot_vsd <- msd_vsd$gg + 
+  labs(x = "Ranked mean", y = "Standard deviation", title = "Variance stabilising transform") + 
+  theme_bw() + theme(legend.position = "none") + textsize_small
+
+msd_rld <- meanSdPlot(assay(rld))
+plot_rld <- msd_rld$gg + 
+  labs(x = "Ranked mean", y = "Standard deviation", title = "Regularized log transform") + 
+  theme_bw() + theme(legend.position = "none") + textsize_small
+
+plot_grid(plot_ntd, plot_vsd, plot_rld, ncol = 3)
+```
+
+#### Sample-to-sample distances
+
+```{r fig_distances_DAUDI, fig.width=10, fig.height=7}
+options(repr.plot.width = 10, repr.plot.height = 7)
+
+for (data in 1:3){
+  sampleDists <- dist(t(assay(unlist(list_datatransform[[data]]))))
+  sampleDistMatrix <- as.matrix(sampleDists)
+  rownames(sampleDistMatrix) <- paste(list_datatransform[[data]]$stimulus,
+                                      list_datatransform[[data]]$staining_conc_text, 
+                                      list_datatransform[[data]]$staining_volume, 
+                                      sep = "-")
+  colnames(sampleDistMatrix) <- NULL
+  colors <- colorRampPalette(rev(brewer.pal(9, "Blues")))(255)
+  
+  plot <- pheatmap(sampleDistMatrix,
+                   clustering_distance_rows = sampleDists,
+                   clustering_distance_cols = sampleDists,
+                   col = colors, 
+                   main = titles_datatransform[data]) 
+  
+  print(plot)
+}
+```
+
+
+### Volcano
+
+We continue with the results without any shrinkage as the shrinkage methods don't seem to affect the results (see Log2FC section).
+Highlight the significantly changing proteins: 
+
+- padj < 0.05
+
+- Log2FC < log2(1.1)
+
+```{r prep_volcano_DAUDI}
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins <- rownames(dataset)
+  dataset$target_nospace <- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express <- "NO"
+  dataset$diff_express[dataset$log2FoldChange > foldchange_filter & dataset$padj < padj_filter] <- "UP"
+  dataset$diff_express[dataset$log2FoldChange < -foldchange_filter & dataset$padj < padj_filter] <- "DOWN"
+  
+  # Add a column for labeling
+  dataset$delabel <- NA
+  dataset$delabel[dataset$diff_express != "NO"] <- dataset$proteins[dataset$diff_express != "NO"]
+  
+  # Add Ab metadata
+  dataset <- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# # Test with aIg vs PBS
+# volc_results_aIg <- prep_forvulcano(dataset = results_aIg, foldchange_filter = log2(1.1))
+
+# Apply function to each dataset
+names_results_volc <- c("volc_results_aIg", "volc_results_conc_0.25", "volc_results_conc_0.125", "volc_results_conc_0.063", "volc_results_conc_0.031", "volc_results_conc_0")
+
+for(dataset in c(1:length(list_results))){
+  assign(names_results_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], foldchange_filter = log2(1.1)))
+}
+```
+
+```{r fig_volcano_DAUDI, fig.width=6, fig.height=4}
+# Function to create volcano plots
+# Standard log2FC threshold = log2(1.5); standard padj threshold = 0.05
+vulcanoplot_results <- function(data = data, 
+                                title_plot = "", 
+                                xintercepts = c(-log2(1.5), log2(1.5)), 
+                                yintercept = -log10(0.05), 
+                                line_colors = c("red"), 
+                                point_colors = c(UP = "navy", NO = "black", DOWN = "firebrick")){
+  
+  # Create a plot (ggplot2)
+  ggplot(data = as.data.frame(data), aes(x = log2FoldChange, y = -log10(padj), col = diff_express, label = delabel)) +
+    geom_point() + 
+    theme_minimal() +
+    geom_text_repel(size = 2.5, 
+                    segment.size = 0.2,
+                    hjust = 0,
+                    direction = "y",
+                    nudge_y = -log10(0.005),
+                    # nudge_x = ifelse(data$log2FoldChange < 0, -0.4 - data$log2FoldChange, 0.4 - data$log2FoldChange)
+                    ) +
+    scale_color_manual(values = point_colors) +
+    geom_vline(xintercept = xintercepts, col = line_colors) +
+    geom_hline(yintercept = yintercept, col = line_colors) +
+    ggtitle(title_plot) +
+    theme(axis.text.x = element_text(colour = 'black', size = 9),
+          axis.text.y = element_text(colour = 'black', size = 9),
+          text = element_text(size = 9),
+          axis.text = element_text(size = 9),
+          plot.title = element_text(size = 11))
+}
+
+# # Test with aIg vs PBS
+# plot <- vulcanoplot_results(data = volc_results_aIg, title_plot = "DAUDI anti-Ig vs PBS", xintercepts = c(-log2(1.1), log2(1.1)))
+# print(plot)
+
+# Apply function to each dataset
+list_results_volc <- list(volc_results_aIg, volc_results_conc_0.25, volc_results_conc_0.125, volc_results_conc_0.063, volc_results_conc_0.031, volc_results_conc_0)
+titles_volcano <- c("anti-Ig vs PBS", "0.25 ug/mL vs 0.5 ug/mL", "0.125 ug/mL vs 0.5 ug/mL", "0.063 ug/mL vs 0.5 ug/mL", "0.031 ug/mL vs 0.5 ug/mL", "0 ug/mL vs 0.5 ug/mL")
+
+for(dataset in c(1:length(list_results_volc))){
+  plot <- vulcanoplot_results(data = list_results_volc[[dataset]], 
+                              title_plot = titles_volcano[dataset], 
+                              xintercepts = c(-log2(1.1), log2(1.1)))
+  print(plot)
+}
+```
+**Figure:** Volcano plots of DESeq2 model comparisons.
+
+
+### Heatmap
+
+We continue with the results with regularised log transformation as this transformation reduces the variance in the 0 ug/mL samples the most (see Data transform section).
+Create heatmaps of significant changes: 
+
+- padj < 0.05
+
+- Log2FC < log2(1.1)
+
+```{r prep_heatmap_DAUDI}
+# Function to filter the data
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+filter_heatmap <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5), select_top = TRUE, select_n = 10) {
+  data <- as.data.frame(dataset) %>%
+    filter(padj <= padj_filter & abs(log2FoldChange) >= foldchange_filter) %>%
+    arrange(-log2FoldChange) 
+  rownames(data) <- data$target_nospace
+  
+  # Select top 10 proteins with most increased and decreased expression
+  if (select_top == TRUE) {
+    data_top <- data %>%
+      slice_max(order_by = abs(log2FoldChange), n = select_n)
+    return(data_top)
+  } else {
+    return(data)
+  }
+}
+
+# # Test with aIg vs PBS
+# heat_results_aIg <- filter_heatmap(dataset = volc_results_aIg, select_top = FALSE)
+
+# Apply function to each dataset
+names_results_heat <- list("heat_results_aIg", "heat_results_conc_0.25", "heat_results_conc_0.125", "heat_results_conc_0.063", "heat_results_conc_0.031", "heat_results_conc_0")
+
+for(dataset in c(1:length(list_results_volc))){
+  assign(names_results_heat[[dataset]], filter_heatmap(dataset = list_results_volc[[dataset]], select_top = FALSE, foldchange_filter = log2(1.1)))
+  dataset
+}
+
+# Subset the full dataframe to get metadata for heatmap plotting
+data_heatmap <- as.data.frame(colData(dds)[, c("stimulus","staining_conc_text", "staining_cells", "staining_volume")]) %>%
+  # filter(cell_line == "DAUDI") %>%
+  arrange(stimulus, staining_conc_text)
+```
+
+```{r fig_heatmap_DAUDI}
+# , fig.width=10, fig.height=10
+# options(repr.plot.width = 10, repr.plot.height = 10)
+
+# aIg vs PBS
+heat_results_aIg$marker_pathway[is.na(heat_results_aIg$marker_pathway)] <- "Other"
+
+ann_colors_aIg <- list(stimulus = c("PBS" = "#edf8e9", "anti-Ig" = "#31a354"),
+                   staining_conc_text = c("0.5 ug/mL" = "#08306b", 
+                                     "0.25 ug/mL" = "#08519c", 
+                                     "0.125 ug/mL" = "#4292c6", 
+                                     "0.063 ug/mL" = "#6baed6", 
+                                     "0.031 ug/mL" = "#9ecae1", 
+                                     "0 ug/mL" = "#deebf7"),
+                   staining_cells = c("0M (no cell)" = "#f2f0f7", "0.25M" = "#9e9ac8", "0.5M" = "#54278f"),
+                   staining_volume = c("20 uL" = "#fdbe85", "30 uL" = "#fd8d3c", "40 uL" = "#e6550d"), 
+                   modification = c(phospho = "#f768a1", no = "grey", cleaved = "#fff7bc"),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_aIg$marker_pathway))], unique(heat_results_aIg$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_aIg$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_aIg[, c("modification", "marker_pathway")],
+  # annotation_row = test_results_H2O2$marker_pathway,
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_aIg,
+  scale = "row",
+  colorRampPalette(c("navy", "white", "firebrick3"))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_aIg)$modification,
+  # cellwidth = 10, 
+  # cellheight = 10, 
+  fontsize = 8,
+  main = "DAUDI: anti-Ig vs PBS\n(true counts, rld transform)"
+)
+
+# 0.031 ug/mL vs 0.5 ug/mL
+heat_results_conc_0.031$marker_pathway[is.na(heat_results_conc_0.031$marker_pathway)] <- "Other"
+
+ann_colors_0.031ugmL <- list(stimulus = c("PBS" = "#edf8e9", "anti-Ig" = "#31a354"),
+                   staining_conc_text = c("0.5 ug/mL" = "#08306b", 
+                                     "0.25 ug/mL" = "#08519c", 
+                                     "0.125 ug/mL" = "#4292c6", 
+                                     "0.063 ug/mL" = "#6baed6", 
+                                     "0.031 ug/mL" = "#9ecae1", 
+                                     "0 ug/mL" = "#deebf7"),
+                   staining_cells = c("0M (no cell)" = "#f2f0f7", "0.25M" = "#9e9ac8", "0.5M" = "#54278f"),
+                   staining_volume = c("20 uL" = "#fdbe85", "30 uL" = "#fd8d3c", "40 uL" = "#e6550d"), 
+                   modification = c(phospho = "#f768a1", no = "grey", cleaved = "#fff7bc"),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_conc_0.031$marker_pathway))], unique(heat_results_conc_0.031$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_conc_0.031$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_conc_0.031[, c("modification", "marker_pathway")],
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_0.031ugmL,
+  scale = "row",
+  colorRampPalette(c("navy", "white", "firebrick3"))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_conc_0.031)$modification,
+  # cellwidth = 10, 
+  # cellheight = 10, 
+  fontsize = 8,  
+  main = "DAUDI: 0.031 ug/mL vs 0.5 ug/mL\n(true counts, rld transformed)"
+)
+```
+**Figure:** Heatmap of significant results for H2O2 vs PBS and for 0.031 ug/mL vs 0.5 ug/mL.
+
+
+### Significant changes
+
+Finally, we visualised the normalised true counts of the significantly changing proteins in the H2O2 vs PBS comparison.
+
+- padj < 0.05
+
+- Log2FC < log2(1.1)
+
+```{r fig_sign_counts_DAUDI, fig.width=5, fig.height=3}
+options(repr.plot.width = 5, repr.plot.height = 3)
+
+top_proteins <- unique(c(heat_results_aIg$target_nospace))
+
+for(protein in 1:length(top_proteins)) {
+  plot <- ggplot(subset(counts_dtbl, cell_line == "DAUDI" & target_nospace == top_proteins[protein]), 
+                 aes(stimulus, true_counts_norm_geo, color = paste(staining_cells, "-", staining_volume))) +
+    geom_jitter(alpha = 1, size = 2, width = 0.1) +
+    facet_wrap(~staining_conc_text) +
+    theme_bw() +
+    # scale_y_log10() +
+    scale_color_manual(values = colors_dark9, name = "Cells - volume") + 
+    ggtitle(top_proteins[protein]) +
+    labs(x = "Stimulus", y = "Normalized compensated counts") +
+    textsize_small
+  
+  print(plot)
+}
+```
+**Figure:** Normalized counts differential aIg vs PBS.
+
+
+
+## DEseq2 analysis HBL1
+
+https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html
+
+DESeq2 analysis parameters:
+
+- HBL1 cells (H2O2 stimulation)
+
+- Compensated counts (> 1)
+
+- Model design: staining_conc_text + stimulus
+
+```{r DESeq_HBL1}
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts <- counts_dtbl  %>%
+  filter(cell_line == "HBL1" & true_counts >= 1) %>%
+  select(target_nospace, well, true_counts) %>%
+  filter(!is.na(true_counts)) %>%
+  spread(well, true_counts) %>%
+  replace(is.na(.), 0)
+
+rownames(cts) <- cts$target_nospace
+cts <- as.matrix(as.data.frame(cts[2:ncol(cts)]))
+
+coldata <- data.frame(well = colnames(cts)) %>%
+  left_join(meta_wellID) %>%
+  mutate(staining_conc_text = factor(staining_conc_text, levels = c("0.5 ug/mL", "0.25 ug/mL", "0.125 ug/mL", "0.063 ug/mL", "0.031 ug/mL", "0 ug/mL")))
+
+rownames(coldata) <- coldata$well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign <- ~ staining_conc_text + stimulus
+
+# Then create the DESeq dataset
+dds <- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stimulus <- relevel(dds$stimulus, ref = "PBS")
+
+# OPTIONAL: Make a list of control genes that should not change (non-phospho proteins)
+# ctrl_genes: logical list with TRUE/FALSE for each protein in cts (same order). TRUE means use for normalisation
+ctrl_genes <- counts_dtbl  %>%
+  filter(cell_line == "HBL1" & true_counts >= 1) %>%
+  select(target_nospace, modification) %>%
+  unique() %>%
+  mutate(ctrl_genes = case_when(modification == "no" ~ TRUE,
+                                modification == "cleaved" | modification == "phospho" ~ FALSE)) %>%
+  pull(ctrl_genes)
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+# dds <- estimateSizeFactors(dds, controlGenes = ctrl_genes) # OPTIONAL: normalise data with specified control genes
+dds <- DESeq(dds, test = "Wald", fitType = "local")
+DESeq_comparisons <- resultsNames(dds) # lists the coefficients
+DESeq_comparisons
+```
+
+
+### Log2FC results
+
+Significance threshold: padj < 0.01
+```{r log2FC_HBL1}
+# Test LFC shrinkage
+results_H2O2 <- results(dds, name = "stimulus_H2O2_vs_PBS", alpha = 0.01)
+results_H2O2_lfc <- lfcShrink(dds, coef = "stimulus_H2O2_vs_PBS", type = "apeglm", lfcThreshold = 0.01)
+results_H2O2_ashr <- lfcShrink(dds, coef = "stimulus_H2O2_vs_PBS", type = "ashr", lfcThreshold = 0.01)
+
+results_conc_0.25 <- results(dds, name = "staining_conc_text_0.25.ug.mL_vs_0.5.ug.mL", alpha = 0.01)
+results_conc_0.125 <- results(dds, name = "staining_conc_text_0.125.ug.mL_vs_0.5.ug.mL", alpha = 0.01)
+results_conc_0.063 <- results(dds, name = "staining_conc_text_0.063.ug.mL_vs_0.5.ug.mL", alpha = 0.01)
+results_conc_0.031 <- results(dds, name = "staining_conc_text_0.031.ug.mL_vs_0.5.ug.mL", alpha = 0.01)
+results_conc_0 <- results(dds, name = "staining_conc_text_0.ug.mL_vs_0.5.ug.mL", alpha = 0.01)
+
+list_results <- list(results_H2O2, results_conc_0.25, results_conc_0.125, results_conc_0.063, results_conc_0.031, results_conc_0)
+
+# Results summary
+results_H2O2_ordered <- results_H2O2[order(results_H2O2$pvalue),] # Order on lowest p-value
+summary(results_H2O2, padj = 0.01)
+sum(results_H2O2$padj < 0.01, na.rm = TRUE)
+```
+
+```{r fig_log2FC_HBL1, fig.width=7, fig.height=3}
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff <- 0.01
+plotMA(results_H2O2, alpha = signcutoff, main = "no shrinking")
+plotMA(results_H2O2_lfc, alpha = signcutoff, main = "apeglm")
+plotMA(results_H2O2_ashr, alpha = signcutoff, main = "ashr")
+
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+signcutoff <- 0.01
+plotMA(results_H2O2, alpha = signcutoff, main = "H2O2 vs PBS")
+plotMA(results_conc_0.25, alpha = signcutoff, main = "0.25 ug/mL vs 0.5 ug/mL")
+plotMA(results_conc_0.031, alpha = signcutoff, main = "0.031 ug/mL vs 0.5 ug/mL")
+```
+
+
+### Data transformation {.tabset}
+
+```{r transformation_HBL1}
+# Normtransform (log2(n+1))
+ntd <- normTransform(dds)
+
+# Variance stabilising transform
+vsd <- vst(dds, blind = FALSE, nsub = nrow(dds))
+
+# Regularized log transform
+rld <- rlog(dds, blind = FALSE)
+```
+
+#### PCA
+
+```{r fig_PCA_HBL1, fig.width=6, fig.height=3}
+list_datatransform <- list(ntd, vsd, rld)
+titles_datatransform <- c("ntd", "vsd", "rld")
+
+for (data in 1:3){
+  options(repr.plot.width = 6, repr.plot.height = 3)
+  pcaData <- plotPCA(unlist(list_datatransform[[data]]), intgroup = c("stimulus", "staining_conc_text", "staining_cells", "staining_volume"), returnData = TRUE)
+  percentVar <- round(100 * attr(pcaData, "percentVar"))
+  
+  plot <- ggplot(pcaData, aes(PC1, PC2, color = stimulus, fill = stimulus, shape = paste(staining_cells, "-", staining_volume))) +
+    geom_point(size = 2) +
+    xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+    ylab(paste0("PC2: ", percentVar[2], "% variance")) + 
+    coord_fixed() +
+    facet_wrap(~staining_conc_text) +
+    scale_color_manual(values = c("PBS" = "black", "H2O2"= "orange")) + 
+    scale_fill_manual(values = c("PBS" = "black", "H2O2"= "orange")) + 
+    scale_shape_manual(values = c(21:25), name = "Cells - volume") +
+    ggtitle(titles_datatransform[data]) +
+    theme_bw() + 
+    textsize_small
+  
+  print(plot)
+}
+```
+
+#### Variance
+
+```{r fig_sd_HBL1, fig.width=8, fig.height=3}
+options(repr.plot.width = 8, repr.plot.height = 3)
+
+msd_ntd <- meanSdPlot(assay(ntd))
+plot_ntd <- msd_ntd$gg + 
+  labs(x = "Ranked mean", y = "Standard deviation", title = "Normtransform (log2(n+1))") + 
+  theme_bw() + theme(legend.position = "none") + textsize_small
+
+msd_vsd <- meanSdPlot(assay(vsd))
+plot_vsd <- msd_vsd$gg + 
+  labs(x = "Ranked mean", y = "Standard deviation", title = "Variance stabilising transform") + 
+  theme_bw() + theme(legend.position = "none") + textsize_small
+
+msd_rld <- meanSdPlot(assay(rld))
+plot_rld <- msd_rld$gg + 
+  labs(x = "Ranked mean", y = "Standard deviation", title = "Regularized log transform") + 
+  theme_bw() + theme(legend.position = "none") + textsize_small
+
+plot_grid(plot_ntd, plot_vsd, plot_rld, ncol = 3)
+```
+
+#### Sample-to-sample distances
+
+```{r fig_distances_HBL1, fig.width=10, fig.height=7}
+options(repr.plot.width = 10, repr.plot.height = 7)
+
+for (data in 1:3){
+  sampleDists <- dist(t(assay(unlist(list_datatransform[[data]]))))
+  sampleDistMatrix <- as.matrix(sampleDists)
+  rownames(sampleDistMatrix) <- paste(list_datatransform[[data]]$stimulus,
+                                      list_datatransform[[data]]$staining_conc_text, 
+                                      list_datatransform[[data]]$staining_volume, 
+                                      sep = "-")
+  colnames(sampleDistMatrix) <- NULL
+  colors <- colorRampPalette(rev(brewer.pal(9, "Blues")))(255)
+  
+  plot <- pheatmap(sampleDistMatrix,
+                   clustering_distance_rows = sampleDists,
+                   clustering_distance_cols = sampleDists,
+                   col = colors, 
+                   main = titles_datatransform[data]) 
+  
+  print(plot)
+}
+```
+
+
+### Volcano
+
+We continue with the results without any shrinkage as the shrinkage methods don't seem to affect the results (see Log2FC section).
+Highlight the significantly changing proteins: 
+
+- padj < 0.01
+
+- Log2FC < log2(1.2)
+
+```{r prep_volcano_HBL1}
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins <- rownames(dataset)
+  dataset$target_nospace <- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express <- "NO"
+  dataset$diff_express[dataset$log2FoldChange > foldchange_filter & dataset$padj < padj_filter] <- "UP"
+  dataset$diff_express[dataset$log2FoldChange < -foldchange_filter & dataset$padj < padj_filter] <- "DOWN"
+  
+  # Add a column for labeling
+  dataset$delabel <- NA
+  dataset$delabel[dataset$diff_express != "NO"] <- dataset$proteins[dataset$diff_express != "NO"]
+  
+  # Add Ab metadata
+  dataset <- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# # Test with H2O2 vs PBS
+# volc_results_H2O2 <- prep_forvulcano(dataset = results_H2O2)
+
+# Apply function to each dataset
+names_results_volc <- c("volc_results_H2O2", "volc_results_conc_0.25", "volc_results_conc_0.125", "volc_results_conc_0.063", "volc_results_conc_0.031", "volc_results_conc_0")
+
+for(dataset in c(1:length(list_results))){
+  assign(names_results_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], padj_filter = 0.01,  foldchange_filter = log2(1.2)))
+}
+```
+
+```{r fig_volcano_HBL1, fig.width=6, fig.height=4}
+# Function to create volcano plots
+# Standard log2FC threshold = log2(1.5); standard padj threshold = 0.05
+vulcanoplot_results <- function(data = data, 
+                                title_plot = "", 
+                                xintercepts = c(-log2(1.5), log2(1.5)), 
+                                yintercept = -log10(0.05), 
+                                line_colors = c("red"), 
+                                point_colors = c(UP = "navy", NO = "black", DOWN = "firebrick")){
+  
+  # Create a plot (ggplot2)
+  ggplot(data = as.data.frame(data), aes(x = log2FoldChange, y = -log10(padj), col = diff_express, label = delabel)) +
+    geom_point() + 
+    theme_minimal() +
+    geom_text_repel(size = 2.5, 
+                    segment.size = 0.2,
+                    hjust = 0,
+                    direction = "y",
+                    nudge_y = -log10(0.005),
+                    # nudge_x = ifelse(data$log2FoldChange < 0, -0.4 - data$log2FoldChange, 0.4 - data$log2FoldChange)
+                    ) +
+    scale_color_manual(values = point_colors) +
+    geom_vline(xintercept = xintercepts, col = line_colors) +
+    geom_hline(yintercept = yintercept, col = line_colors) +
+    ggtitle(title_plot) +
+    theme(axis.text.x = element_text(colour = 'black', size = 9),
+          axis.text.y = element_text(colour = 'black', size = 9),
+          text = element_text(size = 9),
+          axis.text = element_text(size = 9),
+          plot.title = element_text(size = 11))
+}
+
+# # Test with H2O2 vs PBS
+# plot <- vulcanoplot_results(data = volc_results_H2O2, title_plot = "HBL1 H2O2 vs PBS")
+# print(plot)
+
+# Apply function to each dataset
+list_results_volc <- list(volc_results_H2O2, volc_results_conc_0.25, volc_results_conc_0.125, volc_results_conc_0.063, volc_results_conc_0.031, volc_results_conc_0)
+titles_volcano <- c("H2O2 vs PBS", "0.25 ug/mL vs 0.5 ug/mL", "0.125 ug/mL vs 0.5 ug/mL", "0.063 ug/mL vs 0.5 ug/mL", "0.031 ug/mL vs 0.5 ug/mL", "0 ug/mL vs 0.5 ug/mL")
+
+for(dataset in c(1:length(list_results_volc))){
+  plot <- vulcanoplot_results(data =  list_results_volc[[dataset]], title_plot = titles_volcano[dataset], xintercepts = c(-log2(1.2), log2(1.2)), yintercept = -log10(0.01))
+  print(plot)
+}
+```
+**Figure:** Volcano plots of DESeq2 model comparisons.
+
+
+### Heatmap
+
+We continue with the results with regularised log transformation as this transformation reduces the variance in the 0 ug/mL samples the most (see Data transform section).
+Create heatmaps of significant changes: 
+
+- padj < 0.01
+
+- Log2FC < log2(1.2)
+
+```{r prep_heatmap_HBL1}
+# Function to filter the data
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+filter_heatmap <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5), select_top = TRUE, select_n = 10) {
+  data <- as.data.frame(dataset) %>%
+    filter(padj <= padj_filter & abs(log2FoldChange) >= foldchange_filter) %>%
+    arrange(-log2FoldChange) 
+  rownames(data) <- data$target_nospace
+  
+  # Select top 10 proteins with most increased and decreased expression
+  if (select_top == TRUE) {
+    data_top <- data %>%
+      slice_max(order_by = abs(log2FoldChange), n = select_n)
+    return(data_top)
+  } else {
+    return(data)
+  }
+}
+
+# # Test with H2O2 vs PBS
+# test_results_H2O2 <- filter_heatmap(dataset = volc_results_H2O2, select_top = FALSE)
+
+# Apply function to each dataset
+names_results_heat <- list("heat_results_H2O2", "heat_results_conc_0.25", "heat_results_conc_0.125", "heat_results_conc_0.063", "heat_results_conc_0.031", "heat_results_conc_0")
+
+for(dataset in c(1:length(list_results_volc))){
+  assign(names_results_heat[[dataset]], filter_heatmap(dataset = list_results_volc[[dataset]], select_top = FALSE, padj_filter = 0.01,  foldchange_filter = log2(1.2)))
+  dataset
+}
+
+# Subset the full dataframe to get metadata for heatmap plotting
+data_heatmap <- as.data.frame(colData(dds)[, c("stimulus","staining_conc_text", "staining_cells", "staining_volume")]) %>%
+  # filter(cell_line == "HBL1") %>%
+  arrange(stimulus, staining_conc_text)
+```
+
+```{r fig_heatmap_HBL1}
+# , fig.width=10, fig.height=10
+# options(repr.plot.width = 10, repr.plot.height = 10)
+
+# H2O2 vs PBS
+heat_results_H2O2$marker_pathway[is.na(heat_results_H2O2$marker_pathway)] <- "Other"
+
+ann_colors_H2O2 <- list(stimulus = c("PBS" = "#edf8e9", "H2O2" = "#31a354"),
+                   staining_conc_text = c("0.5 ug/mL" = "#08306b", 
+                                     "0.25 ug/mL" = "#08519c", 
+                                     "0.125 ug/mL" = "#4292c6", 
+                                     "0.063 ug/mL" = "#6baed6", 
+                                     "0.031 ug/mL" = "#9ecae1", 
+                                     "0 ug/mL" = "#deebf7"),
+                   staining_cells = c("0M (no cell)" = "#f2f0f7", "0.25M" = "#9e9ac8", "0.5M" = "#54278f"),
+                   staining_volume = c("20 uL" = "#fdbe85", "30 uL" = "#fd8d3c", "40 uL" = "#e6550d"), 
+                   modification = c(phospho = "#f768a1", no = "grey", cleaved = "#fff7bc"),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_H2O2$marker_pathway))], unique(heat_results_H2O2$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_H2O2$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_H2O2[, c("modification", "marker_pathway")],
+  # annotation_row = test_results_H2O2$marker_pathway,
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_H2O2,
+  scale = "row",
+  colorRampPalette(c("navy", "white", "firebrick3"))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_H2O2)$modification,
+  cellwidth = 10,
+  cellheight = 10,
+  fontsize = 8,
+  main = "HBL1: H2O2 vs PBS (true counts, rld transform)"
+)
+
+# 0 ug/mL vs 0.5 ug/mL
+heat_results_conc_0$marker_pathway[is.na(heat_results_conc_0$marker_pathway)] <- "Other"
+
+ann_colors_0ugmL <- list(stimulus = c("PBS" = "#edf8e9", "H2O2" = "#31a354"),
+                   staining_conc_text = c("0.5 ug/mL" = "#08306b", 
+                                     "0.25 ug/mL" = "#08519c", 
+                                     "0.125 ug/mL" = "#4292c6", 
+                                     "0.063 ug/mL" = "#6baed6", 
+                                     "0.031 ug/mL" = "#9ecae1", 
+                                     "0 ug/mL" = "#deebf7"),
+                   staining_cells = c("0M (no cell)" = "#f2f0f7", "0.25M" = "#9e9ac8", "0.5M" = "#54278f"),
+                   staining_volume = c("20 uL" = "#fdbe85", "30 uL" = "#fd8d3c", "40 uL" = "#e6550d"), 
+                   modification = c(phospho = "#f768a1", no = "grey", cleaved = "#fff7bc"),
+                   marker_pathway = setNames(colors_light12[1:length(unique(heat_results_conc_0$marker_pathway))], unique(heat_results_conc_0$marker_pathway))
+)
+
+pheatmap(
+  assay(rld)[unique(c(heat_results_conc_0$target_nospace)), rownames(data_heatmap)],
+  cluster_rows = TRUE,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  annotation_row = heat_results_conc_0[, c("modification", "marker_pathway")],
+  annotation_col = data_heatmap,
+  annotation_colors = ann_colors_0ugmL,
+  scale = "row",
+  colorRampPalette(c("navy", "white", "firebrick3"))(50),
+  column_split = data_heatmap$staining_conc_text,
+  row_split = subset(heat_results_conc_0)$modification,
+  cellwidth = 10,
+  cellheight = 10,
+  fontsize = 8,  
+  main = "HBL1: 0 ug/mL vs 0.5 ug/mL (true counts, rld transform)"
+)
+```
+**Figure:** Heatmap of significant results for H2O2 vs PBS and for 0 ug/mL vs 0.5 ug/mL.
+
+
+### Significant changes
+
+Finally, we visualised the normalised true counts of the significantly changing proteins in the H2O2 vs PBS comparison.
+
+- padj < 0.01
+
+- Log2FC < log2(1.2)
+
+```{r fig_sign_counts_HBL1, fig.width=5, fig.height=3}
+options(repr.plot.width = 5, repr.plot.height = 3)
+
+top_proteins <- unique(c(heat_results_H2O2$target_nospace))
+
+for(protein in 1:length(top_proteins)) {
+  plot <- ggplot(subset(counts_dtbl, cell_line == "HBL1" & target_nospace == top_proteins[protein]), 
+                 aes(stimulus, true_counts_norm_geo, color = paste(staining_cells, "-", staining_volume))) +
+    geom_jitter(alpha = 1, size = 2, width = 0.1) +
+    facet_wrap(~staining_conc_text) +
+    theme_bw() +
+    # scale_y_log10() +
+    scale_color_manual(values = colors_dark9, name = "Cells - volume") + 
+    ggtitle(top_proteins[protein]) +
+    labs(x = "Stimulus", y = "Normalized compensated counts") +
+    textsize_small
+  
+  print(plot)
+}
+```
+**Figure:** Normalized counts differential H2O2 vs PBS.

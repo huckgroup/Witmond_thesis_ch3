@@ -1,0 +1,9 @@
+rowID,colID,wellID,sample,stimulus,replicate,protein_PE,protein_AF647,protein_AF488
+D,3,D3,aIg_1,aIg,1,pSyk,pPLCy2,pCD79a
+D,4,D4,aIg_2,aIg,2,pSyk,pPLCy2,pCD79a
+D,5,D5,aIg_3,aIg,3,pSyk,pPLCy2,pCD79a
+D,6,D6,control_1,control,1,pSyk,pPLCy2,pCD79a
+D,7,D7,control_2,control,2,pSyk,pPLCy2,pCD79a
+D,8,D8,control_3,control,3,pSyk,pPLCy2,pCD79a
+D,9,D9,noAb_1,noAb,1,pSyk,pPLCy2,pCD79a
+D,10,D10,noCells_1,noCells,1,pSyk,pPLCy2,pCD79a

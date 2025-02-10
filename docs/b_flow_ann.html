@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="mwitmond" />
+
+<meta name="date" content="2024-08-06" />
+
+<title>(Phospho-)flow cytometry annotation</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Chapter IDseq tech</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="y_chapter_main.html">Figs main</a>
+</li>
+<li>
+  <a href="z_chapter_suppl.html">Figs suppl</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Flow
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="a_flow_gating.html">Gating</a>
+    </li>
+    <li>
+      <a href="b_flow_ann.html">Annotation</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    IDseq
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="d_IDseq_count.html">Count tables</a>
+    </li>
+    <li>
+      <a href="e_IDseq_ann.html">Annotation</a>
+    </li>
+    <li>
+      <a href="DS078_IDseq_analysis.html">DS078 analysis</a>
+    </li>
+    <li>
+      <a href="DS091_IDseq_analysis.html">DS091 analysis</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">(Phospho-)flow cytometry annotation</h1>
+<h4 class="author">mwitmond</h4>
+<h4 class="date">2024-08-06</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-02-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>chapter_IDseq_tech/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240806code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240806)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240806code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240806)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong31f8444">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 31f8444
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong31f8444"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 31f8444.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
+
+Untracked files:
+    Untracked:  code/DS075_combined_analysis.R
+    Untracked:  code/packages_FACS.R
+    Untracked:  code/packages_seq.R
+    Untracked:  data/BB014_LibraryIndex/
+    Untracked:  data/DS027_FirstIDseq/
+    Untracked:  data/DS055_LibraryKlenowAmp/
+    Untracked:  data/DS056_LibraryAmp1/
+    Untracked:  data/DS059_LibraryByproducts/
+    Untracked:  data/DS072_LibraryAmp2/
+    Untracked:  data/DS075_BarcodeCheck/
+    Untracked:  data/DS078_Blocking1/
+    Untracked:  data/DS080_Blocking2/
+    Untracked:  data/DS084_BioInhibition/
+    Untracked:  data/DS091_ImmunostainingBio/
+    Untracked:  data/DSxxx_Conjugations/
+    Untracked:  data/annotated_gels_batch1-10_digital.pptx
+    Untracked:  output/BioAnalyzer_plots/
+    Untracked:  output/DS075_BarcodeCheck/
+    Untracked:  output/DS078_Blocking1/
+    Untracked:  output/DS091_ImmunostainingBio/
+    Untracked:  output/figures/
+    Untracked:  output/network_visual/
+
+Unstaged changes:
+    Deleted:    analysis/about.Rmd
+    Deleted:    analysis/c_flow_vis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/b_flow_ann.Rmd</code>) and HTML
+(<code>docs/b_flow_ann.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+31f8444
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2025-02-10
+</td>
+<td>
+Revised ch3 figs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+a92dfa0
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2024-08-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+4e7f883
+</td>
+<td>
+mwitmond
+</td>
+<td>
+2024-08-06
+</td>
+<td>
+Publish initial project files
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level2">
+<h2>Set-up</h2>
+<pre class="r"><code>knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = T
+)
+
+# Load required packages
+source(&quot;code/packages_FACS.R&quot;, local = knitr::knit_global())</code></pre>
+</div>
+<div id="ds091-immunostainingbio" class="section level2">
+<h2>DS091: ImmunostainingBio</h2>
+<div id="load-data" class="section level3">
+<h3>Load data</h3>
+<p>Load the gated dataset and create a dataset with live single
+cells</p>
+<pre class="r"><code>gs_DS091 &lt;- load_gs(paste0(&quot;output/DS091_ImmunostainingBio/&quot;, &quot;flow_gated&quot;))
+gated_pops_DS091 &lt;- gs_get_pop_paths(gs_DS091, path = &quot;auto&quot;)
+cs_DS091 &lt;- gs_pop_get_data(gs_DS091, tail(gated_pops_DS091, 1))
+df_DS091 &lt;- fortify(cs_DS091)
+df_DS091[df_DS091 &lt;= 0] &lt;- NA # Remove all zero values from df in order to perform log transformations
+
+# Select only columns that are needed
+df_DS091 &lt;- df_DS091[ , c(&quot;name&quot;, &quot;plateID&quot;, &quot;rowID&quot;, &quot;colID&quot;, &quot;tubeID&quot;, &quot;FSC.A&quot;, &quot;SSC.A&quot;, &quot;BV421.A&quot;, &quot;PE.A&quot;, &quot;Alexa.647.A&quot;, &quot;Alexa.488.A&quot;)]
+
+gc()</code></pre>
+<pre><code>          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 3513602 187.7    7071841 377.7  4095972 218.8
+Vcells 7037590  53.7   12621239  96.3 12596194  96.2</code></pre>
+<pre class="r"><code># Add metadata per well from custom .csv file
+metadata_DS091 &lt;- read_csv(&quot;data/DS091_ImmunostainingBio/flow/metadata_tubes_DS091.csv&quot;)
+
+# Change columns into character if necessary
+metadata_DS091$colID &lt;- as.character(metadata_DS091$colID)
+
+df_DS091 &lt;- left_join(df_DS091, metadata_DS091)
+
+# Remove samples with &lt;5000 cells (except if the sample is t = 0 min)
+counts_DS091 &lt;- df_DS091 %&gt;% count(plateID, tubeID, name = &quot;sample_cell_count&quot;)
+df_DS091 &lt;- left_join(df_DS091, counts_DS091)
+df_DS091 &lt;- df_DS091[df_DS091$sample_cell_count &gt; 5000, ]
+
+gc()</code></pre>
+<pre><code>          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 3604559 192.6    7071841 377.7  4851859 259.2
+Vcells 8019264  61.2   15225486 116.2 12601238  96.2</code></pre>
+<pre class="r"><code># kable(df_DS091 %&gt;% head(5)) %&gt;% kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;))</code></pre>
+</div>
+<div id="transform-data" class="section level3">
+<h3>Transform data</h3>
+<p>Pivot the full dataset into a tidy dataset</p>
+<pre class="r"><code># Combine all data into one tidy dataframe (all data in one column instead of one column for each fluor)
+cols_meta_DS091 &lt;- c(&quot;plateID&quot;, &quot;tubeID&quot;, &quot;cell_line&quot;, &quot;stimulus&quot;, &quot;stim_clean&quot;, &quot;description&quot;,  &quot;sample_cell_count&quot;) # include all metadata columns
+         
+df_PE_DS091 &lt;- df_DS091 %&gt;% 
+  select(all_of(cols_meta_DS091), protein_PE, PE.A, FSC.A, SSC.A) %&gt;% 
+  mutate(fluor = &quot;PE&quot;) %&gt;%
+  rename(
+    protein = protein_PE, 
+    fluorescence = PE.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+df_AF647_DS091 &lt;- df_DS091 %&gt;% 
+  select(all_of(cols_meta_DS091), protein_AF647, Alexa.647.A, FSC.A, SSC.A) %&gt;% 
+  mutate(fluor = &quot;AF647&quot;) %&gt;%
+  rename(
+    protein = protein_AF647, 
+    fluorescence = Alexa.647.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+df_AF488_DS091 &lt;- df_DS091 %&gt;% 
+  select(all_of(cols_meta_DS091), protein_AF488, Alexa.488.A, FSC.A, SSC.A) %&gt;% 
+  mutate(fluor = &quot;AF488&quot;) %&gt;%
+  rename(
+    protein = protein_AF488, 
+    fluorescence = Alexa.488.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+df_BV421_DS091 &lt;- df_DS091 %&gt;% 
+  select(all_of(cols_meta_DS091), protein_BV421, BV421.A, FSC.A, SSC.A) %&gt;% 
+  mutate(fluor = &quot;BV421&quot;) %&gt;%
+  rename(
+    protein = protein_BV421, 
+    fluorescence = BV421.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+
+df_tidy_DS091 &lt;- list(df_PE_DS091, df_AF647_DS091, df_AF488_DS091, df_BV421_DS091) %&gt;% reduce(full_join)
+
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  3618901 193.3    7071841 377.7  4851859 259.2
+Vcells 12853952  98.1   29176244 222.6 29104395 222.1</code></pre>
+<pre class="r"><code># kable(df_tidy_DS091 %&gt;% head(5)) %&gt;% kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;))</code></pre>
+<pre class="r"><code>data_info_DS091 &lt;- df_tidy_DS091 %&gt;%
+  filter(stimulus == &quot;PBS&quot;) %&gt;%
+  group_by(plateID, cell_line, protein) %&gt;%
+  summarise(zero_quant97.5 = quantile(fluorescence, c(0.975), na.rm = T))
+
+df_tidy_DS091 &lt;- left_join(df_tidy_DS091, data_info_DS091)
+
+# Create dataframe with percentage ON for each condition
+data_total_DS091 &lt;- df_tidy_DS091 %&gt;%
+  group_by(plateID, tubeID, protein) %&gt;%
+  count(name = &quot;count_total&quot;)
+
+data_on_DS091 &lt;- df_tidy_DS091 %&gt;%
+  filter((fluorescence - zero_quant97.5) &gt; 0) %&gt;%
+  group_by(plateID, tubeID, protein) %&gt;%
+  count(name = &quot;count_on&quot;)
+
+data_counts_DS091 &lt;- left_join(data_total_DS091, data_on_DS091) %&gt;%
+  mutate(percent_on = (count_on / count_total) * 100)
+
+df_tidy_DS091 &lt;- left_join(df_tidy_DS091, data_counts_DS091)
+
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  3624387 193.6    7071841 377.7  4851859 259.2
+Vcells 14015933 107.0   29176244 222.6 29104395 222.1</code></pre>
+<pre class="r"><code>kable(df_tidy_DS091 %&gt;% head(5)) %&gt;% kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;))</code></pre>
+<table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+plateID
+</th>
+<th style="text-align:left;">
+tubeID
+</th>
+<th style="text-align:left;">
+cell_line
+</th>
+<th style="text-align:left;">
+stimulus
+</th>
+<th style="text-align:left;">
+stim_clean
+</th>
+<th style="text-align:left;">
+description
+</th>
+<th style="text-align:right;">
+sample_cell_count
+</th>
+<th style="text-align:left;">
+protein
+</th>
+<th style="text-align:right;">
+fluorescence
+</th>
+<th style="text-align:right;">
+FSC
+</th>
+<th style="text-align:right;">
+SSC
+</th>
+<th style="text-align:left;">
+fluor
+</th>
+<th style="text-align:right;">
+zero_quant97.5
+</th>
+<th style="text-align:right;">
+count_total
+</th>
+<th style="text-align:right;">
+count_on
+</th>
+<th style="text-align:right;">
+percent_on
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+A02
+</td>
+<td style="text-align:left;">
+DAUDI
+</td>
+<td style="text-align:left;">
+PBS
+</td>
+<td style="text-align:left;">
+Basal
+</td>
+<td style="text-align:left;">
+DAUDI - Basal
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:left;">
+pSYK (Y525/Y526)
+</td>
+<td style="text-align:right;">
+238.5614
+</td>
+<td style="text-align:right;">
+106761.76
+</td>
+<td style="text-align:right;">
+76351.93
+</td>
+<td style="text-align:left;">
+PE
+</td>
+<td style="text-align:right;">
+437.4854
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:right;">
+599
+</td>
+<td style="text-align:right;">
+2.502611
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+A02
+</td>
+<td style="text-align:left;">
+DAUDI
+</td>
+<td style="text-align:left;">
+PBS
+</td>
+<td style="text-align:left;">
+Basal
+</td>
+<td style="text-align:left;">
+DAUDI - Basal
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:left;">
+pSYK (Y525/Y526)
+</td>
+<td style="text-align:right;">
+267.2543
+</td>
+<td style="text-align:right;">
+77788.16
+</td>
+<td style="text-align:right;">
+85502.52
+</td>
+<td style="text-align:left;">
+PE
+</td>
+<td style="text-align:right;">
+437.4854
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:right;">
+599
+</td>
+<td style="text-align:right;">
+2.502611
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+A02
+</td>
+<td style="text-align:left;">
+DAUDI
+</td>
+<td style="text-align:left;">
+PBS
+</td>
+<td style="text-align:left;">
+Basal
+</td>
+<td style="text-align:left;">
+DAUDI - Basal
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:left;">
+pSYK (Y525/Y526)
+</td>
+<td style="text-align:right;">
+223.8050
+</td>
+<td style="text-align:right;">
+97652.39
+</td>
+<td style="text-align:right;">
+73708.08
+</td>
+<td style="text-align:left;">
+PE
+</td>
+<td style="text-align:right;">
+437.4854
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:right;">
+599
+</td>
+<td style="text-align:right;">
+2.502611
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+A02
+</td>
+<td style="text-align:left;">
+DAUDI
+</td>
+<td style="text-align:left;">
+PBS
+</td>
+<td style="text-align:left;">
+Basal
+</td>
+<td style="text-align:left;">
+DAUDI - Basal
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:left;">
+pSYK (Y525/Y526)
+</td>
+<td style="text-align:right;">
+166.4191
+</td>
+<td style="text-align:right;">
+105648.67
+</td>
+<td style="text-align:right;">
+60923.32
+</td>
+<td style="text-align:left;">
+PE
+</td>
+<td style="text-align:right;">
+437.4854
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:right;">
+599
+</td>
+<td style="text-align:right;">
+2.502611
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+A02
+</td>
+<td style="text-align:left;">
+DAUDI
+</td>
+<td style="text-align:left;">
+PBS
+</td>
+<td style="text-align:left;">
+Basal
+</td>
+<td style="text-align:left;">
+DAUDI - Basal
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:left;">
+pSYK (Y525/Y526)
+</td>
+<td style="text-align:right;">
+250.8583
+</td>
+<td style="text-align:right;">
+102266.14
+</td>
+<td style="text-align:right;">
+82931.63
+</td>
+<td style="text-align:left;">
+PE
+</td>
+<td style="text-align:right;">
+437.4854
+</td>
+<td style="text-align:right;">
+23935
+</td>
+<td style="text-align:right;">
+599
+</td>
+<td style="text-align:right;">
+2.502611
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>cells_DS091 &lt;- c(&quot;HBL1&quot;, &quot;BJAB&quot;, &quot;OCI-Ly8&quot;)
+conc_DS091 &lt;- c(&quot;PBS&quot;, 
+                &quot;5 ug/mL aIg&quot;, &quot;10 ug/mL aIg&quot;, &quot;20 ug/mL aIg&quot;,
+                &quot;3.3 mM H2O2&quot;, &quot;10 mM H2O2&quot;, &quot;20 mM H2O2&quot;,
+                &quot;3.3 H2O2 + 10 aIg&quot;, &quot;10 H2O2 + 10 aIg&quot;, &quot;10 H2O2 + 20 aIg&quot;, &quot;15 H2O2 + 15 aIg&quot;)
+
+ggplot(subset(df_tidy_DS091, protein == &quot;pPLCy2 (Y759)&quot;), aes(x = fluorescence)) +
+  geom_density_ridges(
+    aes(y = factor(conc_text, levels = rev(conc_DS091))),
+    scale = 2, 
+    fill = &quot;#006699&quot;, 
+    alpha = 0.5
+  ) +
+  geom_vline(aes(xintercept = zero_quant97.5), linewidth = 0.5) +
+  facet_wrap(vars(factor(cell_line, levels = cells_DS091))) +
+  scale_x_logicle() + # logicle scale instead of log10 scale
+  labs(x = paste(&quot;Fluorescent intensity PLCy2&quot;), y = &quot;&quot;) +
+  theme_bw() +
+  theme(legend.position = &quot;none&quot;, panel.grid.minor = element_blank())</code></pre>
+</div>
+<div id="median-data" class="section level3">
+<h3>Median data</h3>
+<p>Calculate median fluorescent values for each sample/replicate</p>
+<pre class="r"><code># Calculate median values for each sample
+medians_DS091 &lt;- df_tidy_DS091 %&gt;% 
+  group_by(plateID, tubeID, protein, fluor) %&gt;% 
+  summarise_at(vars(fluorescence), list(fluorescence_median = median), na.rm = TRUE)
+
+medians_tidy_DS091 &lt;- left_join(medians_DS091, distinct(select(df_tidy_DS091, cols_meta_DS091))) %&gt;%
+  left_join(data_counts_DS091)
+
+# Calculate fold change compared to conc 0 (average of 0 ug/mL aIg + 0 mM H2O2)
+median_zero_DS091 &lt;- medians_tidy_DS091 %&gt;%
+  filter(stimulus == &quot;PBS&quot;) %&gt;%
+  group_by(plateID, cell_line, protein) %&gt;%
+  summarise(zero_median = mean(fluorescence_median))
+
+medians_tidy_DS091 &lt;- left_join(medians_tidy_DS091, median_zero_DS091) %&gt;%
+  mutate(FC = (fluorescence_median / zero_median), 
+         log2FC = log2(FC))
+
+gc()</code></pre>
+<pre><code>           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  3652107 195.1    7071841 377.7  4851859 259.2
+Vcells 14085227 107.5   29176244 222.6 29104395 222.1</code></pre>
+<pre class="r"><code># kable(medians_tidy_DS091 %&gt;% head(5)) %&gt;% kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;))</code></pre>
+</div>
+<div id="save-data" class="section level3">
+<h3>Save data</h3>
+<p>Save annotated datasets as .csv file</p>
+<pre class="r"><code>write.csv(df_tidy_DS091, file = &quot;output/DS091_ImmunostainingBio/flow_ann/flow_data_DS091.csv&quot;, row.names = F)
+
+write.csv(medians_tidy_DS091, file = &quot;output/DS091_ImmunostainingBio/flow_ann/flow_medians_DS091.csv&quot;, row.names = F)</code></pre>
+<pre class="r"><code># Remove unnecessary files to clear up memory
+rm(list = ls(pattern = &quot;_DS091&quot;))
+gc()</code></pre>
+<pre><code>          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 3652903 195.1    7071841 377.7  4851859 259.2
+Vcells 6270854  47.9   23340996 178.1 29104395 222.1</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 10 x64 (build 19045)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_Netherlands.utf8  LC_CTYPE=English_Netherlands.utf8   
+[3] LC_MONETARY=English_Netherlands.utf8 LC_NUMERIC=C                        
+[5] LC_TIME=English_Netherlands.utf8    
+
+time zone: Europe/Amsterdam
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] png_0.1-8            patchwork_1.2.0      geomtextpath_0.1.4  
+ [4] ggh4x_0.2.8          magick_2.8.3         greekLetters_1.0.2  
+ [7] kableExtra_1.4.0     ggrepel_0.9.5        scales_1.3.0        
+[10] ggpubr_0.6.0         cowplot_1.1.3        ggthemes_5.1.0      
+[13] RColorBrewer_1.1-3   viridis_0.6.5        viridisLite_0.4.2   
+[16] ggridges_0.5.6       platetools_0.1.7     forecast_8.23.0     
+[19] readxl_1.4.3         zoo_1.8-12           lubridate_1.9.3     
+[22] forcats_1.0.0        stringr_1.5.1        dplyr_1.1.4         
+[25] purrr_1.0.2          readr_2.1.5          tidyr_1.3.1         
+[28] tibble_3.2.1         tidyverse_2.0.0      ggcyto_1.32.0       
+[31] flowWorkspace_4.16.0 ncdfFlow_2.50.0      BH_1.84.0-0         
+[34] ggplot2_3.5.1        flowCore_2.16.0      workflowr_1.7.1     
+
+loaded via a namespace (and not attached):
+ [1] rstudioapi_0.16.0   jsonlite_1.8.8      magrittr_2.0.3     
+ [4] rmarkdown_2.27      fs_1.6.4            zlibbioc_1.50.0    
+ [7] vctrs_0.6.5         rstatix_0.7.2       htmltools_0.5.8.1  
+[10] curl_5.2.1          broom_1.0.6         cellranger_1.1.0   
+[13] TTR_0.24.4          sass_0.4.9          bslib_0.7.0        
+[16] plyr_1.8.9          cachem_1.1.0        whisker_0.4.1      
+[19] lifecycle_1.0.4     pkgconfig_2.0.3     R6_2.5.1           
+[22] fastmap_1.2.0       digest_0.6.36       colorspace_2.1-0   
+[25] S4Vectors_0.42.0    ps_1.7.6            rprojroot_2.0.4    
+[28] textshaping_0.4.0   cytolib_2.16.0      fansi_1.0.6        
+[31] timechange_0.3.0    httr_1.4.7          abind_1.4-5        
+[34] compiler_4.4.1      bit64_4.0.5         withr_3.0.0        
+[37] backports_1.5.0     tseries_0.10-56     carData_3.0-5      
+[40] highr_0.11          hexbin_1.28.3       ggsignif_0.6.4     
+[43] tools_4.4.1         lmtest_0.9-40       quantmod_0.4.26    
+[46] httpuv_1.6.15       nnet_7.3-19         glue_1.7.0         
+[49] quadprog_1.5-8      callr_3.7.6         nlme_3.1-164       
+[52] promises_1.3.0      grid_4.4.1          getPass_0.2-4      
+[55] generics_0.1.3      gtable_0.3.5        tzdb_0.4.0         
+[58] data.table_1.15.4   hms_1.1.3           xml2_1.3.6         
+[61] car_3.1-2           utf8_1.2.4          BiocGenerics_0.50.0
+[64] pillar_1.9.0        vroom_1.6.5         later_1.3.2        
+[67] lattice_0.22-6      bit_4.0.5           RProtoBufLib_2.16.0
+[70] tidyselect_1.2.1    knitr_1.47          git2r_0.33.0       
+[73] gridExtra_2.3       urca_1.3-4          svglite_2.1.3      
+[76] stats4_4.4.1        xfun_0.45           Biobase_2.64.0     
+[79] timeDate_4032.109   matrixStats_1.3.0   stringi_1.8.4      
+[82] yaml_2.3.8          evaluate_0.24.0     Rgraphviz_2.48.0   
+[85] graph_1.82.0        cli_3.6.3           systemfonts_1.1.0  
+[88] munsell_0.5.1       processx_3.8.4      jquerylib_0.1.4    
+[91] Rcpp_1.0.12         XML_3.99-0.17       parallel_4.4.1     
+[94] fracdiff_1.5-3      assertthat_0.2.1    xts_0.14.0         
+[97] crayon_1.5.3        rlang_1.1.4        </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

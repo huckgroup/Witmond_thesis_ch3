@@ -1,0 +1,868 @@
+---
+title: "ID-seq annotation"
+author: "mwitmond"
+date: "2024-09-24"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    toc_float: 
+      collapsed: FALSE
+    toc_depth: 3
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = T
+)
+
+# Load required packages
+source("code/packages_seq.R", local = knitr::knit_global())
+```
+
+```{r fig_settings}
+row_order = c("A", "B", "C", "D", "E", "F", "G", "H")
+col_order = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+panel_labels <- c("a", "b", "c","d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
+
+textsize <- theme(axis.text.x = element_text(colour = "grey", size = 11), #, face = "bold"
+                  axis.text.y = element_text(colour = "grey", size = 11),
+                  axis.title = element_text(colour = "black", size = 12), 
+                  legend.title = element_text(colour = "black", size = 12),
+                  # legend.title = element_blank(), 
+                  legend.text = element_text(colour = "grey", size = 11), 
+                  strip.text.x = element_text(colour = "black", size = 12)
+)
+
+textsize_small <- theme(text = element_text(size = 7, family = "sans", colour = "black"),
+                        plot.title = element_text(size = 8)
+)
+textsize_medium <- theme(text = element_text(size = 10, family = "sans", colour = "black"),
+                         strip.text.x = element_text(size = 10), 
+                         plot.title = element_text(size = 10)
+)
+
+colors_dark9 <- c("#4daf4a", "#984ea3", "#377eb8", "#ff7f00", "#f781bf", "#ffff33", "#e41a1c", "#a65628", "#999999")
+colors_light12 <- c("#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f")
+colors_paired10 <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#fb9a99", "#e31a1c")
+
+colors_blue9 <- c("#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c", "#08306b")
+colors_green9 <- c("#f7fcf5", "#e5f5e0", "#c7e9c0", "#a1d99b", "#74c476", "#41ab5d", "#238b45", "#006d2c", "#00441b")
+colors_purple9 <- c("#fcfbfd", "#efedf5", "#dadaeb", "#bcbddc", "#9e9ac8", "#807dba", "#6a51a3", "#54278f", "#3f007d")
+colors_red9 <- c("#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d")
+colors_orange9 <- c("#fff5eb", "#fee6ce", "#fdd0a2", "#fdae6b", "#fd8d3c", "#f16913", "#d94801", "#a63603", "#7f2704")
+colors_grey9 <- c("#ffffff", "#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#000000")
+
+colors_yb9 <- c("#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58")
+colors_pr9 <- c("#f7f4f9", "#e7e1ef", "#d4b9da", "#c994c7", "#df65b0", "#e7298a", "#ce1256", "#980043", "#67001f")
+
+colors_proteins <- c("pCD79a (Y182)" = "#892BE1", "pSYK (Y525/Y526)" = "#1E8FFF", "pPLCy2 (Y759)" = "#20B1A9")
+colors_stim <- c("PBS" = "#737373", "anti-Ig" = "#74c476", "H2O2" = "#6EA6CD")
+colors_stim_clean <- c("Basal" = "#737373", "Activated (anti-Ig)" = "#74c476", "Activated (H2O2)" = "#6EA6CD")
+colors_cell <- c("HBL1" = "#df65b0", "DAUDI" = "#41b6c4")
+```
+
+
+
+## DS075: BarcodeCheck
+
+### Raw data
+
+```{r data_DS075}
+# Load sparse matrix format all data
+counts_PlateA <- read_count_output("data/DS075_BarcodeCheck/counts/PlateA/featurecounts", name = "featurecounts")
+counts_PlateB <- read_count_output("data/DS075_BarcodeCheck/counts/PlateB/featurecounts", name = "featurecounts")
+
+meta_wellID <- read_csv("data/DS075_BarcodeCheck/config/DynSign.075_wellBC_metadata_seq.csv")
+# meta_wellID <- read_csv("data/DS075_BarcodeCheck/config/meta_antibody_barcodes_samples_new.csv")
+meta_Abs_nr <- read_excel("data/DS075_BarcodeCheck/config/meta_featurebarcodes.xlsx")
+
+# Reshape counts in data table format
+# Plate A
+counts_dtbl_plateA <- data.frame(counts_PlateA) %>% 
+  mutate(barcode_name = rownames(counts_PlateA)) %>% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %>%
+  gather("well_BC_seq", "counts", 2:c(ncol(counts_PlateA)+1)) %>%
+  dplyr::filter(counts > 1) %>% # Remove undetected proteins counts
+  left_join(meta_Abs_nr) %>%
+  unique() %>%
+  # dplyr::filter(!is.na(target_nospace)) %>% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %>%
+  arrange(plate, well)
+
+# Plate B
+counts_dtbl_plateB <- data.frame(counts_PlateB) %>% 
+  mutate(barcode_name = rownames(counts_PlateB)) %>% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %>%
+  gather("well_BC_seq", "counts", 2:c(ncol(counts_PlateB)+1)) %>%
+  dplyr::filter(counts > 1) %>% # Remove undetected proteins counts
+  left_join(meta_Abs_nr) %>%
+  unique() %>%
+  # dplyr::filter(!is.na(target_nospace)) %>% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == "B")) %>% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %>%
+  arrange(plate, well)
+
+counts_dtbl <- full_join(counts_dtbl_plateA, counts_dtbl_plateB)
+
+# Calculate per-sample properties
+data_properties <- counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %>%
+  left_join(meta_wellID) %>% # Add sample metadata 
+  arrange(plate, well)
+```
+
+***Table**: Unfiltered data-table properties loaded into R*
+
+|                           | nCols (#samples)        | nRows (\# barcodes)     |
+|------------------|---------------------------|---------------------------|
+| Plate A         | `r ncol(counts_PlateA)` | `r nrow(counts_PlateA)` |
+
+```{r fig_count_prot_DS075, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties, aes(log10(nCount), nProt)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~plate) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+
+***Figure:** Correlation between total counts and number of detected protein barcodes. We observe many more detected proteins than present in the staining.*
+
+As we have a 96-wells plate, we can also have a look at total counts per plate detected:
+
+```{r fig_plate_totalUMI_DS075, fig.width=8, fig.height=4}
+options(repr.plot.width = 10, repr.plot.height = 6)
+
+rng <- range(log10(data_properties$nCount))
+
+plot <- raw_grid(data = log10(data_properties$nCount), well = data_properties$well, plate_id = data_properties$plate, plate = 96, size = 6) +
+  scale_fill_viridis(expression("Total counts Log"[10]), limits = c(rng[1], rng[2])) +
+  theme_bw()
+
+print(plot)
+
+```
+
+***Figure:** Plate overviews of total counts.*
+
+
+### Data wrangling
+
+Calculate the following:
+
+-   Percentage contamination
+
+```{r percent_DS075}
+# Calculate percentage contamination for each BC
+counts_dtbl_percent <- counts_dtbl %>% 
+  left_join(data_properties) %>%
+  dplyr::rename(counts_BC = counts, 
+                counts_total = nCount, 
+                measured_BC = barcode_nr_only, 
+                measured_BC_long = barcode_name) %>%
+  mutate(counts_percent = (counts_BC / counts_total) * 100, 
+         plate_well = paste0(plate, "_", well))
+
+# Calculate total percentage contamination
+data_total_cont <- counts_dtbl_percent %>%
+  dplyr::filter(measured_BC_long != expected_BC_long) %>%
+  group_by(plate, well) %>%
+  summarize(counts_total_cont = sum(counts_BC), 
+            counts_total_percent_cont = sum(counts_percent))
+counts_dtbl_percent <- counts_dtbl_percent %>%
+  left_join(data_total_cont)
+```
+
+
+
+### Save data
+
+Finally, we will save the datasets as .csv file
+
+-   IDseq_data_sample.csv: Dataset of counts per protein per sample 
+
+```{r save_DS075}
+# Dataset of counts per barcode per well
+meta_cols_well_DS075 <- c("plate_well", "plate", "row", "column", "well", 
+                          "experiment", "expected_BC", "expected_BC_long", "measured_BC", "measured_BC_long", 
+                          "counts_BC", "counts_total", "counts_percent", "counts_total_cont", "counts_total_percent_cont")
+data_well_all <- counts_dtbl_percent %>% 
+  arrange(plate_well, measured_BC) %>%
+  dplyr::select(meta_cols_well_DS075) # reorder columns for a more logical order
+
+write.csv(data_well_all, file = "output/DS075_BarcodeCheck/IDseq_ann/IDseq_data_sample.csv", row.names = F)
+```
+
+```{r clear_DS075}
+rm(list = ls(pattern = "DS075"))
+rm(list = ls(pattern = "Plate"))
+gc()
+```
+
+
+
+## DS078: Blocking1
+
+### Raw data
+
+```{r data_DS078}
+# Load sparse matrix format all data
+counts_PlateA <- read_count_output("data/DS078_Blocking1/counts/PlateA/featurecounts", name = "featurecounts")
+meta_wellID <- read_csv("data/DS078_Blocking1/config/DynSign.078_wellBC_metadata_seq.csv")
+
+meta_Abs_OG <- read_excel("data/DS078_Blocking1/config/BulkIDseq_Ab_info_seq_analysis_202405.xlsx")
+meta_Abs_DS078 <- read_csv("data/DS078_Blocking1/config/DynSign.078_Ab_metadata.csv")
+
+# Reshape counts in data table format
+counts_dtbl <- data.frame(counts_PlateA) %>% 
+  mutate(barcode_name = rownames(counts_PlateA)) %>% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %>%
+  gather("well_BC_seq", "counts", 2:c(ncol(counts_PlateA)+1)) %>%
+  dplyr::filter(counts >= 1) %>% # Remove undetected proteins counts
+  left_join(meta_Abs_DS078) %>%
+  unique() %>%
+  # dplyr::filter(!is.na(target_nospace)) %>% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %>%
+  arrange(plate, well)
+
+counts_dtbl <- counts_dtbl %>%
+  mutate(plate_well = paste0(plate, "_", well))
+
+# Calculate per-sample properties
+data_properties <- counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %>%
+  left_join(meta_wellID) # Add sample metadata 
+```
+
+***Table**: Unfiltered data-table properties loaded into R*
+
+|                           | nCols (#samples)        | nRows (\# barcodes)     |
+|------------------|---------------------------|---------------------------|
+| Plate A         | `r ncol(counts_PlateA)` | `r nrow(counts_PlateA)` |
+
+```{r fig_count_prot_DS078, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties, aes(log10(nCount), nProt, color = cell_treat)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+
+***Figure:** Correlation between total counts and number of detected protein barcodes. We observe many more detected proteins than present in the staining.*
+
+As we have a 96-wells plate, we can also have a look at total counts per plate detected:
+
+```{r fig_plate_totalUMI_DS078, fig.width=8, fig.height=4}
+options(repr.plot.width = 10, repr.plot.height = 6)
+
+rng <- range(log10(data_properties$nCount))
+
+plot <- raw_grid(data = log10(data_properties$nCount), well = data_properties$well, plate_id = data_properties$plate, plate = 96, size = 6) +
+  scale_fill_viridis(expression("Total counts Log"[10]), limits = c(rng[1], rng[2])) +
+  theme_bw()
+
+print(plot)
+
+```
+
+***Figure:** Plate overviews of total counts.*
+
+
+### Barcode combination 
+
+Several barcodes are contaminated with other barcodes (all barcodes were sequenced individually to determine the contamination). We combined the counts of barcodes that are attached to the same antibody (same target).
+
+```{r comp_apply_DS078}
+counts_comp <- counts_dtbl %>%
+  drop_na(target_assign) %>%
+  dplyr::select(plate_well, target_nospace, target_present, target_assign, counts) %>%
+  group_by(plate_well, target_assign) %>%
+  summarise(counts_target = sum(counts))
+
+counts_dtbl <- left_join(counts_dtbl, counts_comp) %>%
+  drop_na(target_assign)
+
+# Calculate per-sample properties
+data_properties_true <- counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(counts_target, na.rm = TRUE), 
+            nProt = n()) %>%
+  left_join(meta_wellID) # Add sample metadata 
+```
+
+```{r fig_count_raw_comp_DS078, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties_true, aes(log10(nCount), nProt, color = cell_treat)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+
+ggplot(drop_na(counts_dtbl, target_assign), aes(log10(counts), log10(counts_target), color = cell_treat)) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_conc, name = "iSYK + iBTK + iNFkB") +
+  theme_bw() +
+  labs(title = "Correlation original counts and combined counts",
+       x = expression("Original counts Log"[10]),
+       y = expression("Combined counts Log"[10])) +
+  textsize_small
+```
+
+***Figure:** Correlation between original counts and combined counts, and between compensated counts and detected number of barcodes.*
+
+
+### Count normalisation
+
+To remove variation between replicates, the data is normalised per target protein with a geometric mean scaling factor: First, the geometric mean of each target is calculated separately for each cell line, and then the median of the protein scaling factors is calculated separately for each sample.
+
+```{r normalisation_DS078}
+scaling_factors <- counts_dtbl %>%
+  dplyr::filter(staining == "yes") %>%
+  # dplyr::filter() %>% #target_nospace == "GAPDH" # modification == "no"
+  ungroup() %>%
+  group_by(target_nospace) %>%
+  mutate(scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor_geo = counts_target / exp(mean(log((counts_target))))) %>%
+  ungroup() %>%
+  group_by(description_rep) %>%
+  summarize(scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl_norm <- counts_dtbl %>%
+  dplyr::filter(staining == "yes") %>%
+  left_join(scaling_factors) %>%
+  ungroup() %>%
+  mutate(counts_norm_geo = counts / scaling_factor_geo, 
+         counts_target_norm_geo = counts_target / true_scaling_factor_geo)
+
+counts_dtbl_no <- counts_dtbl %>%
+  dplyr::filter(staining == "no")
+counts_dtbl_norm <- full_join(counts_dtbl_norm, counts_dtbl_no) %>%
+  dplyr::filter(!is.na(target_nospace))
+
+# Calculate per-sample properties
+data_properties_norm <- counts_dtbl_norm %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount_norm = sum(counts_norm_geo), 
+            nProt = n()) %>%
+  left_join(meta_wellID)
+
+data_properties_norm_true <- counts_dtbl_norm %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount_norm = sum(counts_target_norm_geo), 
+            nProt = n()) %>%
+  left_join(meta_wellID)
+```
+
+```{r fig_count_norm_DS078, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties_norm_true, aes(log10(nCount_norm), nProt, color = cell_treat)) +
+  geom_point(alpha = 1, size = 1) +
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_dark9) +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+
+ggplot(counts_dtbl_norm, aes(log10(counts_target), log10(counts_target_norm_geo), color = cell_treat)) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_grid(~block_buf) +
+  # scale_color_manual(values = colors_conc, name = "iSYK + iBTK + iNFkB") +
+  theme_bw() +
+  labs(title = "Correlation original counts and combined counts",
+       x = expression("Original counts Log"[10]),
+       y = expression("Combined counts Log"[10])) +
+  textsize_small
+```
+
+***Figure:** Correlation between raw counts and compensated counts.*
+
+
+### Data wrangling
+
+Calculate the following:
+
+-   Mean + sd for replicates (counts_target + counts_target_norm_geo)
+
+```{r mean_rep_DS078}
+# Calculate mean + sd of counts_target and counts_target_norm_geo
+mean_dtbl <- counts_dtbl_norm %>%
+  dplyr::group_by(description, target_assign) %>%
+  summarise(
+    counts_sd = sd(counts_target, na.rm = T),
+    counts = mean(counts_target, na.rm = T), 
+    counts_norm_sd = sd(counts_target_norm_geo, na.rm = T),
+    counts_norm = mean(counts_target_norm_geo, na.rm = T)
+    )
+
+# Add metadata
+mean_dtbl <- mean_dtbl %>%
+  left_join(dplyr::select(counts_dtbl,
+                   c(barcode_name, DS_Ab_nr, target, DS_barcode_nr, DS_barcode_seq, target_nospace, target_assign, target_assign_unique, cell_line, stimulus, stim_clean, stim_stain, block_buf, cell_treat, staining, description))) %>%
+  distinct()
+```
+
+
+
+### Save data
+
+Finally, we will save the datasets as .csv file
+
+-   IDseq_data_sample.csv: Dataset of counts per protein per sample 
+
+-   IDseq_data_condition.csv: Dataset of counts per protein per condition (mean of replicates)
+
+```{r save_DS078}
+# Dataset of counts per protein per sample 
+meta_cols_well_DS078 <- c("plate_well", "plate", "well", "experiment", "cell_line", "stimulus", "stim_clean", "stim_stain", "block_buf", "cell_treat", "replicate", "description", "description_rep",
+                          "target_nospace", "target_assign", "target_assign_unique", "barcode_name", "DS_Ab_nr", 
+                          "counts", "counts_target", "true_scaling_factor_geo", "counts_target_norm_geo")
+data_well_all <- counts_dtbl_norm %>% 
+  arrange(plate_well, target_assign) %>%
+  dplyr::select(meta_cols_well_DS078) %>% # reorder columns for a more logical order
+  dplyr::rename(Ab_BC_nr = barcode_name, 
+                scaling_factor = true_scaling_factor_geo, 
+                counts_target_norm = counts_target_norm_geo)
+
+write.csv(data_well_all, file = "output/DS078_Blocking1/IDseq_ann/IDseq_data_sample.csv", row.names = F)
+
+# Dataset of mean counts per protein per condition (replicates combined)
+meta_cols_mean_DS078 <- c("cell_line", "stimulus", "stim_clean", "stim_stain", "block_buf", "cell_treat", "description",
+                          "target_nospace", "target_assign", "target_assign_unique", "barcode_name", "DS_Ab_nr", 
+                          "counts", "counts_sd", "counts_norm", "counts_norm_sd")
+data_mean_all <- mean_dtbl %>%
+  dplyr::select(meta_cols_mean_DS078) %>% # reorder cols to more logical order
+  dplyr::rename(Ab_BC_nr = barcode_name)
+
+write.csv(data_mean_all, file = "output/DS078_Blocking1/IDseq_ann/IDseq_data_condition.csv", row.names = F)
+```
+
+```{r clear_DS078}
+rm(list = ls(pattern = "DS078"))
+rm(list = ls(pattern = "Plate"))
+rm(list = ls(pattern = "comp"))
+gc()
+```
+
+
+
+## DS091: ImmunostainingBio
+
+### Raw data
+
+```{r data_DS091}
+# Load sparse matrix format all data
+counts_PlateA <- read_count_output("data/DS091_ImmunostainingBio/counts/PlateA/featurecounts", name = "featurecounts")
+meta_wellID <- read_csv("data/DS091_ImmunostainingBio/config/DynSign.091_wellBC_metadata_seq.csv")
+
+meta_Abs <- read_excel("data/DS091_ImmunostainingBio/config/BulkIDseq_Ab_info_seq_analysis_202212.xlsx")
+
+# Reshape counts in data table format
+counts_dtbl <- data.frame(counts_PlateA) %>% 
+  mutate(barcode_name = rownames(counts_PlateA)) %>% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %>%
+  gather("well_BC_seq", "counts", 2:c(ncol(counts_PlateA)+1)) %>%
+  dplyr::filter(counts >= 1) %>% # Remove undetected proteins counts
+  left_join(meta_Abs) %>%
+  unique() %>%
+  # dplyr::filter(!is.na(target_nospace)) %>% # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %>%
+  arrange(plate, well)
+
+counts_dtbl <- counts_dtbl %>%
+  mutate(plate_well = paste0(plate, "_", well))
+
+# Calculate per-sample properties
+data_properties <- counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %>%
+  left_join(meta_wellID) # Add sample metadata 
+```
+
+***Table**: Unfiltered data-table properties loaded into R*
+
+|                           | nCols (#samples)        | nRows (\# barcodes)     |
+|------------------|---------------------------|---------------------------|
+| Plate A         | `r ncol(counts_PlateA)` | `r nrow(counts_PlateA)` |
+
+The full panel of mapped barcodes and 96 wells are present in the data table. First have a look at the total counts and number of detected protein barcodes per sample: There are a lot more proteins detected than put in the panel, due to barcode contamination and cross-ver between wells. The nostain samples have relatively low counts and proteins detected.
+
+```{r fig_count_prot_DS091, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(data_properties, aes(log10(nCount), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = "Staining conc \n(ug/mL)") +
+  # scale_color_binned(type = "viridis", name = "Staining conc (ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+
+***Figure:** Correlation between total counts and number of detected protein barcodes. We observe many more detected proteins than present in the staining.*
+
+As we have a 96-wells plate, we can also have a look at total counts per plate detected:
+
+```{r fig_plate_totalUMI_DS091, fig.width=8, fig.height=4}
+options(repr.plot.width = 10, repr.plot.height = 6)
+
+rng <- range(log10(data_properties$nCount))
+
+plot <- raw_grid(data = log10(data_properties$nCount), well = data_properties$well, plate_id = data_properties$plate, plate = 96, size = 6) +
+  scale_fill_viridis(expression("Total counts Log"[10]), limits = c(rng[1], rng[2])) +
+  theme_bw()
+
+print(plot)
+
+```
+
+***Figure:** Plate overviews of total counts.*
+
+
+### Barcode contamination comp
+
+Several barcodes are contaminated with \<2.5% of other barcodes (all barcodes were sequenced individually to determine the contamination). As this can skew the results, especially for lowly present barcodes that are contaminated with highly present barcodes, we will compensate for this.
+
+```{r comp_apply_DS091}
+comp_matrix <- read_csv("data/DS091_ImmunostainingBio/BC_compensation_matrix.csv")
+
+data_comp <- counts_dtbl %>%
+  # dplyr::filter(well == "A01") %>%
+  dplyr::select(plate, well, barcode_name, counts) %>%
+  left_join(comp_matrix, by = join_by(barcode_name == BC_to_correct)) #, multiple = "all"
+
+# Get counts of OG BC
+data_comp_OG <- data_comp %>%
+  # dplyr::filter(well == "A01") %>%
+  dplyr::filter(barcode_name == OG_BC) %>%
+  dplyr::select(plate, well, OG_BC, counts) %>%
+  dplyr::rename(counts_OG_BC = counts)
+
+# Calculate false reads
+data_false <- left_join(data_comp, data_comp_OG) %>% 
+  mutate(false_counts = (counts_OG_BC / percent_OG_BC) * percent_BC_to_correct) %>%
+  dplyr::filter(barcode_name != OG_BC) %>%
+  group_by(plate, well, barcode_name, counts) %>%
+  summarize(total_false_counts = sum(false_counts, na.rm = TRUE))
+
+counts_dtbl <- counts_dtbl %>%
+  # dplyr::filter(well == "A01") %>%
+  left_join(data_false) %>% 
+  mutate(total_false_counts = replace_na(total_false_counts, 0), 
+         true_counts = as.integer(counts - total_false_counts), 
+         percent_true = (true_counts / counts) * 100) %>%
+  dplyr::filter(!is.na(target_nospace)) # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+
+compensation <- counts_dtbl %>%
+  dplyr::select(plate, well, barcode_name, counts, total_false_counts, true_counts, percent_true, target_nospace)
+
+# Calculate per-sample properties
+data_properties_true <- counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(true_counts), 
+            nProt = n()) %>%
+  left_join(meta_wellID)
+```
+
+```{r fig_count_raw_comp_DS091, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(counts_dtbl, aes(log10(counts), log10(true_counts), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = "Staining conc \n(ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation raw counts and compensated counts",
+       x = expression("Raw counts Log"[10]),
+       y = expression("Compensated counts Log"[10])) +
+  textsize_small
+
+ggplot(data_properties_true, aes(log10(nCount), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = "Staining conc \n(ug/mL)") +
+  # scale_color_binned(type = "viridis", name = "Staining conc (ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation total counts and number of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+
+***Figure:** Correlation between raw counts and compensated counts, and between compensated counts and detected number of barcodes. After compensation, all samples (except nostain samples) have 107 detected proteins (the number of Ab in the panel).*
+
+
+### Count normalisation
+
+To remove variation between replicates, the data is normalised per target protein with a geometric mean scaling factor: First, the geometric mean of each target is calculated separately for each cell line, and then the median of the protein scaling factors is calculated separately for each sample.
+
+```{r normalisation_DS091}
+scaling_factors <- counts_dtbl %>%
+  dplyr::filter(cell_line %in% c("HBL1", "DAUDI")) %>%
+  # filter() %>% #target_nospace == "GAPDH" # modification == "no"
+  ungroup() %>%
+  group_by(cell_line, target_nospace) %>%
+  mutate(scaling_factor = counts / median(counts),
+         scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor = true_counts / median(true_counts),
+         true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %>%
+  ungroup() %>%
+  group_by(cell_line, description_sample, description_staining) %>%
+  summarize(scaling_factor = median(scaling_factor), .groups = "keep",
+            scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor = median(true_scaling_factor),
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl_norm <- counts_dtbl %>%
+  dplyr::filter(cell_line %in% c("HBL1", "DAUDI")) %>%
+  left_join(scaling_factors) %>%
+  ungroup() %>%
+  mutate(counts_norm = counts / scaling_factor,
+         counts_norm_geo = counts / scaling_factor_geo, 
+         true_counts_norm = true_counts / true_scaling_factor, 
+         true_counts_norm_geo = true_counts / true_scaling_factor_geo)
+
+counts_dtbl_norm <- dplyr::filter(counts_dtbl_norm, !is.na(target_nospace)) %>%
+  mutate(stimulus = factor(stimulus, levels = c("PBS", "anti-Ig", "H2O2")))
+
+# Calculate per-sample properties
+data_properties_norm <- counts_dtbl_norm %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount_norm = sum(counts_norm_geo), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, "PBS", "anti-Ig", "H2O2"))
+
+data_properties_norm_true <- counts_dtbl_norm %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount_norm = sum(true_counts_norm_geo), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, plate == "A")) %>% # Add sample metadata 
+  mutate(stimulus = fct_relevel(stimulus, "PBS", "anti-Ig", "H2O2"))
+```
+
+```{r fig_count_norm_DS091, fig.width=8, fig.height=5}
+options(repr.plot.width = 6, repr.plot.height = 4)
+
+ggplot(counts_dtbl_norm, aes(log10(counts), log10(counts_norm_geo), color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_wrap(~stimulus) +
+  scale_color_manual(values = colors_blue9[4:9], name = "Staining conc \n(ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation raw counts and normalised counts",
+       x = expression("Raw counts Log"[10]),
+       y = expression("Normalised counts Log"[10])) +
+  textsize_small
+
+ggplot(data_properties_norm, aes(log10(nCount_norm), nProt, color = as.character(staining_conc))) +
+  geom_point(alpha = 1, size = 1) +
+  facet_wrap(~stimulus) + # stimulus, staining_cells, staining_conc, staining_volume
+  scale_color_manual(values = colors_blue9[2:7], name = "Staining conc \n(ug/mL)") +
+  # scale_color_binned(type = "viridis", name = "Staining conc (ug/mL)") +
+  theme_bw() +
+  labs(title = "Correlation normalised counts and number of detected barcodes", 
+       x = expression("Normalised counts Log"[10]),
+       y = "Detected number of protein barcodes") +
+  textsize_small
+```
+
+***Figure:** Correlation between raw counts and compensated counts.*
+
+```{r normalisation_bio_DS091}
+scaling_factors_bio <- counts_dtbl %>%
+  dplyr::filter(staining_conc_text == "0.125 ug/mL") %>%
+  # filter() %>% #target_nospace == "GAPDH" # modification == "no"
+  ungroup() %>%
+  group_by(cell_line, target_nospace) %>%
+  mutate(scaling_factor = counts / median(counts),
+         scaling_factor_geo = counts / exp(mean(log((counts)))), 
+         true_scaling_factor = true_counts / median(true_counts),
+         true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %>%
+  ungroup() %>%
+  group_by(cell_line, description_sample, description_staining) %>%
+  summarize(scaling_factor = median(scaling_factor), .groups = "keep",
+            scaling_factor_geo = median(scaling_factor_geo), 
+            true_scaling_factor = median(true_scaling_factor),
+            true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+counts_dtbl_bio <- counts_dtbl %>%
+  dplyr::filter(staining_conc_text == "0.125 ug/mL") %>%
+  left_join(scaling_factors) %>%
+  ungroup() %>%
+  mutate(counts_norm = counts / scaling_factor,
+         counts_norm_geo = counts / scaling_factor_geo, 
+         true_counts_norm = true_counts / true_scaling_factor, 
+         true_counts_norm_geo = true_counts / true_scaling_factor_geo)
+
+counts_dtbl_bio <- dplyr::filter(counts_dtbl_bio, !is.na(target_nospace)) %>%
+  mutate(stimulus = factor(stimulus, levels = c("PBS", "anti-Ig", "H2O2")))
+
+ggplot(counts_dtbl_bio, aes(log10(counts), log10(counts_norm_geo), color = stim_clean)) +
+  geom_point(alpha = 1, size = 0.8) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") + 
+  facet_wrap(~cell_line) +
+  scale_color_manual(values = colors_stim_clean, name = "Stimulus") +
+  theme_bw() +
+  labs(title = "Correlation raw counts and normalised counts",
+       x = expression("Raw counts Log"[10]),
+       y = expression("Normalised counts Log"[10])) +
+  textsize_small
+```
+
+
+### Data wrangling
+
+Calculate the following:
+
+-   Mean + sd for replicates (true_counts + true_counts_norm_geo)
+
+```{r mean_rep_DS091}
+# Calculate mean + sd of true_counts and true_counts_norm_geo
+# Dataset with all samples
+mean_dtbl_norm <- counts_dtbl_norm %>%
+  dplyr::group_by(description_sample, description_staining, target_nospace) %>%
+  summarise(
+    counts_sd = sd(true_counts, na.rm = T),
+    counts = mean(true_counts, na.rm = T), 
+    counts_norm_sd = sd(true_counts_norm_geo, na.rm = T),
+    counts_norm = mean(true_counts_norm_geo, na.rm = T)
+    )
+
+# Add metadata
+mean_dtbl_norm <- mean_dtbl_norm %>%
+  left_join(dplyr::select(counts_dtbl,
+                   c(barcode_name, DS_Ab_nr, target, modification, epitope, marker_cell, marker_pathway, marker_pathway_detail, isotype, DS_barcode_nr, DS_barcode_seq, target_nospace, cell_line, stimulus, stim_clean, staining_cells, staining_conc, staining_conc_text, staining_volume, description_sample, description_staining))) %>%
+  distinct()
+
+# Dataset with bio samples
+mean_dtbl_bio <- counts_dtbl_bio %>%
+  dplyr::group_by(description_sample, description_staining, target_nospace) %>%
+  summarise(
+    counts_sd = sd(true_counts, na.rm = T),
+    counts = mean(true_counts, na.rm = T), 
+    counts_norm_sd = sd(true_counts_norm_geo, na.rm = T),
+    counts_norm = mean(true_counts_norm_geo, na.rm = T)
+    )
+
+# Add metadata
+mean_dtbl_bio <- mean_dtbl_bio %>%
+  left_join(dplyr::select(counts_dtbl,
+                   c(barcode_name, DS_Ab_nr, target, modification, epitope, marker_cell, marker_pathway, marker_pathway_detail, isotype, DS_barcode_nr, DS_barcode_seq, target_nospace, cell_line, stimulus, stim_clean, staining_cells, staining_conc, staining_conc_text, staining_volume, description_sample, description_staining))) %>%
+  distinct()
+```
+
+
+
+### Save data
+
+Finally, we will save the datasets as .csv file
+
+-   IDseq_data_sample.csv: Dataset of counts per protein per sample (all samples)
+
+-   bio_IDseq_data_sample.csv: Dataset of counts per protein per sample (bio samples)
+
+-   IDseq_data_condition.csv: Dataset of counts per protein per condition (mean of replicates) (all samples)
+
+-   bio_IDseq_data_condition.csv: Dataset of counts per protein per condition (mean of replicates) (bio samples)
+
+```{r save_DS091}
+# Dataset of counts per protein per sample 
+meta_cols_well_DS091 <- c("plate_well", "plate", "well", "experiment", "cell_line", "stimulus", "stim_clean", "replicate", "staining", "staining_cells", "staining_conc", "staining_conc_text", "staining_volume", "description_sample", "description_sample_rep", "description_staining",
+                    "target_nospace", "target", "modification", "marker_cell", "marker_pathway", "marker_pathway_detail", "barcode_name", "DS_Ab_nr", 
+                    "true_counts", "true_scaling_factor_geo", "true_counts_norm_geo")
+data_well_all <- counts_dtbl_norm %>% 
+  arrange(plate_well, target_nospace) %>%
+  dplyr::select(meta_cols_well_DS091) %>% # reorder columns for a more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name, 
+                counts = true_counts, 
+                scaling_factor = true_scaling_factor_geo, 
+                counts_norm = true_counts_norm_geo)
+write.csv(data_well_all, file = "output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_sample.csv", row.names = F)
+
+data_well_bio <- counts_dtbl_bio %>% 
+  arrange(plate_well, target_nospace) %>%
+  dplyr::select(meta_cols_well_DS091) %>% # reorder columns for a more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name, 
+                counts = true_counts, 
+                scaling_factor = true_scaling_factor_geo, 
+                counts_norm = true_counts_norm_geo)
+write.csv(data_well_bio, file = "output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_sample.csv", row.names = F)
+
+# Dataset of mean counts per protein per condition (replicates combined)
+meta_cols_mean_DS091 <- c("cell_line", "stimulus", "stim_clean", "staining_cells", "staining_conc", "staining_conc_text", "staining_volume", "description_sample", "description_staining", 
+                    "target_nospace", "target", "modification", "marker_cell", "marker_pathway", "marker_pathway_detail", "barcode_name", "DS_Ab_nr", 
+                    "counts", "counts_sd", "counts_norm", "counts_norm_sd")
+data_mean_all <- mean_dtbl_norm %>%
+  dplyr::select(meta_cols_mean_DS091) %>% # reorder cols to more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name)
+write.csv(data_mean_all, file = "output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_condition.csv", row.names = F)
+
+data_mean_bio <- mean_dtbl_bio %>%
+  dplyr::select(meta_cols_mean_DS091) %>% # reorder cols to more logical order
+  dplyr::rename(marker_path = marker_pathway, # rename some columns for clarity
+                marker_path_detail = marker_pathway_detail, 
+                Ab_BC_nr = barcode_name)
+write.csv(data_mean_bio, file = "output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_condition.csv", row.names = F)
+```
+
+```{r clear_DS091}
+rm(list = ls(pattern = "DS091"))
+rm(list = ls(pattern = "Plate"))
+rm(list = ls(pattern = "comp"))
+gc()
+```

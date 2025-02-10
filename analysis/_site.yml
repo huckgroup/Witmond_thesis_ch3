@@ -1,0 +1,35 @@
+name: "chapter_IDseq_tech"
+output_dir: ../docs
+navbar:
+  title: "Chapter IDseq tech"
+  left:
+  - text: Home
+    href: index.html
+  - text: Figs main
+    href: y_chapter_main.html
+  - text: Figs suppl
+    href: z_chapter_suppl.html
+  - text: Flow
+    menu:
+    - text: Gating
+      href: a_flow_gating.html
+    - text: Annotation
+      href: b_flow_ann.html
+  - text: IDseq
+    menu:
+    - text: Count tables
+      href: d_IDseq_count.html
+    - text: Annotation
+      href: e_IDseq_ann.html
+    - text: DS078 analysis
+      href: DS078_IDseq_analysis.html
+    - text: DS091 analysis
+      href: DS091_IDseq_analysis.html
+  - text: License
+    href: license.html
+output:
+  workflowr::wflow_html:
+    toc: yes
+    toc_float: yes
+    theme: readable
+    highlight: textmate

@@ -1,0 +1,476 @@
+---
+title: "DS078 IDseq analysis"
+author: "Jessie van Buggenum"
+date: "2022-06-28"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = F
+)
+```
+
+```{r libraries_and_ functions, message=FALSE, warning=FALSE}
+library(DropletUtils)
+library(Seurat)
+library(Matrix)
+library(tidyverse)
+library(scico)
+library(dplyr)
+library(ggthemes)
+library(kableExtra)
+library(ggpubr)
+library(patchwork)
+library(readxl)
+library(ggpubr)
+   library(scales)
+library(platetools)
+library(viridis)
+## From online; Slightly modified from BUSpaRse, just to avoid installing a few dependencies not used here
+read_count_output <- function(dir, name) {
+  dir <- normalizePath(dir, mustWork = TRUE)
+  m <- readMM(paste0(dir, "/", name, ".mtx"))
+  m <- Matrix::t(m)
+  m <- as(m, "dgCMatrix")
+  # The matrix read has cells in rows
+  ge <- ".genes.txt"
+  genes <- readLines(file(paste0(dir, "/", name, ge)))
+  barcodes <- readLines(file(paste0(dir, "/", name, ".barcodes.txt")))
+  colnames(m) <- barcodes
+  rownames(m) <- genes
+  return(m)
+}
+
+## For re-ordered antibody plot
+scale_x_reordered <- function(..., sep = "___") {
+  reg <- paste0(sep, ".+$")
+  ggplot2::scale_x_discrete(labels = function(x) gsub(reg, "", x), ...)
+}
+reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
+  new_x <- paste(x, within, sep = sep)
+  stats::reorder(new_x, by, FUN = fun)
+}
+
+```
+
+
+## Import & datatable properties
+
+
+```{r import_counts}
+## load sparse matrix format all data
+counts_PlateA <- read_count_output("data/counts/PlateA/featurecounts", name = "featurecounts")
+
+meta_wellID <- read_excel("data/config/meta_wellplate_corrected_switch_back.xlsx")
+meta_Abs <- read_excel("data/config/meta_antibody.xlsx")
+
+
+  
+## reshape counts in data table format
+counts.dtbl <- data.frame(counts_PlateA) %>% 
+  mutate(Barcodename = rownames(counts_PlateA)) %>%
+  select(Barcodename, everything()) %>%
+  gather("sample_BC", "counts", 2:c(ncol(counts_PlateA)+1)) %>%
+  filter(counts >1) %>% ## Remove undetected proteins counts
+   left_join(meta_Abs)%>%
+  unique() %>%
+  filter(!is.na(target_Full_Name)) %>% #remove proteins not in metadata%>%
+  left_join(subset(meta_wellID, Plate == "Plate_A")) %>% ## Add sample metadata
+  filter(!is.na(sample_ID))
+
+## Calculate per-sample properties
+data_properties <- counts.dtbl %>%
+  unique()%>%
+  group_by(sample_BC) %>%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %>%
+  left_join(subset(meta_wellID, Plate == "Plate_A")) %>%
+  filter(!is.na(buffer))## Add sample metadata 
+
+```
+
+
+The full panel of mapped barcodes and 96 wells are present in the data table. After removing non-detected barcodes and proteins nmot present in metadata file (not conjugated) we will explore the data properties. First have a look at the total counts and number of detected protein barcodes per sample:
+
+```{r Fig1-corr-nCount-nProt,  warning=FALSE, fig.width=4, fig.height=4}
+
+options(repr.plot.width=4, repr.plot.height=4)
+
+ggplot(data_properties , aes(log10(nCount), nProt)) +
+  geom_point(alpha = 1, size = 1) +
+ # facet_wrap(~stimulus)+
+  theme_bw() +
+  labs(title = "Correlation total counts and \nnumber of detected barcodes", 
+       x = expression("Total counts Log"[10]),
+       y = "Detected number of protein barcodes")
+```
+**Figure 1.** Correlation between Total counts and number of detected protein barcodes. We observe many more detected proteins than present in the staining. Note that we removed all counts that were not in antibody metadata files. Sequencing depth of several samples is very high (between 0.1M and 1M reads).
+
+As we have a 96-wells plate, we can also have a look at total counts per plate detected:
+
+```{r Fig2-plateoverview_totalUMIlog10, warning=FALSE, fig.width=8, fig.height=3 }
+options(repr.plot.width=8, repr.plot.height=3)
+
+raw_map(data = log10(data_properties$nCount), well = data_properties$well_nr, 
+        plate = 96, size = 6) +
+  scale_fill_viridis(expression("Total counts Log"[10])) +
+  theme_bw()
+```
+**Figure 2.** Plate overview of total counts. We can see several patterns of samples with high total counts. This is expected, as in these wells we have the stained HBL1 cells. In other wells we do not expect counts as these are different types of negative controls (MQ, no-stain, no-cell).
+
+To gain insight into effect of buffer conditions on number signal in all different samples, we first have a look at not-normalized (raw) counts per buffer per sample: 
+
+```{r Fig3-totcounts-persample, warning=FALSE, fig.width=8, fig.height=4 }
+ggplot(data_properties , aes(buffer, nCount, color = as.factor(replicate))) +
+  geom_jitter(alpha = 0.8, size = 1, width = 0.1) +
+  facet_wrap(~description_cell_treat, ncol = 4)+
+  theme_bw() +
+  RotatedAxis() +
+ # scale_y_log10() +
+  scale_color_colorblind("Replicate")
+```
+**Figure 3.** Per sample total counts. There are several samples with high counts: as expected the stained HBL1 cells. The negative samples (no-stain, MQ and no-cell have relatively low counts.) Also the Jurkat T-cells have low counts. 
+
+To visualize better differences in samples with lower counts we can plot log10 scale: 
+
+```{r Fig3-totcounts-persample-log, warning=FALSE, fig.width=8, fig.height=4 }
+ggplot(data_properties , aes(buffer, nCount, color = as.factor(replicate))) +
+  geom_jitter(alpha = 0.8, size = 1, width = 0.1) +
+  facet_wrap(~description_cell_treat, ncol = 4)+
+  theme_bw() +
+  RotatedAxis() +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+               labels = trans_format("log10", math_format(10^.x))) +
+  labs(x = "Buffer", y = expression("Total counts Log"[10])) +
+  scale_color_colorblind("Replicate")
+```
+**Figure 3.log ** Per sample total counts on log-scale.  The negative control samples show around 1000-10.000 counts. The T-cell line (Jurkat cells) show slightly higher counts(above 10.000 counts), and the HBL1 cells show positive signal between 10.000 and 1M counts (2 orders of magnitude above background). There are buffer-depended effects on background binding on the Jurkat cells (lowest with QuRIEseq, Highest with CITE-seq, rest similar). 
+
+## Signal over background
+
+```{r}
+data_properties.signalBackground <- filter(data_properties, cell_line =="Jurkat") %>%
+  group_by(buffer ) %>%
+  summarise(background.jurkat.av = mean(nCount))
+  
+data_properties <- left_join(data_properties, data_properties.signalBackground) %>%
+  mutate(signal_over_background = nCount/background.jurkat.av)
+
+
+```
+
+
+```{r Fig4-signBackground_jurkat, warning=FALSE, fig.width=8, fig.height=4 }
+ggplot(data_properties , aes(buffer, signal_over_background, color = as.factor(replicate))) +
+  geom_jitter(alpha = 0.8, size = 1, width = 0.1) +
+  facet_wrap(~description_cell_treat, ncol = 4)+
+  theme_bw() +
+  RotatedAxis() +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+               labels = trans_format("log10", math_format(10^.x))) +
+  # labs(x = "Buffer", y = expression("Total counts Log"[10])) +
+  scale_color_colorblind("Replicate")
+```
+**Figure 4.** 
+
+
+
+```{r}
+data_properties.signalBackground.nocell <- filter(data_properties, description =="noCell") %>%
+  group_by(buffer ) %>%
+  summarise(background.nocell.av = mean(nCount))
+  
+data_properties <- left_join(data_properties, data_properties.signalBackground.nocell) %>%
+  mutate(signal_over_background.nocell = nCount/background.nocell.av)
+
+
+```
+
+
+```{r Fig4-signBackground_nocell, warning=FALSE, fig.width=8, fig.height=4 }
+ggplot(data_properties , aes(buffer, signal_over_background.nocell, color = as.factor(replicate))) +
+  geom_jitter(alpha = 0.8, size = 1, width = 0.1) +
+  facet_wrap(~description_cell_treat, ncol = 4)+
+  theme_bw() +
+  RotatedAxis() +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+               labels = trans_format("log10", math_format(10^.x))) +
+  # labs(x = "Buffer", y = expression("Total counts Log"[10])) +
+  scale_color_colorblind("Replicate")
+```
+**Figure 4.** 
+
+## Per-antibody barcode analysis
+
+
+
+```{r}
+counts.dtbl.notpresentAbs <- filter(counts.dtbl, target_easy_name_unique == "NA_0")
+counts.dtbl.Abs <- filter(counts.dtbl, target_easy_name_unique != "NA_0")
+```
+
+```{r Fig5_BC-signal-abs, warning=FALSE, fig.width=12, fig.height=6}
+ggplot(counts.dtbl.Abs, aes(reorder(target_easy_name_unique ,counts ), counts , color = as.factor(description_cell_treat), shape = as.factor(replicate))) +
+     # geom_boxplot(outlier.colour="black", outlier.shape=16,
+     #         outlier.size=0.5, notch=FALSE) +
+  geom_point(alpha = 0.7)+
+     scale_x_reordered() +
+     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+ scale_y_log10(
+   breaks = trans_breaks("log10", function(x) 10^x),
+   labels = trans_format("log10", math_format(10^.x))) +
+ annotation_logticks(sides = 'l') +
+  labs(x="protein")+
+  theme_bw() +
+  facet_wrap(~buffer, ncol = 2)+
+  RotatedAxis()+
+  scale_color_colorblind()
+```
+**Figure5.** Distribution raw counts per Ab-barcode. Non-normalized counts show same patterns across all antibodies. 
+
+```{r Fig5_BC-signal-notpresent, warning=FALSE, fig.width=12, fig.height=10}
+ggplot(counts.dtbl.notpresentAbs, aes(reorder(Barcodename ,counts ), counts , color = as.factor(description_cell_treat), shape = as.factor(replicate))) +
+     # geom_boxplot(outlier.colour="black", outlier.shape=16,
+     #         outlier.size=0.5, notch=FALSE) +
+  geom_point(alpha = 0.7)+
+     scale_x_reordered() +
+     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+ # scale_y_log10(
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ #  annotation_logticks(sides = 'l') +
+  labs(x="protein")+
+  theme_bw() +
+  facet_wrap(~buffer, ncol = 2, scales = "free_x")+
+  RotatedAxis()+
+  scale_color_colorblind()
+```
+**Figure5.2** Distribution raw counts per barcode not present in experiment. Are these extra contaminants?
+
+
+As there are multiple barcodes per antibody, we can add-up all these values. Then we will have a look at HBL1 PBS and aIg samples, normalize per staining the replicates using average scaling factor of non-phospho antibodies CD19, ERK12, IkB and PARP. 
+
+```{r}
+## First sum all counts from contaminant barcodes
+
+counts.dtbl.Abs.sum <- counts.dtbl.Abs %>%
+  ungroup() %>%
+  group_by(target_easy_name, description, description_cell_treat, buffer, cell_line, treatment, replicate) %>%
+  summarise(counts = sum(counts), .groups = "keep") %>%
+  ungroup()
+
+## Select stained cells
+counts.dtbl.Abs.sum <- counts.dtbl.Abs.sum %>%
+  filter(cell_line != "MQ" & cell_line != "noCell" & cell_line != "Jurkat") %>%
+  filter(description_cell_treat != "HBL1_aIg_nostain" & description_cell_treat != "HBL1_PBS_nostain")  %>%
+  group_by(buffer, cell_line) %>%
+  mutate(counts_median = median(counts),
+         counts_norm_median = counts/counts_median)%>%
+  ungroup()
+
+# counts.nonphospho <- counts.dtbl.Abs.sum %>%
+#   filter(target_easy_name == "CD19" |target_easy_name == "ERK1_2" |target_easy_name == "IkB" |target_easy_name == "PARP" )%>%
+#   ungroup() %>%
+#   group_by(buffer, description) %>%
+#   summarise(counts.total.nonphospho = sum(counts), .groups = "keep") %>%
+#   ungroup() %>%
+#   group_by(buffer) %>%
+#   mutate(scaling.factor = counts.total.nonphospho/median(counts.total.nonphospho))
+
+
+extra <- counts.dtbl.Abs.sum %>%
+  filter(target_easy_name == "CD19" |target_easy_name == "ERK1_2" |target_easy_name == "IkB" |target_easy_name == "PARP" )%>%
+  ungroup() %>%
+  group_by(buffer, target_easy_name) %>%
+  mutate(scaling.factor = counts/median(counts))
+
+counts.nonphospho <- counts.dtbl.Abs.sum %>%
+  filter(target_easy_name == "CD19" |target_easy_name == "ERK1_2" |target_easy_name == "IkB" |target_easy_name == "PARP" )%>%
+  ungroup() %>%
+  group_by(buffer, target_easy_name) %>%
+  mutate(scaling.factor = counts/median(counts),
+         scaling.factor.geo = counts/exp(mean(log((counts))))) %>%
+  ungroup()%>%
+  group_by(buffer, description)%>%
+  summarise(scaling.factor = mean(scaling.factor), .groups = "keep",
+            scaling.factor.geo = mean(scaling.factor.geo))
+
+counts.dtbl.Abs.sum <- counts.dtbl.Abs.sum %>%
+  left_join(counts.nonphospho) %>%
+  ungroup() %>%
+  mutate(counts_norm_household = counts/scaling.factor,
+         counts_norm_household.geo = counts/scaling.factor.geo)%>%
+mutate(treatment = fct_relevel(treatment, 
+            "PBS", "aIg"),
+       description_cell_treat = fct_relevel(description_cell_treat, "HBL1_PBS", "HBL1_aIg")) 
+
+# counts.PARP <- counts.dtbl.Abs.sum %>%
+#   filter(target_easy_name == "PARP" )%>%
+#   select(description, buffer,count__PARP =counts)%>%
+#   ungroup() %>%
+#   group_by(buffer) %>%
+#   mutate(scaling.factor.PARP = count__PARP/median(count__PARP))
+# 
+# 
+# counts.dtbl.Abs.sum <- counts.dtbl.Abs.sum %>%
+#   left_join(counts.PARP) %>%
+#   ungroup() %>%
+#   mutate(counts_norm_PARP = counts/scaling.factor.PARP)
+
+```
+
+
+```{r Fig6-normCounts, warning=FALSE, fig.width=8, fig.height=5}
+ggplot(counts.dtbl.Abs.sum, aes(buffer, counts_norm_household , color = description_cell_treat, shape = as.factor(replicate), group = description_cell_treat)) +
+  geom_point(alpha = 0.7, position = position_dodge(width = 0.5))+
+  
+     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+ # scale_y_log10(
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ # annotation_logticks(sides = 'l') +
+  labs(x="")+
+  theme_bw() +
+  facet_wrap(~target_easy_name, ncol = 4)+
+  RotatedAxis()+
+  scale_color_colorblind()
+```
+**Figure 6.** Per-buffer normalized counts using Avg scaling factor of 4 non-phospho proteins. Effect of aIg is hard to see. 
+
+```{r Fig6-normCounts.geo, warning=FALSE, fig.width=8, fig.height=5}
+ggplot(counts.dtbl.Abs.sum, aes(buffer, counts_norm_household.geo , color = description_cell_treat, shape = as.factor(replicate), group = description_cell_treat)) +
+  geom_point(alpha = 0.7, position = position_dodge(width = 0.5))+
+  
+     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+ # scale_y_log10(
+ #   breaks = trans_breaks("log10", function(x) 10^x),
+ #   labels = trans_format("log10", math_format(10^.x))) +
+ # annotation_logticks(sides = 'l') +
+  labs(x="")+
+  theme_bw() +
+  facet_wrap(~target_easy_name, ncol = 4)+
+  RotatedAxis()+
+  scale_color_colorblind()
+```
+**Figure 6.geo ** Per-buffer normalized counts using Avg scaling factor of 4 non-phospho proteins. Effect of aIg is hard to see. 
+
+
+To visualize effect of aIg, we calculate the fold-change and with t-test determine p-value:
+
+```{r}
+FoldChanges <- counts.dtbl.Abs.sum %>%
+  ungroup() %>%
+  group_by(treatment, buffer,target_easy_name) %>%
+  summarise(values = list(counts_norm_household), .groups = "keep") %>%
+  ungroup()%>%
+  group_by(target_easy_name, buffer) %>%
+  summarise(fc = c(mean(values[[2]]) /mean(values[[1]])),
+            lfc = log2(mean(values[[2]]) /mean(values[[1]])),
+            p_value= t.test(values[[1]],values[[2]])$p.value, .groups = "keep") %>%
+  ungroup()%>%
+  mutate(sign = ifelse(p_value <0.05, "sign", "nonsign"))
+
+FoldChanges.geo <- counts.dtbl.Abs.sum %>%
+  ungroup() %>%
+  group_by(treatment, buffer,target_easy_name) %>%
+  summarise(values = list(counts_norm_household.geo), .groups = "keep") %>%
+  ungroup()%>%
+  group_by(target_easy_name, buffer) %>%
+  summarise(fc = c(mean(values[[2]]) /mean(values[[1]])),
+            lfc = log2(mean(values[[2]]) /mean(values[[1]])),
+            p_value= t.test(values[[1]],values[[2]])$p.value, .groups = "keep") %>%
+  ungroup()%>%
+  mutate(sign = ifelse(p_value <0.05, "sign", "nonsign"))
+
+
+```
+
+
+```{r Fig7-foldChange, warning=FALSE, fig.width=8, fig.height=5}
+ggplot(FoldChanges, aes(buffer, fc, color = sign)) +
+  geom_point(alpha = 0.7)+
+     scale_x_reordered() +
+     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+  labs(x="",y = "Fold Change (aIg/PBS)")+
+  theme_bw() +
+  facet_wrap(~target_easy_name, ncol = 4)+
+  RotatedAxis()+
+  scale_color_colorblind("pval < 0.05") +
+  geom_hline(yintercept = 1)
+```
+**Figure 7** Fold-change aIg vs PBS. Not many significant increased phospho-proteins. It seems QuRIE-seq buffer gives best fold-change. This is the case even though overall raw counts are much lower ass seen in figure 6. I'm not sure yet if this normalization & analysis is the best, and it is rather odd that the Ab-seq with seemingly best signal over technical background has no significant effect of aIg. 
+
+```{r Fig7-foldChange.geo, warning=FALSE, fig.width=8, fig.height=5}
+ggplot(FoldChanges.geo, aes(buffer, fc, color = sign)) +
+  geom_point(alpha = 0.7)+
+     scale_x_reordered() +
+     theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5,colour='black', size =6)) +
+  labs(x="",y = "Fold Change (aIg/PBS)")+
+  theme_bw() +
+  facet_wrap(~target_easy_name, ncol = 4)+
+  RotatedAxis()+
+  scale_color_colorblind("pval < 0.05") +
+  geom_hline(yintercept = 1)
+```
+**Figure 7.geo**  Fold-change aIg vs PBS. Not many significant increased phospho-proteins. It seems QuRIE-seq buffer gives best fold-change. This is the case even though overall raw counts are much lower ass seen in figure 6. I'm not sure yet if this normalization & analysis is the best, and it is rather odd that the Ab-seq with seemingly best signal over technical background has no significant effect of aIg. 
+
+
+
+
+```{r}
+
+# library(ggpubr)
+# library(rstatix)
+ 
+# stat.test <- counts.dtbl.Abs.sum %>%
+#   group_by(buffer, target_easy_name) %>%
+#   t_test(counts_norm_household ~ treatment) %>%
+#   adjust_pvalue(method = "bonferroni") %>%
+#   add_significance("p.adj")
+# stat.test <- stat.test %>%
+#   add_xy_position(fun = "mean_sd", x = "buffer", dodge = 0.8)
+
+# 
+# # Create bar plots of means
+# ggbarplot(counts.dtbl.Abs.sum, x = "buffer", y = "counts_norm_household", 
+#           facet.by =  "target_easy_name",
+#           add = c("mean_sd", "jitter"),
+#           color = "treatment", palette = c("#00AFBB", "#E7B800"),
+#            position = position_dodge(0.8)) +
+#   # stat_pvalue_manual(
+#   # stat.test,  label = "p", 
+#   # tip.length = 0, hide.ns = TRUE
+#   # )+
+#   theme_bw() +
+#   RotatedAxis()+
+#   labs(x="")
+
+
+# 
+# df.summary <- counts.dtbl.Abs.sum %>%
+#   group_by(buffer,treatment,target_easy_name) %>%
+#   summarise(
+#     sd = sd(counts_norm_household, na.rm = TRUE),
+#     counts_norm_household = mean(counts_norm_household)
+#   )
+# 
+# 
+# ggplot(df.summary, aes(buffer, counts_norm_household)) +
+#   geom_jitter(data =(counts.dtbl.Abs.sum), aes(buffer, counts_norm_household), position = position_jitter(0.05), color = "darkgray") + 
+#   facet_wrap(~target_easy_name)+
+#   geom_errorbar(
+#     aes(ymin = counts_norm_household-sd, ymax = counts_norm_household+sd, color = treatment),
+#     position = position_dodge(0.5), width = 0.2
+#     )+
+#   geom_point(aes(color = treatment), position = position_dodge(0.3)) +
+#   scale_color_manual(values = c("#00AFBB", "#E7B800"))
+
+
+```
+

@@ -1,0 +1,206 @@
+---
+title: "(Phospho-)flow cytometry annotation"
+author: "mwitmond"
+date: "2024-08-06"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    toc_float: 
+      collapsed: FALSE
+    toc_depth: 2
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Set-up
+
+```{r setup, message=F, warning=F}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = T
+)
+
+# Load required packages
+source("code/packages_FACS.R", local = knitr::knit_global())
+```
+
+
+
+## DS091: ImmunostainingBio
+
+### Load data
+
+Load the gated dataset and create a dataset with live single cells
+```{r data_DS091}
+gs_DS091 <- load_gs(paste0("output/DS091_ImmunostainingBio/", "flow_gated"))
+gated_pops_DS091 <- gs_get_pop_paths(gs_DS091, path = "auto")
+cs_DS091 <- gs_pop_get_data(gs_DS091, tail(gated_pops_DS091, 1))
+df_DS091 <- fortify(cs_DS091)
+df_DS091[df_DS091 <= 0] <- NA # Remove all zero values from df in order to perform log transformations
+
+# Select only columns that are needed
+df_DS091 <- df_DS091[ , c("name", "plateID", "rowID", "colID", "tubeID", "FSC.A", "SSC.A", "BV421.A", "PE.A", "Alexa.647.A", "Alexa.488.A")]
+
+gc()
+```
+
+```{r metadata_DS091}
+# Add metadata per well from custom .csv file
+metadata_DS091 <- read_csv("data/DS091_ImmunostainingBio/flow/metadata_tubes_DS091.csv")
+
+# Change columns into character if necessary
+metadata_DS091$colID <- as.character(metadata_DS091$colID)
+
+df_DS091 <- left_join(df_DS091, metadata_DS091)
+
+# Remove samples with <5000 cells (except if the sample is t = 0 min)
+counts_DS091 <- df_DS091 %>% count(plateID, tubeID, name = "sample_cell_count")
+df_DS091 <- left_join(df_DS091, counts_DS091)
+df_DS091 <- df_DS091[df_DS091$sample_cell_count > 5000, ]
+
+gc()
+
+# kable(df_DS091 %>% head(5)) %>% kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+### Transform data
+
+Pivot the full dataset into a tidy dataset
+```{r tidy_DS091}
+# Combine all data into one tidy dataframe (all data in one column instead of one column for each fluor)
+cols_meta_DS091 <- c("plateID", "tubeID", "cell_line", "stimulus", "stim_clean", "description",  "sample_cell_count") # include all metadata columns
+         
+df_PE_DS091 <- df_DS091 %>% 
+  select(all_of(cols_meta_DS091), protein_PE, PE.A, FSC.A, SSC.A) %>% 
+  mutate(fluor = "PE") %>%
+  rename(
+    protein = protein_PE, 
+    fluorescence = PE.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+df_AF647_DS091 <- df_DS091 %>% 
+  select(all_of(cols_meta_DS091), protein_AF647, Alexa.647.A, FSC.A, SSC.A) %>% 
+  mutate(fluor = "AF647") %>%
+  rename(
+    protein = protein_AF647, 
+    fluorescence = Alexa.647.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+df_AF488_DS091 <- df_DS091 %>% 
+  select(all_of(cols_meta_DS091), protein_AF488, Alexa.488.A, FSC.A, SSC.A) %>% 
+  mutate(fluor = "AF488") %>%
+  rename(
+    protein = protein_AF488, 
+    fluorescence = Alexa.488.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+df_BV421_DS091 <- df_DS091 %>% 
+  select(all_of(cols_meta_DS091), protein_BV421, BV421.A, FSC.A, SSC.A) %>% 
+  mutate(fluor = "BV421") %>%
+  rename(
+    protein = protein_BV421, 
+    fluorescence = BV421.A, 
+    FSC = FSC.A, 
+    SSC = SSC.A)
+
+df_tidy_DS091 <- list(df_PE_DS091, df_AF647_DS091, df_AF488_DS091, df_BV421_DS091) %>% reduce(full_join)
+
+gc()
+
+# kable(df_tidy_DS091 %>% head(5)) %>% kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r percent_on_DS091}
+data_info_DS091 <- df_tidy_DS091 %>%
+  filter(stimulus == "PBS") %>%
+  group_by(plateID, cell_line, protein) %>%
+  summarise(zero_quant97.5 = quantile(fluorescence, c(0.975), na.rm = T))
+
+df_tidy_DS091 <- left_join(df_tidy_DS091, data_info_DS091)
+
+# Create dataframe with percentage ON for each condition
+data_total_DS091 <- df_tidy_DS091 %>%
+  group_by(plateID, tubeID, protein) %>%
+  count(name = "count_total")
+
+data_on_DS091 <- df_tidy_DS091 %>%
+  filter((fluorescence - zero_quant97.5) > 0) %>%
+  group_by(plateID, tubeID, protein) %>%
+  count(name = "count_on")
+
+data_counts_DS091 <- left_join(data_total_DS091, data_on_DS091) %>%
+  mutate(percent_on = (count_on / count_total) * 100)
+
+df_tidy_DS091 <- left_join(df_tidy_DS091, data_counts_DS091)
+
+gc()
+
+kable(df_tidy_DS091 %>% head(5)) %>% kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r fig1_ridge_cell_DS091, fig.width=7, fig.height=4, eval=F}
+cells_DS091 <- c("HBL1", "BJAB", "OCI-Ly8")
+conc_DS091 <- c("PBS", 
+                "5 ug/mL aIg", "10 ug/mL aIg", "20 ug/mL aIg",
+                "3.3 mM H2O2", "10 mM H2O2", "20 mM H2O2",
+                "3.3 H2O2 + 10 aIg", "10 H2O2 + 10 aIg", "10 H2O2 + 20 aIg", "15 H2O2 + 15 aIg")
+
+ggplot(subset(df_tidy_DS091, protein == "pPLCy2 (Y759)"), aes(x = fluorescence)) +
+  geom_density_ridges(
+    aes(y = factor(conc_text, levels = rev(conc_DS091))),
+    scale = 2, 
+    fill = "#006699", 
+    alpha = 0.5
+  ) +
+  geom_vline(aes(xintercept = zero_quant97.5), linewidth = 0.5) +
+  facet_wrap(vars(factor(cell_line, levels = cells_DS091))) +
+  scale_x_logicle() + # logicle scale instead of log10 scale
+  labs(x = paste("Fluorescent intensity PLCy2"), y = "") +
+  theme_bw() +
+  theme(legend.position = "none", panel.grid.minor = element_blank())
+```
+
+### Median data
+
+Calculate median fluorescent values for each sample/replicate
+```{r medians_sample_DS091}
+# Calculate median values for each sample
+medians_DS091 <- df_tidy_DS091 %>% 
+  group_by(plateID, tubeID, protein, fluor) %>% 
+  summarise_at(vars(fluorescence), list(fluorescence_median = median), na.rm = TRUE)
+
+medians_tidy_DS091 <- left_join(medians_DS091, distinct(select(df_tidy_DS091, cols_meta_DS091))) %>%
+  left_join(data_counts_DS091)
+
+# Calculate fold change compared to conc 0 (average of 0 ug/mL aIg + 0 mM H2O2)
+median_zero_DS091 <- medians_tidy_DS091 %>%
+  filter(stimulus == "PBS") %>%
+  group_by(plateID, cell_line, protein) %>%
+  summarise(zero_median = mean(fluorescence_median))
+
+medians_tidy_DS091 <- left_join(medians_tidy_DS091, median_zero_DS091) %>%
+  mutate(FC = (fluorescence_median / zero_median), 
+         log2FC = log2(FC))
+
+gc()
+
+# kable(medians_tidy_DS091 %>% head(5)) %>% kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+### Save data
+
+Save annotated datasets as .csv file
+```{r save_DS091}
+write.csv(df_tidy_DS091, file = "output/DS091_ImmunostainingBio/flow_ann/flow_data_DS091.csv", row.names = F)
+
+write.csv(medians_tidy_DS091, file = "output/DS091_ImmunostainingBio/flow_ann/flow_medians_DS091.csv", row.names = F)
+```
+
+```{r clear_DS091}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "_DS091"))
+gc()
+```

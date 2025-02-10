@@ -1,0 +1,1736 @@
+---
+title: "Chapter supplementary figures"
+author: "mwitmond"
+date: "2024-08-06"
+output:
+  workflowr::wflow_html:
+    toc: TRUE
+    toc_float: 
+      collapsed: FALSE
+    toc_depth: 3
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+## Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = F, warning = F, echo = T, eval = T
+)
+
+# Load required packages
+source("code/packages_seq.R", local = knitr::knit_global())
+source("code/packages_FACS.R", local = knitr::knit_global())
+```
+
+```{r fig_settings}
+row_order = c("A", "B", "C", "D", "E", "F", "G", "H")
+col_order = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+panel_labels <- c("a", "b", "c","d", "e", "f", "g", "h", "i", "j", "k", "l", "m")
+PANEL_labels <- c("A", "B", "C","D", "E", "F", "G", "H", "I", "J", "K", "L", "M")
+
+textsize <- theme(axis.text.x = element_text(colour = "grey", size = 11), #, face = "bold"
+                  axis.text.y = element_text(colour = "grey", size = 11),
+                  axis.title = element_text(colour = "black", size = 12), 
+                  legend.title = element_text(colour = "black", size = 12),
+                  # legend.title = element_blank(), 
+                  legend.text = element_text(colour = "grey", size = 11), 
+                  strip.text.x = element_text(colour = "black", size = 12)
+)
+
+textsize_small <- theme(text = element_text(size = 8, family = "sans", colour = "black"),
+                        plot.title = element_text(size = 9)
+)
+textsize_medium <- theme(text = element_text(size = 10, family = "sans", colour = "black"),
+                         strip.text.x = element_text(size = 10), 
+                         plot.title = element_text(size = 10)
+)
+```
+
+```{r fig_colors}
+colors_nord <- c("#2e3440", "#3b4252", "#434c5e", "#4c566a", 
+                 "#d8dee9", "#e5e9f0", "#eceff4", 
+                 "#8fbcbb", "#88c0d0", "#81a1c1", "#5e81ac", 
+                 "#bf616a", "#d08770", "#ebcb8b", "#a3be8c", "#b48ead")
+
+colors_toll_bright <- c("#4477AA", "#66CCEE", "#228833", "#CCBB44", "#EE6677", "#AA3377", "#BBBBBB")
+colors_toll_mute <- c("#332288", "#88CCEE", "#44AA99", "#117733", "#999933", "#DDCC77", "#CC6677", "#882255", "#AA4499", "#DDDDDD")
+colors_toll_br <- c("#364B9A", "#4A7BB7", "#6EA6CD", "#98CAE1", "#C2E4EF", "#EAECCC", "#FEDA8B", "#FDB366", "#F67A4B", "#DD3D2D", "#A50026")
+
+colors_blue9 <- c("#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c", "#08306b")
+colors_green9 <- c("#f7fcf5", "#e5f5e0", "#c7e9c0", "#a1d99b", "#74c476", "#41ab5d", "#238b45", "#006d2c", "#00441b")
+colors_purple9 <- c("#fcfbfd", "#efedf5", "#dadaeb", "#bcbddc", "#9e9ac8", "#807dba", "#6a51a3", "#54278f", "#3f007d")
+colors_red9 <- c("#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d")
+colors_orange9 <- c("#fff5eb", "#fee6ce", "#fdd0a2", "#fdae6b", "#fd8d3c", "#f16913", "#d94801", "#a63603", "#7f2704")
+colors_grey9 <- c("#ffffff", "#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#000000")
+colors_yb9 <- c("#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58")
+colors_pr9 <- c("#f7f4f9", "#e7e1ef", "#d4b9da", "#c994c7", "#df65b0", "#e7298a", "#ce1256", "#980043", "#67001f")
+
+# Variable-specific colors
+colors_stim <- c("PBS" = "#737373", "anti-Ig" = "#2cb142", "H2O2" = "#66CCEE", 
+                 "Basal" = "#737373", "Activated (anti-Ig)" = "#2cb142", "Activated (H2O2)" = "#66CCEE")
+colors_cell <- c("HBL1" = "#df65b0", "DAUDI" = "#41b6c4", "OCI-Ly8" = "#332288")
+# colors_cell_alt <- c("HBL1" = "#AA4499", "OCI-Ly8" = "#332288")
+colors_block_buf <- c("ID-seq" = "#88CCEE", 
+                      "RAID" = "#44AA99", 
+                      "QuRIE-seq" = "#117733", 
+                      "Ab-seq" = "#AA4499", 
+                      "CITE-seq" = "#CC6677", 
+                      "NEAT-seq" = "#A50026")
+colors_stain_conc <- c("0.5 ug/mL" = "#3f007d", 
+                          "0.25 ug/mL" = "#54278f", 
+                          "0.125 ug/mL" = "#807dba", 
+                          "0.063 ug/mL" = "#9e9ac8", 
+                          "0.031 ug/mL" = "#bcbddc", 
+                          "0 ug/mL" = "#d9d9d9")
+colors_stain_cell <- c("0M (no cell)" = "#d9d9d9", "0.25M" = "#9e9ac8", "0.5M" = "#54278f")
+colors_stain_volume <- c("20 uL" = "#fdbe85", "30 uL" = "#fd8d3c", "40 uL" = "#e6550d")
+```
+
+
+
+## Suppl. Figure S1
+
+*Figure S1: Detailed B-cell signaling network.*
+
+Input:
+-   BioRender schematic figures
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS1_panelA, fig.retina=1}
+# Placeholder
+figS1_panelA <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS1_panelA
+
+# PNG
+png_figS1_panelA <- image_read("output/figures/non_R_figs/ch3_Bcell_network_full_202411.png") %>%
+  image_ggplot(interpolate = TRUE)
+png_figS1_panelA
+```
+
+
+### Combined fig
+
+```{r figS1_combi, fig.width=6, fig.height=6, fig.retina=1}
+# Combine all panels of the figure
+png_figS1_panelA
+
+# Save figure as pdf, jpg
+ggsave(
+  figS1_panelA,
+  filename = "output/figures/suppl_figS1.pdf",
+  width = 6,
+  height = 6,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS1_panelA,
+  filename = "output/figures/suppl_figS1_place.jpg",
+  width = 6,
+  height = 6,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S1: Detailed B-cell signaling network.*
+
+```{r figS1_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS1"))
+# rm(list = ls(pattern = "_fig1"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+## Suppl. Figure S2
+
+*Figure S2: Antibody-DNA conjugates after 2 years of storage at -20C.*
+
+Input:
+-   SDS-PAGE gel images
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS2_panelA, fig.retina=1}
+# Placeholder
+figS2_panelA <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS2_panelA
+
+# PNG
+png_figS2_panelA <- image_read("output/figures/non_R_figs/conjugation_immediately.png") %>%
+  image_ggplot(interpolate = TRUE)
+png_figS2_panelA
+```
+
+#### Panel B
+```{r figS2_panelB, fig.retina=1}
+# Placeholder
+figS2_panelB <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS2_panelB
+
+# PNG
+png_figS2_panelB <- image_read("output/figures/non_R_figs/conjugation_after2years.png") %>%
+  image_ggplot()
+png_figS2_panelB
+```
+
+
+### Combined fig
+
+```{r figS2_combi, fig.width=6, fig.height=5.7, fig.retina=1}
+# Combine all panels of the figure
+figS2 <- plot_grid(png_figS2_panelA, png_figS2_panelB, labels = PANEL_labels[c(1, 2)], ncol = 1, rel_heights = c(1, 1), label_size = 10)
+figS2
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS2,
+  filename = "output/figures/suppl_figS2.pdf",
+  width = 6,
+  height = 5.7,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS2,
+  filename = "output/figures/suppl_figS2.jpg",
+  width = 6,
+  height = 5.7,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S2: Antibody-DNA conjugates after 2 years of storage at -20C.*
+
+```{r figS2_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS2"))
+# rm(list = ls(pattern = "_fig1"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+## Suppl. Figure S3
+
+*Figure S3: Examples of clean and contaminated Ab barcodes.*
+
+Input:
+
+-   DS075 ID-seq data
+
+### Data
+
+```{r figS3_data}
+# ID-seq data DS075 (counts per barcode per well)
+figS3_data_id <- read_csv("output/DS075_BarcodeCheck/IDseq_ann/IDseq_data_sample.csv")
+```
+
+```{r figS3_labels}
+figS3_BC_color <- c("correct" = "#2cb142", "false" = "black") #"#2cb142" "#74c476"
+```
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS3_panelA, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+set.seed(8448)
+figS3A_data_id <- figS3_data_id %>%
+  dplyr::filter(counts_percent > 0.1) %>%
+  group_by(expected_BC_long) %>%
+  mutate(total_prot = n(),
+         expected_BC_label = paste("Expected: BC", expected_BC), 
+         expected_BC_color = case_when(measured_BC_long == expected_BC_long ~ "correct", 
+                                       .default = "false")) %>%
+  ungroup() %>%
+  dplyr::filter(total_prot == 1 & expected_BC < 100) %>%
+  # sample_n(6)
+  subset(expected_BC %in% c(52, 59, 72, 75, 90, 97))
+
+# Figure
+figS3_panelA <- ggplot(figS3A_data_id) +
+  geom_point(aes(factor(measured_BC), counts_percent, color = expected_BC_color)) + 
+  facet_wrap(vars(factor(expected_BC_label)), scales = "free_x", nrow = 3) + 
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_color_manual(values = figS3_BC_color) +
+  labs(x = "Measured Ab barcode", y = "Percentage of total counts") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(), legend.position = "none") +
+  textsize_small
+figS3_panelA
+```
+
+#### Panel B
+```{r figS3_panelB, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+set.seed(8448)
+figS3B_data_id <- figS3_data_id %>%
+  dplyr::filter(counts_percent > 2.5) %>%
+  group_by(expected_BC_long) %>%
+  mutate(total_prot = n(),
+         expected_BC_label = paste("Expected: BC", expected_BC), 
+         expected_BC_color = case_when(measured_BC_long == expected_BC_long ~ "correct", 
+                                       .default = "false")) %>%
+  ungroup() %>%
+  dplyr::filter(total_prot > 1 & expected_BC < 100) %>%
+  # sample_n(6)
+  subset(expected_BC %in% c(3, 7, 14, 22, 53, 56, 74, 83, 96))
+
+# Figure
+figS3_panelB <- ggplot(figS3B_data_id) +
+  geom_point(aes(factor(measured_BC), counts_percent, color = expected_BC_color)) + 
+  facet_wrap(vars(factor(expected_BC_label)), scales = "free_x", nrow = 3) +
+  # facet_wrap(~expected_BC_long, scales = "free_x") + 
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_color_manual(values = figS3_BC_color) +
+  labs(x = "Measured Ab barcode", y = "Percentage of total counts") +
+  theme_bw() +
+  # theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(), legend.position = "none") +
+  theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(), legend.position = "none") +
+  textsize_small
+figS3_panelB
+```
+
+
+### Combined fig
+
+```{r figS3_combi, fig.width=6, fig.height=4, fig.retina=1}
+# Combine all panels of the figure
+figS3 <- plot_grid(figS3_panelA, figS3_panelB, labels = PANEL_labels[c(1, 2)], nrow = 1, rel_widths = c(1, 1.5), label_size = 10)
+figS3
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS3,
+  filename = "output/figures/suppl_figS3.pdf",
+  width = 6,
+  height = 4,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS3,
+  filename = "output/figures/suppl_figS3.jpg",
+  width = 6,
+  height = 4,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S3: Examples of clean and contaminated Ab barcodes.*
+
+```{r figS3_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS3"))
+# rm(list = ls(pattern = "_fig1"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+## Suppl. Figure S4
+
+*Figure S4: Immunostaining conditions in DAUDI treated with anti-Ig.*
+
+Input:
+
+-   DS091 ID-seq data
+
+### Data
+
+```{r figS4_data}
+# ID-seq data DS091 (counts per well/sample and mean per condition)
+figS4_data_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_sample.csv")
+# figS4_mean_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/IDseq_data_condition.csv")
+```
+
+```{r figS4_labels}
+figS4_stain_conc <- c("0.5 ug/mL", "0.25 ug/mL", "0.125 ug/mL", "0.063 ug/mL", "0.031 ug/mL", "0 ug/mL")
+```
+
+
+### Panels {.tabset}
+
+#### Panel A
+
+Differential expression analysis of the effect of staining conc on H2O2 vs PBS
+
+DESeq2 analysis parameters:
+
+-   HBL1 cells: 2 stimuli, 6 staining conc, 3 staining cell nr, 3 staining volumes
+
+-   Compensated counts (>= 1)
+
+-   Model design: staining_conc_text (ref: 0.5 ug/mL) + stimulus ( ref: PBS) + staining_conc_text:stimulus
+
+```{r figS4A_DESeq}
+# Select data
+figS4A_data <- figS4_data_id %>%
+  dplyr::filter(cell_line == "DAUDI" & staining_cells == "0.25M" & staining_volume != "20 uL" & counts >= 1)
+
+# Differential expression analysis
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts <- figS4A_data  %>%
+  dplyr::select(target_nospace, plate_well, counts) %>%
+  dplyr::filter(!is.na(counts)) %>%
+  spread(plate_well, counts) %>%
+  replace(is.na(.), 0) %>%
+  column_to_rownames("target_nospace")
+
+cts <- as.matrix(as.data.frame(cts))
+
+coldata <- data.frame(plate_well = colnames(cts)) %>%
+  left_join(figS4A_data[, c(1:16)]) %>% 
+  distinct() %>%
+  mutate(staining_conc_text = factor(staining_conc_text, levels = figS4_stain_conc))
+
+rownames(coldata) <- coldata$plate_well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign <- ~ staining_conc_text + stimulus + staining_conc_text:stimulus
+
+# Then create the DESeq dataset
+dds <- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+# dds$staining_conc_text <- relevel(dds$staining_conc_text, ref = "0.5 ug/mL")
+dds$stimulus <- relevel(dds$stimulus, ref = "PBS")
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+
+dds <- DESeq(dds, test = "Wald", fitType = "local")
+DESeq_comparisons <- resultsNames(dds) # lists the coefficients
+# DESeq_comparisons
+
+# Results
+results_aIg <- results(dds, name = "stimulus_anti.Ig_vs_PBS", alpha = 0.05)
+# summary(results_H2O2, padj = 0.05)
+results_conc_0.25 <- results(dds, name = "staining_conc_text_0.25.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0.125 <- results(dds, name = "staining_conc_text_0.125.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0.063 <- results(dds, name = "staining_conc_text_0.063.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0.031 <- results(dds, name = "staining_conc_text_0.031.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+results_conc_0 <- results(dds, name = "staining_conc_text_0.ug.mL_vs_0.5.ug.mL", alpha = 0.05)
+
+results_stim_0.25 <- results(dds, name = "staining_conc_text0.25.ug.mL.stimulusanti.Ig", alpha = 0.05)
+results_stim_0.125 <- results(dds, name = "staining_conc_text0.125.ug.mL.stimulusanti.Ig", alpha = 0.05)
+results_stim_0.063 <- results(dds, name = "staining_conc_text0.063.ug.mL.stimulusanti.Ig", alpha = 0.05)
+results_stim_0.031 <- results(dds, name = "staining_conc_text0.031.ug.mL.stimulusanti.Ig", alpha = 0.05)
+results_stim_0 <- results(dds, name = "staining_conc_text0.ug.mL.stimulusanti.Ig", alpha = 0.05)
+
+list_results <- list(results_aIg, 
+                     results_conc_0.25, results_conc_0.125, results_conc_0.063, results_conc_0.031, results_conc_0, 
+                     results_stim_0.25, results_stim_0.125, results_stim_0.063, results_stim_0.031, results_stim_0)
+
+# Data transformation
+# Regularized log transform
+rld_DAUDI <- rlog(dds, blind = FALSE)
+
+# Data wrangling
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins <- rownames(dataset)
+  dataset$target_nospace <- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express <- "NO"
+  dataset$diff_express[dataset$log2FoldChange > foldchange_filter & dataset$padj < padj_filter] <- "UP"
+  dataset$diff_express[dataset$log2FoldChange < -foldchange_filter & dataset$padj < padj_filter] <- "DOWN"
+  
+  # Add a column for labeling
+  dataset$delabel <- NA
+  dataset$delabel[dataset$diff_express != "NO"] <- dataset$proteins[dataset$diff_express != "NO"]
+  
+  # Add Ab metadata
+  # dataset <- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# Apply function to each dataset
+# Applied thresholds:
+# padj < 0.05
+# log2FC > log2(1.2)
+names_volc <- c("volc_aIg", 
+                "volc_conc_0.25", "volc_conc_0.125", "volc_conc_0.063", "volc_conc_0.031", "volc_conc_0", 
+                "volc_stim_0.25", "volc_stim_0.125", "volc_stim_0.063", "volc_stim_0.031", "volc_stim_0")
+
+for(dataset in c(1:length(list_results))){
+  assign(names_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], foldchange_filter = log2(1.1)))
+}
+
+# Function to filter the data
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+filter_heatmap <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5), select_top = TRUE, select_n = 10) {
+  data <- as.data.frame(dataset) %>%
+    dplyr::filter(padj <= padj_filter & abs(log2FoldChange) >= foldchange_filter) %>%
+    arrange(-log2FoldChange) 
+  rownames(data) <- data$target_nospace
+  
+  # Select top 10 proteins with most increased and decreased expression
+  if (select_top == TRUE) {
+    data_top <- data %>%
+      slice_max(order_by = abs(log2FoldChange), n = select_n)
+    return(data_top)
+  } else {
+    return(data)
+  }
+}
+
+# Apply function to each dataset
+list_results_volc <- list(volc_aIg, 
+                          volc_conc_0.25, volc_conc_0.125, volc_conc_0.063, volc_conc_0.031, volc_conc_0, 
+                          volc_stim_0.25, volc_stim_0.125, volc_stim_0.063, volc_stim_0.031, volc_stim_0)
+names_heat <- c("heat_aIg", 
+                "heat_conc_0.25", "heat_conc_0.125", "heat_conc_0.063", "heat_conc_0.031", "heat_conc_0", 
+                "heat_stim_0.25", "heat_stim_0.125", "heat_stim_0.063", "heat_stim_0.031", "heat_stim_0")
+
+for(dataset in c(1:length(list_results_volc))){
+  assign(names_heat[[dataset]], filter_heatmap(dataset = list_results_volc[[dataset]], select_top = FALSE, foldchange_filter = log2(1.1)))
+  dataset
+}
+```
+
+```{r figS4_panelA, fig.width=6, fig.height=3, fig.retina=1}
+# Data
+# Combine heatmap datasets (without DESeq2 analysis values)
+heat_combi_DAUDI <- list(heat_aIg#, 
+                        # heat_conc_0.25, heat_conc_0.125, heat_conc_0.063, heat_conc_0.031, heat_conc_0
+                        # heat_stim_0.25, heat_stim_0.125, heat_stim_0.063, heat_stim_0.031, heat_stim_0
+                        ) %>%
+  purrr::reduce(full_join) %>%
+  dplyr::select(-c(baseMean, log2FoldChange, lfcSE, stat, pvalue, padj, diff_express)) %>%
+  left_join(figS4_data_id[, 17:24]) %>%
+  dplyr::filter(modification == "phospho") %>%
+  distinct()
+
+# Subset the full dataframe to get metadata for heatmap plotting
+figS4A_info_DAUDI <- figS4A_data %>%
+  dplyr::select(plate_well, staining_volume, staining_conc_text, stim_clean) %>%
+  distinct() %>%
+  # dplyr::filter(cell_line == "DAUDI" &inhibitor == "iBTK" & inhib_conc %in% fig2_conc_all & !(stim_clean == "Basal" & inhib_conc %in% fig2_conc_all[2:5])) %>%
+  mutate(stim_clean = factor(stim_clean, levels = c("Basal", "Activated (H2O2)")), 
+         staining_conc_text = factor(staining_conc_text, levels = figS4_stain_conc), 
+         staining_conc_label = factor(str_replace(staining_conc_text, " ", "\n"), levels = c("0.5\nug/mL", "0.25\nug/mL", "0.125\nug/mL", "0.063\nug/mL", "0.031\nug/mL", "0\nug/mL"))) %>%
+  as.data.frame()
+rownames(figS4A_info_DAUDI) <- figS4A_info_DAUDI$plate_well
+figS4A_info_DAUDI <- dplyr::select(figS4A_info_DAUDI, -c(plate_well))
+
+# Get the rld transformed data for the heatmap and scale per row
+figS4A_data_heat_DAUDI <- t(scale(t(assay(rld_DAUDI)[c(heat_combi_DAUDI$target_nospace), rownames(figS4A_info_DAUDI)])))
+# sort_hclust <- function(...) as.hclust(dendsort(as.dendrogram(...)))
+# data_cluster_rows <- sort_hclust(hclust(dist(data_cell)))
+# plot(data_cluster_rows, main = "Unsorted Dendrogram", xlab = "", sub = "")
+
+# Figure
+figS4A_ann_colors <- list(#Cells = colors_stain_cell,
+                         "Staining volume" = colors_stain_volume, 
+                         "Panel conc." = colors_stain_conc, 
+                         Stimulus = colors_stim)
+figS4A_heat_legend <- list(title = "Scaled\nexpression", title_gp = gpar(fontsize = 7), labels_gp = gpar(fontsize = 7), 
+                          grid_width = unit(2, "mm"), grid_height = unit(20, "mm"))
+
+figS4A_col_ann <- HeatmapAnnotation(#Cells = figS4A_info_DAUDI$staining_cells, 
+                                   "Staining volume" = figS4A_info_DAUDI$staining_volume, 
+                                   "Panel conc." = figS4A_info_DAUDI$staining_conc_text,
+                                   Stimulus = figS4A_info_DAUDI$stim_clean, 
+                                   simple_anno_size = unit(2.5, "mm"), 
+                                   annotation_name_gp = gpar(fontsize = 7),
+                                   col = figS4A_ann_colors, 
+                                   annotation_legend_param = list(#Cells = list(title = "Cells", 
+                                                                                   # title_gp = gpar(fontsize = 6), 
+                                                                                   # labels_gp = gpar(fontsize = 6), 
+                                                                                   # grid_width = unit(2, "mm"), 
+                                                                                   # grid_height = unit(1, "mm")), 
+                                                                  "Staining volume" = list(title = "Staining\nvolume", 
+                                                                                   title_gp = gpar(fontsize = 7), 
+                                                                                   labels_gp = gpar(fontsize = 7), 
+                                                                                   grid_width = unit(2.5, "mm"), 
+                                                                                   grid_height = unit(1, "mm")), 
+                                                                  "Panel conc." = list(title = "Panel\nconcentration", 
+                                                                                   title_gp = gpar(fontsize = 7), 
+                                                                                   labels_gp = gpar(fontsize = 7), 
+                                                                                   grid_width = unit(2.5, "mm"), 
+                                                                                   grid_height = unit(1, "mm")), 
+                                                                  Stimulus = list(title = "Stimulus", 
+                                                                                   title_gp = gpar(fontsize = 7), 
+                                                                                   labels_gp = gpar(fontsize = 7), 
+                                                                                   grid_width = unit(2.5, "mm"), 
+                                                                                   grid_height = unit(1, "mm"))), 
+                                   show_legend = c(TRUE, TRUE, TRUE))
+
+figS4_panelA <- ggplotify::as.ggplot(ComplexHeatmap::pheatmap(
+  figS4A_data_heat_DAUDI,
+  scale = "none",
+  cluster_rows = TRUE,
+  # treeheight_row = 20,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+  cluster_cols = FALSE,
+  top_annotation = figS4A_col_ann,
+  annotation_colors = figS4A_ann_colors,
+  colorRampPalette(c("navy", "white", "firebrick3"))(50),
+  column_split = figS4A_info_DAUDI$staining_conc_label,
+  # row_split = heat_combi_DAUDI$modification,
+  row_gap = unit(1, "mm"), 
+  # cellwidth = 10,
+  # cellheight = 10,
+  fontsize = 6,
+  row_title_gp = gpar(fontsize = 6),
+  column_title_gp = gpar(fontsize = 6), 
+  annotation_names_col = gpar(fontsize = 7),
+  border_color = NA,
+  heatmap_legend_param = figS4A_heat_legend,
+  # annotation_legend = FALSE,
+)) +
+  # ggtitle("          Signaling activation in DAUDI under different staining conditions") +
+  textsize_medium
+figS4_panelA
+```
+
+
+### Combined fig
+
+```{r figS4_combi, fig.width=6, fig.height=3, fig.retina=1}
+# Combine all panels of the figure
+figS4_panelA
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS4_panelA,
+  filename = "output/figures/suppl_figS4.pdf",
+  width = 6,
+  height = 3,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS4_panelA,
+  filename = "output/figures/suppl_figS4.jpg",
+  width = 6,
+  height = 3,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S4: Immunostaining conditions in DAUDI treated with anti-Ig.*
+
+```{r figS4_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS4"))
+rm(list = ls(pattern = "png"))
+rm(list = ls(pattern = "results_"))
+rm(list = ls(pattern = "volc_"))
+rm(list = ls(pattern = "list_"))
+rm(list = ls(pattern = "names_"))
+rm(list = ls(pattern = "titles_"))
+rm(list = ls(pattern = "data_"))
+rm(list = ls(pattern = "heat_"))
+rm(list = ls(pattern = "rld"))
+rm(list = ls(pattern = "pca"))
+gc()
+```
+
+
+
+## Suppl. Figure S5
+
+*Figure S5: Comparison of phospho flow cytometry and ID-seq measurements.*
+
+Input:
+
+-   DS091 phosphoflow data
+
+-   DS091 ID-seq data
+
+### Data
+
+```{r figS5_data}
+# Phosphoflow data DS091
+figS5_data_pf <- read_csv("output/DS091_ImmunostainingBio/flow_ann/flow_data_DS091.csv")
+
+# ID-seq data DS091 (counts per well/sample and mean per condition)
+figS5_data_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_sample.csv")
+figS5_mean_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_condition.csv")
+```
+
+```{r figS5_labels}
+figS5_stim <- c("PBS", "anti-Ig", "H2O2")
+figS5_stim_clean <- c("Basal", "Activated (anti-Ig)", "Activated (H2O2)")
+figS5_cell <- c("DAUDI", "HBL1")
+figS5_cell_stim <- c("DAUDI - Basal", "DAUDI - Activated (anti-Ig)", "HBL1 - Basal", "HBL1 - Activated (H2O2)")
+figS5_cell_stim_label <- c("DAUDI\nBasal", "DAUDI\nActivated\n(anti-Ig)", "HBL1\nBasal", "HBL1\nActivated\n(H2O2)")
+
+figS5_proteins_pf <- c("pCD79a (Y182)", "pSYK (Y525/Y526)") #"pPLCy2 (Y759)"
+figS5_proteins_id <- c("CD79a_Y182", "SYK_Y525_Y526") #PLCy2_Y759"
+figS5_proteins_id_label <- c("CD79a_Y182" = "pCD79a (Y182)", "SYK_Y525_Y526" = "pSYK (Y525/Y526)") #PLCy2_Y759"
+```
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS5_panelA, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS5A_data <- figS5_data_pf %>%
+  # subset(protein == "pCD79a (Y182)")
+  subset(protein %in% figS5_proteins_pf)
+
+# Figure
+figS5_panelA <- ggplot(figS5A_data, aes(x = fluorescence)) +
+  geom_density_ridges(
+    aes(y = factor(description, levels = rev(figS5_cell_stim), labels = rev(figS5_cell_stim_label)), fill = factor(stim_clean, levels = figS5_stim_clean)),
+    scale = 1, 
+    alpha = 0.5
+  ) +
+  facet_wrap(vars(factor(protein, levels = figS5_proteins_pf)), nrow = 1) +
+  scale_x_logicle() + # logicle scale instead of log10 scale
+  scale_fill_manual(values = colors_stim, name = "Treatment") +
+  labs(x = "Fluorescent intensity", y = "") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(), legend.key.size = unit(0.5, "cm"), legend.spacing.y = unit(0.2, "cm"), legend.box.spacing = unit(0.1, "cm"), legend.position = "none", legend.justification = "right") +
+  textsize_small
+figS5_panelA
+```
+
+#### Panel B
+```{r figS5_panelB, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS5B_data <- figS5_data_id %>%
+  # subset(target_nospace == "CD79a_Y182")
+  subset(target_nospace %in% figS5_proteins_id)
+figS5B_mean <- figS5_mean_id %>%
+  # subset(target_nospace == "CD79a_Y182")
+  subset(target_nospace %in% figS5_proteins_id)
+
+# Figure
+figS5_panelB <- ggplot() +
+  geom_jitter(data = figS5B_data,
+              aes(x = factor(description_sample, levels = figS5_cell_stim, labels = figS5_cell_stim_label),
+                  y = counts_norm,
+                  color = factor(stim_clean, levels = figS5_stim_clean)),
+              alpha = 1, size = 1, width = 0.1) +
+  geom_errorbar(data = figS5B_mean,
+                aes(x = factor(description_sample, levels = figS5_cell_stim, labels = figS5_cell_stim_label), 
+                    ymin = counts_norm, ymax = counts_norm,
+                    group = factor(stim_clean, levels = figS5_stim_clean),
+                    color = factor(stim_clean, levels = figS5_stim_clean)),
+                width = 0.35, size = 0.75) +
+  facet_wrap(vars(factor(target_nospace, levels = figS5_proteins_id, labels = figS5_proteins_id_label)), nrow = 1, scales = "free_y") +
+  scale_color_manual(values = colors_stim, name = "Treatment") +
+  labs(x = element_blank(), y = "Normalised counts") +
+  theme_bw() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), legend.key.size = unit(0.5, "cm"), legend.spacing.y = unit(0.2, "cm"), legend.box.spacing = unit(0.1, "cm"), legend.position = "none", legend.justification = "right") +
+  textsize_small
+figS5_panelB
+```
+
+
+### Combined fig
+
+```{r figS5_combi, fig.width=4, fig.height=4, fig.retina=1}
+# Combine all panels of the figure
+figS5 <- plot_grid(figS5_panelA, figS5_panelB, labels = PANEL_labels[c(1:2)], ncol = 1, rel_heights = c(1.2, 1), label_size = 10, align = "v")
+figS5
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS5,
+  filename = "output/figures/suppl_figS5.pdf",
+  width = 4,
+  height = 4,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS5,
+  filename = "output/figures/suppl_figS5.jpg",
+  width = 4,
+  height = 4,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S5: Comparison of phospho flow cytometry and ID-seq measurements.*
+
+```{r figS5_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS5"))
+# rm(list = ls(pattern = "_fig1"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+## Suppl. Figure S6
+
+*Figure S6: Volcano visualisation of activated signaling compared to basal signaling.*
+
+Input:
+
+-   DS091 ID-seq data
+
+### Data
+
+```{r figS6_data}
+# ID-seq data DS091 (counts per well/sample)
+figS6_data_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_sample.csv")
+```
+
+```{r figS6_labels}
+figS6_cells <- c("DAUDI", "HBL1")
+figS6_stim <- c("Basal", "Activated (anti-Ig)", "Activated (H2O2)")
+figS6_stim_label <- c("Basal", "Activated\n(anti-Ig)", "Activated\n(H2O2)")
+figS6_cell_stim <- c("DAUDI - Basal", "DAUDI - Activated (anti-Ig)", "HBL1 - Basal", "HBL1 - Activated (H2O2)")
+figS6_cell_stim_label <- c("DAUDI basal", "DAUDI activated\n(anti-Ig)", "HBL1 basal", "HBL1 activated\n(H2O2)")
+
+figS6_meta_cols <- c("plate_well", "plate", "well", "experiment", "cell_line", "stimulus", "stim_clean", "replicate", "description_sample", "description_sample_rep", "description_staining")
+```
+
+
+### Panels {.tabset}
+
+#### Panel A
+
+Differential expression analysis of activated (anti-Ig) vs basal signaling in DAUDI
+
+DESeq2 analysis parameters:
+
+-   DAUDI cells: 2 stimuli
+
+-   Compensated counts (>= 1)
+
+-   Model design: stim_clean (ref: Basal)
+
+```{r figS6A_DESeq_DAUDI}
+# Select data
+figS6A_data <- figS6_data_id %>%
+  dplyr::filter(cell_line == "DAUDI" & counts >= 1)
+
+# Differential expression analysis
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts <- figS6A_data  %>%
+  dplyr::select(target_nospace, plate_well, counts) %>%
+  dplyr::filter(!is.na(counts)) %>%
+  spread(plate_well, counts) %>%
+  replace(is.na(.), 0) %>%
+  column_to_rownames("target_nospace")
+
+cts <- as.matrix(as.data.frame(cts))
+
+coldata <- data.frame(plate_well = colnames(cts)) %>%
+  left_join(figS6A_data[, c(1:16)]) %>% 
+  distinct()
+
+rownames(coldata) <- coldata$plate_well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign <- ~ stim_clean
+
+# Then create the DESeq dataset
+dds <- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+# dds$staining_conc_text <- relevel(dds$staining_conc_text, ref = "0.5 ug/mL")
+dds$stim_clean <- relevel(dds$stim_clean, ref = "Basal")
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+
+dds <- DESeq(dds, test = "Wald", fitType = "local")
+DESeq_comparisons <- resultsNames(dds) # lists the coefficients
+# DESeq_comparisons
+
+# Results
+results_DAUDI <- results(dds, name = "stim_clean_Activated..anti.Ig._vs_Basal", alpha = 0.05)
+# summary(results_DAUDI, padj = 0.05)
+list_results <- list(results_DAUDI)
+
+# Data transformation
+# Regularized log transform
+rld_DAUDI <- rlog(dds, blind = FALSE)
+
+# Data wrangling
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins <- rownames(dataset)
+  dataset$target_nospace <- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express <- "NO"
+  dataset$diff_express[dataset$log2FoldChange > foldchange_filter & dataset$padj < padj_filter] <- "UP"
+  dataset$diff_express[dataset$log2FoldChange < -foldchange_filter & dataset$padj < padj_filter] <- "DOWN"
+  
+  # Add a column for labeling
+  dataset$delabel <- NA
+  dataset$delabel[dataset$diff_express != "NO"] <- dataset$proteins[dataset$diff_express != "NO"]
+  
+  # Add Ab metadata
+  # dataset <- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# Apply function to each dataset
+# Applied thresholds:
+# padj < 0.05
+# log2FC > log2(1.1)
+names_volc <- c("volc_DAUDI")
+
+for(dataset in c(1:length(list_results))){
+  assign(names_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], foldchange_filter = log2(1.1)))
+}
+```
+
+```{r figS6_panelA, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS6A_data_volc <- volc_DAUDI 
+figS6A_data_volc$wrapper <- "Burkitt's model (DAUDI)\nanti-Ig vs PBS"
+
+fig6A_stat <- as.data.frame(figS6A_data_volc) %>%
+  dplyr::filter(diff_express == "UP") %>%
+  dplyr::summarise(log2FC = mean(log2FoldChange)) %>%
+  pull(log2FC)
+print("DAUDI mean log2FC")
+fig6A_stat
+print("2^(mean log2FC)")
+(2^fig6A_stat)
+
+# Figure
+figS6_panelA <- ggplot(data = figS6A_data_volc,
+                      aes(x = log2FoldChange, y = -log10(padj), color = diff_express, label = delabel)) +
+  geom_point(size = 0.5) +
+  geom_text_repel(size = 2,
+                  segment.size = 0.2,
+                  hjust = 0,
+                  direction = "y",
+                  nudge_y = -log10(0.005),
+                  nudge_x = ifelse(figS6A_data_volc$log2FoldChange < 0, -0.5 - figS6A_data_volc$log2FoldChange, 0.6 - figS6A_data_volc$log2FoldChange)
+  ) +
+  scale_color_manual(values = c(UP = "#A50026", NO = "black", DOWN = "#364B9A"),
+                     breaks = c("UP", "NO", "DOWN"),
+                     labels = c("Increased", "No difference", "Decreased"),
+                     name = "Differentially\nexpressed\nproteins") + 
+  geom_vline(xintercept = c(-log2(1.1), log2(1.1)), color = "#CC6677") +
+  geom_hline(yintercept = -log10(0.05), color = "#CC6677") +
+  facet_wrap(vars(factor(wrapper))) +
+  labs(x = "log2(fold change)", y = "-log10(adjusted p-value)", title = "") +
+  # coord_cartesian(xlim = c(-0.5, 1.5), ylim = c(0, 325)) +
+  theme_bw() +
+  textsize_small +
+  theme(legend.key.size = unit(0.2, "cm"), legend.spacing.y = unit(0.1, "cm"), legend.box.spacing = unit(0.1, "cm"), legend.position = "bottom", legend.justification = "left", panel.grid.minor = element_blank(), panel.grid.major = element_blank(), strip.text.x = element_text(size = 8)) + 
+  guides(color = guide_legend(ncol = 1, byrow = TRUE))
+figS6_panelA
+```
+
+#### Panel B
+
+Differential expression analysis of activated (anti-Ig) vs basal signaling in HBL1
+
+DESeq2 analysis parameters:
+
+-   HBL1 cells: 2 stimuli
+
+-   Compensated counts (>= 1)
+
+-   Model design: stim_clean (ref: Basal)
+
+```{r figS6B_DESeq_HBL1}
+# Select data
+figS6B_data <- figS6_data_id %>%
+  dplyr::filter(cell_line == "HBL1" & counts >= 1)
+
+# Differential expression analysis
+# Prepare data to load into DESeq dataset
+# cts: dataframe with proteins as row names, wells as column names, and count data as cell values
+# coldata: dataframe with wells as row names and all metadata as columns
+cts <- figS6B_data  %>%
+  dplyr::select(target_nospace, plate_well, counts) %>%
+  dplyr::filter(!is.na(counts)) %>%
+  spread(plate_well, counts) %>%
+  replace(is.na(.), 0) %>%
+  column_to_rownames("target_nospace")
+
+cts <- as.matrix(as.data.frame(cts))
+
+coldata <- data.frame(plate_well = colnames(cts)) %>%
+  left_join(figS6B_data[, c(1:16)]) %>% 
+  distinct()
+
+rownames(coldata) <- coldata$plate_well
+
+# Create DESeq object
+# First define how the model is designed. Place most important parameter last
+modeldesign <- ~ stim_clean
+
+# Then create the DESeq dataset
+dds <- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = modeldesign)
+# Define the reference samples for design parameter
+dds$stim_clean <- relevel(dds$stim_clean, ref = "Basal")
+
+# Run DESeq2: 
+  # This function performs a default analysis through the steps:
+  # Estimation of size factors: estimateSizeFactors
+  # Estimation of dispersion: estimateDispersions
+  # Negative Binomial GLM fitting and Wald statistics: nbinomWaldTest
+
+dds <- DESeq(dds, test = "Wald", fitType = "local")
+DESeq_comparisons <- resultsNames(dds) # lists the coefficients
+# DESeq_comparisons
+
+# Results
+results_HBL1 <- results(dds, name = "stim_clean_Activated..H2O2._vs_Basal", alpha = 0.05)
+# summary(results_HBL1, padj = 0.05)
+list_results <- list(results_HBL1)
+
+# Data transformation
+# Regularized log transform
+rld_HBL1 <- rlog(dds, blind = FALSE)
+
+# Data wrangling
+# Function to prepare DESeq2 results for volcano plots
+# Standard log2FC filter = log2(1.5); standard padj filter = 0.05
+prep_forvulcano <- function(dataset = dataset, padj_filter = 0.05, foldchange_filter = log2(1.5)){ 
+  dataset$proteins <- rownames(dataset)
+  dataset$target_nospace <- rownames(dataset)
+  
+  # Add a column for differential expression
+  dataset$diff_express <- "NO"
+  dataset$diff_express[dataset$log2FoldChange > foldchange_filter & dataset$padj < padj_filter] <- "UP"
+  dataset$diff_express[dataset$log2FoldChange < -foldchange_filter & dataset$padj < padj_filter] <- "DOWN"
+  
+  # Add a column for labeling
+  dataset$delabel <- NA
+  dataset$delabel[dataset$diff_express != "NO"] <- dataset$proteins[dataset$diff_express != "NO"]
+  
+  # Add Ab metadata
+  # dataset <- left_join(as.data.frame(dataset), meta_Abs)
+  
+  return(dataset)
+}
+
+# Apply function to each dataset
+# Applied thresholds:
+# padj < 0.05
+# log2FC > log2(1.25)
+names_volc <- c("volc_HBL1")
+
+for(dataset in c(1:length(list_results))){
+  assign(names_volc[dataset], prep_forvulcano(dataset = list_results[[dataset]], foldchange_filter = log2(1.2)))
+}
+```
+
+```{r figS6_panelB, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS6B_data_volc <- volc_HBL1
+figS6B_data_volc$wrapper <- "DLBCL model (HBL1)\nH2O2 vs PBS"
+
+fig6B_stat <- as.data.frame(figS6B_data_volc) %>%
+  dplyr::filter(diff_express == "UP") %>%
+  dplyr::summarise(log2FC = mean(log2FoldChange)) %>%
+  pull(log2FC)
+print("HBL1 mean log2FC")
+fig6B_stat
+print("2^(mean log2FC)")
+(2^fig6B_stat)
+
+# Figure
+figS6_panelB <- ggplot(data = figS6B_data_volc,
+                      aes(x = log2FoldChange, y = -log10(padj), color = diff_express, label = delabel)) +
+  geom_point(size = 0.5) +
+  geom_text_repel(size = 1.75,
+                  segment.size = 0.2,
+                  hjust = 0,
+                  direction = "y",
+                  max.overlaps = 11,
+                  nudge_y = -log10(0.005),
+                  nudge_x = ifelse(figS6B_data_volc$log2FoldChange < 0, -1.05 - figS6B_data_volc$log2FoldChange, 1.55 - figS6B_data_volc$log2FoldChange)
+  ) +
+  scale_color_manual(values = c(UP = "#A50026", NO = "black", DOWN = "#364B9A"),
+                     breaks = c("UP", "NO", "DOWN"),
+                     labels = c("Increased", "No difference", "Decreased"),
+                     name = "Differentially\nexpressed\nproteins") + 
+  geom_vline(xintercept = c(-log2(1.2), log2(1.2)), color = "#CC6677") +
+  geom_hline(yintercept = -log10(0.05), color = "#CC6677") +
+  facet_wrap(vars(factor(wrapper))) +
+  labs(x = "log2(fold change)", y = "-log10(adjusted p-value)", title = "") +
+  # coord_cartesian(xlim = c(-0.5, 1.5), ylim = c(0, 325)) +
+  theme_bw() +
+  textsize_small +
+  theme(legend.key.size = unit(0.2, "cm"), legend.spacing.y = unit(0.1, "cm"), legend.box.spacing = unit(0.1, "cm"), legend.position = "bottom", legend.justification = "left", panel.grid.minor = element_blank(), panel.grid.major = element_blank(), strip.text.x = element_text(size = 8)) + 
+  guides(color = guide_legend(ncol = 1, byrow = TRUE))
+figS6_panelB
+```
+
+
+### Combined fig
+
+```{r figS6_combi, fig.width=6, fig.height=4, fig.retina=1}
+# Combine all panels of the figure
+figS6 <- plot_grid(figS6_panelA, figS6_panelB, labels = PANEL_labels[c(1, 2)], nrow = 1, rel_widths = c(1, 1), label_size = 10, align = "h")
+figS6
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS6,
+  filename = "output/figures/suppl_figS6.pdf",
+  width = 6,
+  height = 4,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS6,
+  filename = "output/figures/suppl_figS6.jpg",
+  width = 6,
+  height = 4,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S6: Volcano visualisation of activated signaling compared to basal signaling.*
+
+```{r figS6_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS6"))
+rm(list = ls(pattern = "png"))
+rm(list = ls(pattern = "results_"))
+rm(list = ls(pattern = "volc_"))
+rm(list = ls(pattern = "list_"))
+rm(list = ls(pattern = "names_"))
+rm(list = ls(pattern = "titles_"))
+rm(list = ls(pattern = "data_"))
+rm(list = ls(pattern = "heat_"))
+rm(list = ls(pattern = "rld"))
+rm(list = ls(pattern = "pca"))
+gc()
+```
+
+
+
+## Suppl. Figure S7
+
+*Figure S7: Additional example proteins for signaling activation in DAUDI and HBL1.*
+
+Input:
+
+-   DS091 ID-seq data
+
+### Data
+
+```{r figS7_data}
+# ID-seq data DS091 (counts per well/sample and mean per condition)
+figS7_data_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_sample.csv")
+figS7_mean_id <- read_csv("output/DS091_ImmunostainingBio/IDseq_ann/bio_IDseq_data_condition.csv")
+```
+
+```{r figS7_labels}
+figS7_cells <- c("DAUDI", "HBL1")
+figS7_stim <- c("Basal", "Activated (anti-Ig)", "Activated (H2O2)")
+figS7_stim_label <- c("Basal", "Activated\n(anti-Ig)", "Activated\n(H2O2)")
+figS7_cell_stim <- c("DAUDI - Basal", "DAUDI - Activated (anti-Ig)", "HBL1 - Basal", "HBL1 - Activated (H2O2)")
+figS7_cell_stim_label <- c("DAUDI basal", "DAUDI activated\n(anti-Ig)", "HBL1 basal", "HBL1 activated\n(H2O2)")
+```
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS7_panelA, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+# figS7A_prot <- c("BTK_Y551", "CREB_S133", "PYK2_Y402", "S6_S240_S244", "VAV1_Y174")
+figS7A_prot <- c("BLNK_Y84", "BTK_Y223", "LYN_Y397", "SHP2_Y580", "SYK_Y525_Y526")
+figS7A_prot_label <- c("BLNK\n(Y84)", "BTK\n(Y223)", "LYN\n(Y397)", "SHP2\n(Y580)", "SYK\n(Y525/Y526)")
+figS7A_data <- figS7_data_id %>%
+  dplyr::filter(cell_line == "DAUDI") %>%
+  subset(target_nospace %in% figS7A_prot)
+figS7A_mean <- figS7_mean_id %>%
+  dplyr::filter(cell_line == "DAUDI") %>%
+  subset(target_nospace %in% figS7A_prot)
+
+# Figure
+figS7_panelA <- ggplot() +
+  geom_jitter(data = figS7A_data,
+              aes(x = factor(target_nospace, levels = figS7A_prot, labels = figS7A_prot_label),
+                  y = counts_norm,
+                  color = factor(stim_clean, levels = figS7_stim)),
+              alpha = 1, size = 1, width = 0.1) +
+  geom_errorbar(data = figS7A_mean,
+                aes(x = factor(target_nospace, levels = figS7A_prot, labels = figS7A_prot_label),
+                    ymin = counts_norm, ymax = counts_norm,
+                    group = factor(stim_clean, levels = figS7_stim),
+                    color = factor(stim_clean, levels = figS7_stim)),
+                width = 0.35, size = 0.75) +
+  scale_color_manual(values = colors_stim, breaks = figS7_stim, labels = figS7_stim_label, name = "Treatment") +
+  labs(x = element_blank(), y = "Normalized counts") +
+  theme_bw() +
+  # RotatedAxis() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), legend.key.size = unit(0.5, "cm"), legend.spacing.y = unit(0.2, "cm"), legend.box.spacing = unit(0.01, "cm"), legend.position = "bottom", legend.justification = "left", axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.75)) +
+  textsize_small
+figS7_panelA
+```
+
+#### Panel B
+```{r figS7_panelB, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS7B_prot <- c("BTK_Y551", "CREB_S133", "PYK2_Y402", "S6_S240_S244", "VAV1_Y174")
+figS7B_prot_label <- c("BTK\n(Y551)", "CREB\n(S133)", "PYK2\n(Y402)", "S6\n(S240/S244)", "VAV1\n(Y174)")
+# figS7B_prot <- c("BLNK_Y84", "BTK_Y223", "LYN_Y397", "SHP2_Y580", "SYK_Y525_Y526")
+figS7B_data <- figS7_data_id %>%
+  dplyr::filter(cell_line == "HBL1") %>%
+  subset(target_nospace %in% figS7B_prot)
+figS7B_mean <- figS7_mean_id %>%
+  dplyr::filter(cell_line == "HBL1") %>%
+  subset(target_nospace %in% figS7B_prot)
+
+# Figure
+figS7_panelB <- ggplot() +
+  geom_jitter(data = figS7B_data,
+              aes(x = factor(target_nospace, levels  =figS7B_prot, labels = figS7B_prot_label),
+                  y = counts_norm,
+                  color = factor(stim_clean, levels = figS7_stim)),
+              alpha = 1, size = 1, width = 0.1) +
+  geom_errorbar(data = figS7B_mean,
+                aes(x = factor(target_nospace, levels  =figS7B_prot, labels = figS7B_prot_label),
+                    ymin = counts_norm, ymax = counts_norm,
+                    group = factor(stim_clean, levels = figS7_stim),
+                    color = factor(stim_clean, levels = figS7_stim)),
+                width = 0.35, size = 0.75) +
+  scale_color_manual(values = colors_stim, breaks = figS7_stim, labels = figS7_stim_label, name = "Treatment") +
+  labs(x = element_blank(), y = "Normalized counts") +
+  theme_bw() +
+  RotatedAxis() +
+  theme(panel.grid.minor.y = element_blank(), panel.grid.major.x = element_blank(), legend.key.size = unit(0.5, "cm"), legend.spacing.y = unit(0.1, "cm"), legend.box.spacing = unit(0.01, "cm"), legend.position = "bottom", legend.justification = "left", axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.75)) +
+  # guides(color = guide_legend(ncol = 1, byrow = TRUE)) +
+  textsize_small
+figS7_panelB
+```
+
+
+### Combined fig
+
+```{r figS7_combi, fig.width=6, fig.height=3, fig.retina=1}
+# Combine all panels of the figure
+figS7 <- plot_grid(figS7_panelA, figS7_panelB, labels = PANEL_labels[c(1, 2)], nrow = 1, rel_widths = c(1, 1), label_size = 10, align = "h")
+figS7
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS7,
+  filename = "output/figures/suppl_figS7.pdf",
+  width = 6,
+  height = 3,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS7,
+  filename = "output/figures/suppl_figS7.jpg",
+  width = 6,
+  height = 3,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S7: Additional example proteins for signaling activation in DAUDI and HBL1.*
+
+```{r figS7_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS7"))
+# rm(list = ls(pattern = "_fig1"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+## Suppl. Figure S8
+
+*Figure S8: Quality control of ID-seq data.*
+
+Input:
+
+-   DS091 ID-seq data
+
+### Data
+
+```{r figS8_data}
+# Load sparse matrix format all data
+figS8_counts_PlateA <- read_count_output("data/DS091_ImmunostainingBio/counts/PlateA/featurecounts", name = "featurecounts")
+figS8_meta_wellID <- read_csv("data/DS091_ImmunostainingBio/config/DynSign.091_wellBC_metadata_seq.csv")
+figS8_meta_Abs <- read_excel("data/DS091_ImmunostainingBio/config/BulkIDseq_Ab_info_seq_analysis_202212.xlsx")
+figS8_comp_matrix <- read_csv("data/DS091_ImmunostainingBio/BC_compensation_matrix.csv")
+
+# Reshape counts in data table format
+figS8_counts_dtbl <- data.frame(figS8_counts_PlateA) %>% 
+  mutate(barcode_name = rownames(figS8_counts_PlateA)) %>% #barcode_name #Barcodename
+  dplyr::select(barcode_name, everything()) %>%
+  gather("well_BC_seq", "counts", 2:c(ncol(figS8_counts_PlateA)+1)) %>%
+  dplyr::filter(counts >= 1) %>% # Remove undetected proteins counts
+  left_join(figS8_meta_Abs) %>%
+  unique() %>%
+  left_join(subset(figS8_meta_wellID, plate == "A")) %>% # Add sample metadata
+  dplyr::filter(!is.na(experiment)) %>%
+  arrange(plate, well) %>%
+  mutate(plate_well = paste0(plate, "_", well))
+```
+
+```{r figS8_labels}
+figS8_conc <- c(0.5, 0.25, 0.125, 0.063, 0.031, 0)
+figS8_conc_text <- c("0.5 ug/mL", "0.25 ug/mL", "0.125 ug/mL", "0.063 ug/mL", "0.031 ug/mL", "0 ug/mL")
+figS8_conc_labels <- c("0.5\nug/mL", "0.25\nug/mL", "0.125\nug/mL", "0.063\nug/mL", "0.031\nug/mL", "0\nug/mL")
+```
+
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS8_panelA, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+# Calculate per-sample properties
+figS8A_data <- figS8_counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(counts), 
+            nProt = n()) %>%
+  left_join(figS8_meta_wellID)
+
+# Figure
+figS8_panelA <- ggplot(figS8A_data, aes(log10(nCount), nProt, color = staining_conc_text)) +
+  geom_point(alpha = 0.9, size = 1) +
+  facet_wrap(vars(factor(experiment, labels = "Before analysis\n(raw counts)"))) +
+  coord_cartesian(xlim = c(2.7, 6)) +
+  scale_color_manual(values = colors_stain_conc, name = "Staining conc.") +
+  labs(x = expression("Total counts (log"[10]*")"),
+       y = "Detected Ab barcodes") +
+  theme_bw() +
+  textsize_small +
+  theme(legend.position = "none", legend.key.size = unit(0.35, "cm"), legend.spacing.y = unit(0.01, "cm"), legend.box.spacing = unit(0.05, "cm"), panel.grid.minor = element_blank(), strip.text.x = element_text(size = 7.5), legend.title = element_text(size = 7))
+figS8_panelA
+```
+
+#### Panel B
+```{r figS8_panelB, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS8_data_comp <- figS8_counts_dtbl %>%
+  dplyr::select(plate, well, barcode_name, counts) %>%
+  left_join(figS8_comp_matrix, by = join_by(barcode_name == BC_to_correct)) #, multiple = "all"
+
+# Get counts of OG BC
+figS8_data_comp_OG <- figS8_data_comp %>%
+  dplyr::filter(barcode_name == OG_BC) %>%
+  dplyr::select(plate, well, OG_BC, counts) %>%
+  dplyr::rename(counts_OG_BC = counts)
+
+# Calculate false reads
+figS8_data_false <- left_join(figS8_data_comp, figS8_data_comp_OG) %>% 
+  mutate(false_counts = (counts_OG_BC / percent_OG_BC) * percent_BC_to_correct) %>%
+  dplyr::filter(barcode_name != OG_BC) %>%
+  group_by(plate, well, barcode_name, counts) %>%
+  summarize(total_false_counts = sum(false_counts, na.rm = TRUE))
+
+figS8B_counts_dtbl <- figS8_counts_dtbl %>%
+  left_join(figS8_data_false) %>% 
+  mutate(total_false_counts = replace_na(total_false_counts, 0), 
+         true_counts = as.integer(counts - total_false_counts), 
+         percent_true = (true_counts / counts) * 100) %>%
+  dplyr::filter(!is.na(target_nospace)) # Remove barcodes not in Ab metadata (not conjugated/added in panel)
+
+# Calculate per-sample properties
+figS8B_data <- figS8B_counts_dtbl %>%
+  unique()%>%
+  group_by(plate, well_BC_seq) %>%
+  summarize(nCount = sum(true_counts), 
+            nProt = n()) %>%
+  left_join(figS8_meta_wellID)
+
+# Figure
+figS8_panelB <- ggplot(figS8B_data, aes(log10(nCount), nProt, color = staining_conc_text)) +
+  geom_point(alpha = 0.9, size = 1) +
+  facet_wrap(vars(factor(experiment, labels = "After correction"))) +
+  coord_cartesian(xlim = c(2.7, 6)) +
+  scale_color_manual(values = colors_stain_conc, name = "Staining conc.") +
+  labs(x = expression("Total counts (log"[10]*")"),
+       y = "Detected Ab barcodes") +
+  theme_bw() +
+  textsize_small +
+  theme(legend.position = "none", legend.key.size = unit(0.35, "cm"), legend.spacing.y = unit(0.01, "cm"), legend.box.spacing = unit(0.05, "cm"), panel.grid.minor = element_blank(), strip.text.x = element_text(size = 7.5, margin = margin(0.3, 0, 0.3, 0, "cm")), legend.title = element_text(size = 7))
+figS8_panelB
+```
+
+#### Panel C
+```{r figS8_panelC, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+figS8_scaling_factors <- figS8B_counts_dtbl %>%
+  dplyr::filter(cell_line %in% c("HBL1", "DAUDI")) %>%
+  ungroup() %>%
+  group_by(cell_line, target_nospace) %>%
+  mutate(true_scaling_factor_geo = true_counts / exp(mean(log((true_counts))))) %>%
+  ungroup() %>%
+  group_by(cell_line, description_sample, description_staining) %>%
+  summarize(true_scaling_factor_geo = median(true_scaling_factor_geo, na.rm = TRUE))
+
+figS8C_counts_dtbl_norm <- figS8B_counts_dtbl %>%
+  dplyr::filter(cell_line %in% c("HBL1", "DAUDI")) %>%
+  left_join(figS8_scaling_factors) %>%
+  ungroup() %>%
+  mutate(true_counts_norm_geo = true_counts / true_scaling_factor_geo) %>%
+  dplyr::filter(!is.na(target_nospace))
+
+# Calculate per-sample properties
+figS8C_data <- figS8C_counts_dtbl_norm %>%
+  unique()%>%
+  group_by(well_BC_seq) %>%
+  summarize(nCount_norm = sum(true_counts_norm_geo), 
+            nProt = n()) %>%
+  left_join(subset(figS8_meta_wellID, plate == "A"))
+
+# Figure
+figS8_panelC <- ggplot(figS8C_data, aes(log10(nCount_norm), nProt, color = factor(staining_conc, levels = figS8_conc, labels = figS8_conc_text))) +
+  geom_point(alpha = 0.9, size = 1) +
+  facet_wrap(vars(factor(experiment, labels = "After normalisation"))) +
+  coord_cartesian(xlim = c(2.7, 6)) +
+  scale_color_manual(values = colors_stain_conc, labels = figS8_conc, name = "Staining conc.\n(ug/mL)") +
+  labs(x = expression("Total counts (log"[10]*")"),
+       y = "Detected Ab barcodes") +
+  theme_bw() +
+  textsize_small +
+  theme(legend.position = "right", legend.key.size = unit(0.35, "cm"), legend.spacing.y = unit(0.01, "cm"), legend.box.spacing = unit(0.05, "cm"), panel.grid.minor = element_blank(), strip.text.x = element_text(size = 7.5, margin = margin(0.3, 0, 0.3, 0, "cm")), legend.title = element_text(size = 7), legend.text = element_text(size = 7.5))
+figS8_panelC
+```
+
+#### Panel D
+```{r figS8_panelD, fig.width=6, fig.height=3, fig.retina=1}
+# Select data
+rng <- range(log10(figS8A_data$nCount))
+
+# Figure
+figS8_panelD <- raw_map(data = log10(figS8A_data$nCount), well = figS8A_data$well, plate = 96, size = 7) +
+  scale_fill_viridis(expression("Total counts (log"[10]*")"), limits = c(rng[1], rng[2])) +
+  theme_bw() +
+  textsize_small
+figS8_panelD
+```
+
+
+### Combined fig
+
+```{r figS8_combi, fig.width=6, fig.height=5, fig.retina=1}
+# Combine all panels of the figure
+figS8_ABC <- plot_grid(figS8_panelA, figS8_panelB, figS8_panelC, labels = PANEL_labels[c(1, 2, 3)], nrow = 1, rel_widths = c(1, 1, 1.4), label_size = 10)
+figS8 <- plot_grid(figS8_ABC, figS8_panelD, labels = c(NA, PANEL_labels[c(4)]), ncol = 1, rel_heights = c(1, 1.4), label_size = 10)
+figS8
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS8,
+  filename = "output/figures/suppl_figS8.pdf",
+  width = 6,
+  height = 4.8,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS8,
+  filename = "output/figures/suppl_figS8.jpg",
+  width = 6,
+  height = 4.8,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S8: Quality control of ID-seq data.*
+
+```{r figS8_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS8"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+## Suppl. Figure S9
+
+*Figure S9: Phospho flow cytometry gating strategy.*
+
+Input:
+
+-   DS091 phosphoflow data
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS9_panelA, fig.retina=1}
+# Placeholder
+figS9_panelA <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS9_panelA
+
+# PNG
+png_figS9_panelA <- magick::image_read("output/figures/gating_figs/fig_debris_DS091.png") %>%
+  image_ggplot(interpolate = TRUE)
+png_figS9_panelA
+```
+
+#### Panel B
+```{r figS9_panelB, fig.retina=1}
+# Placeholder
+figS9_panelB <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS9_panelB
+
+# PNG
+png_figS9_panelB <- magick::image_read("output/figures/gating_figs/fig_singlets_DS091.png") %>%
+  image_ggplot(interpolate = TRUE)
+png_figS9_panelB
+```
+
+#### Panel C
+```{r figS9_panelC, fig.retina=1}
+# Placeholder
+figS9_panelC <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS9_panelC
+
+# PNG
+png_figS9_panelC <- magick::image_read("output/figures/gating_figs/fig_live_DS091.png") %>%
+  image_ggplot(interpolate = TRUE)
+png_figS9_panelC
+```
+
+
+### Combined fig
+
+```{r figS9_combi, fig.width=7.3, fig.height=2.5, fig.retina=1}
+# Combine all panels of the figure
+figS9 <- plot_grid(png_figS9_panelA, png_figS9_panelB, png_figS9_panelC, labels = PANEL_labels[c(1, 2, 3)], ncol = 3, rel_widths = c(1, 1, 1), label_size = 10)
+figS9
+
+# Save figure as pdf, jpg, and png
+ggsave(
+  figS9,
+  filename = "output/figures/suppl_figS9.pdf",
+  width = 6,
+  height = 2,
+  units = "in",
+  dpi = 300
+  )
+ggsave(
+  figS9,
+  filename = "output/figures/suppl_figS9.jpg",
+  width = 6,
+  height = 2,
+  units = "in",
+  dpi = 300
+  )
+```
+*Figure S9: Phospho flow cytometry gating strategy.*
+
+```{r figS9_clean}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS9"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
+
+
+
+
+
+
+
+
+
+
+
+## Suppl. Figure S0
+
+*Figure title.*
+
+Input:
+-   BioRender schematic figures
+
+-   ... phosphoflow data
+
+-   ... ID-seq data
+
+### Data
+
+```{r figS0_data, eval=F}
+
+```
+
+```{r figS0_labels, eval=F}
+
+```
+
+
+### Panels {.tabset}
+
+#### Panel A
+```{r figS0_panelA, fig.retina=1, eval=F}
+# Placeholder
+figS0_panelA <- ggplot() +
+  geom_blank() +
+  scale_x_continuous(limits = c(0, 10)) + 
+  scale_y_continuous(limits = c(0, 10)) + 
+  # labs(title = "BCR signaling network") + 
+  theme_bw() +
+  theme(axis.text = element_text(color = "white"), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()) +
+  textsize_small
+# figS0_panelA
+
+# PNG
+png_figS0 <- image_read("output/figures/non_R_figs/xxx.png") %>%
+  image_ggplot()
+# png_figS0
+```
+
+#### Panel B
+```{r figS0_panelB, fig.width=6, fig.height=3, fig.retina=1, eval=F}
+# Select data
+
+# Figure
+
+```
+
+#### Panel C
+```{r figS0_panelC, fig.width=6, fig.height=3, fig.retina=1, eval=F}
+# Select data
+
+# Figure
+
+```
+
+
+### Combined fig
+
+```{r figS0_combi, fig.width=6, fig.height=3, fig.retina=1, eval=F}
+# Combine all panels of the figure
+figS0 <- plot_grid(panelA, panelB, labels = PANEL_labels[c(1, 2)], ncol = 1, rel_heights = c(1, 1), label_size = 10)
+figS0
+
+# Save figure as pdf, jpg, and png
+# ggsave(
+#   figS0,
+#   filename = "output/figures/suppl_figS0.pdf",
+#   width = 6,
+#   height = 3,
+#   units = "in",
+#   dpi = 300
+#   )
+ggsave(
+  figS0,
+  filename = "output/figures/suppl_figS0.jpg",
+  width = 6,
+  height = 3,
+  units = "in",
+  dpi = 300
+  )
+# ggsave(
+#   figS0,
+#   filename = "output/figures/suppl_figS0.png",
+#   width = 6,
+#   height = 3,
+#   units = "in",
+#   dpi = 300
+#   )
+```
+*Figure title.*
+
+```{r figS0_clean, eval=F}
+# Remove unnecessary files to clear up memory
+rm(list = ls(pattern = "figS0"))
+# rm(list = ls(pattern = "_fig1"))
+rm(list = ls(pattern = "png_"))
+gc()
+```
